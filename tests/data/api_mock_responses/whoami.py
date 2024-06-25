@@ -15,7 +15,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 50
+            "grain": 50,
         },
         {
             "caption": "Fujichrome Velvia 50 + 2383",
@@ -31,7 +31,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 100,
             "is_grain_enabled": True,
-            "grain": 20
+            "grain": 20,
         },
         {
             "caption": "Fujichrome CDU-II (cross)",
@@ -47,7 +47,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 41.02000045776367
+            "grain": 41.02000045776367,
         },
         {
             "caption": "Lomochrome Metropolis XR 100-400",
@@ -63,7 +63,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 20
+            "grain": 20,
         },
         {
             "caption": "Lomochrome Purple XR 100-400",
@@ -79,7 +79,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 18.8799991607666
+            "grain": 18.8799991607666,
         },
         {
             "caption": "Kodak Aerocolor IV 125",
@@ -95,7 +95,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 20.190000534057617
+            "grain": 20.190000534057617,
         },
         {
             "caption": "Ilford HP5 Plus 400 Push +2",
@@ -111,7 +111,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 60.7400016784668,
             "is_grain_enabled": True,
-            "grain": 34.63999938964844
+            "grain": 34.63999938964844,
         },
         {
             "caption": "AGFA Chrome RSX II 200 (Exp. 2006)",
@@ -127,7 +127,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 48.47999954223633,
             "is_grain_enabled": True,
-            "grain": 23.25
+            "grain": 23.25,
         },
         {
             "caption": "Agfa Agfacolor 100",
@@ -143,7 +143,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 20.190000534057617
+            "grain": 20.190000534057617,
         },
         {
             "caption": "Agfa Agfacolor Portrait XPS 160",
@@ -159,7 +159,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 27.31999969482422
+            "grain": 27.31999969482422,
         },
         {
             "caption": "Agfa Agfacolor XRS 200 (Exp. 1991)",
@@ -175,7 +175,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 36.9900016784668
+            "grain": 36.9900016784668,
         },
         {
             "caption": "Astrum Color Negative 125",
@@ -191,7 +191,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 17.5
+            "grain": 17.5,
         },
         {
             "caption": "Cinestill 50D + Kodak Endura",
@@ -207,7 +207,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 25.420000076293945
+            "grain": 25.420000076293945,
         },
         {
             "caption": "Cinestill 800T + Kodak Endura",
@@ -223,7 +223,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 20.079999923706055
+            "grain": 20.079999923706055,
         },
         {
             "caption": "Fuji Eterna Vivid 500 (Exp. 2013) + 2383",
@@ -239,7 +239,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 33.400001525878906
+            "grain": 33.400001525878906,
         },
         {
             "caption": "Fuji Eterna Vivid 500 (Exp. 2013) + 3513",
@@ -255,7 +255,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 33.400001525878906
+            "grain": 33.400001525878906,
         },
         {
             "caption": "Fuji Reala 500D (Exp.2013) + 2383",
@@ -271,7 +271,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 33.400001525878906
+            "grain": 33.400001525878906,
         },
         {
             "caption": "Fujichrome Velvia 100",
@@ -287,7 +287,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 20
+            "grain": 20,
         },
         {
             "caption": "Fujicolor 100 + 3513",
@@ -303,7 +303,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 22.93000030517578
+            "grain": 22.93000030517578,
         },
         {
             "caption": "Fujicolor 100 + Kodak Endura",
@@ -319,7 +319,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 22.93000030517578
+            "grain": 22.93000030517578,
         },
         {
             "caption": "Fujicolor C200 + 3513",
@@ -335,7 +335,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 25.229999542236328
+            "grain": 25.229999542236328,
         },
         {
             "caption": "Fujicolor C200 + Kodak Endura",
@@ -351,7 +351,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 25.229999542236328
+            "grain": 25.229999542236328,
         },
         {
             "caption": "Fujicolor Natura 1600 + 3513",
@@ -367,7 +367,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 41.02000045776367
+            "grain": 41.02000045776367,
         },
         {
             "caption": "Fujicolor Natura 1600 + Kodak Endura",
@@ -383,7 +383,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 41.02000045776367
+            "grain": 41.02000045776367,
         },
         {
             "caption": "Fujifilm FP-100c",
@@ -399,7 +399,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 34.65999984741211
+            "grain": 34.65999984741211,
         },
         {
             "caption": "Fujifilm FP-100c (Digital Intermediate)",
@@ -415,7 +415,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 19.43000030517578
+            "grain": 19.43000030517578,
         },
         {
             "caption": "Fujifilm Instax + 2383",
@@ -431,7 +431,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 50.459999084472656,
             "is_grain_enabled": True,
-            "grain": 13.670000076293945
+            "grain": 13.670000076293945,
         },
         {
             "caption": "Kodak Ektar 25 (Exp. 1996) + 2383",
@@ -447,7 +447,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 30.34000015258789
+            "grain": 30.34000015258789,
         },
         {
             "caption": "Kodak Ektar 25 (Exp. 1996) + Kodak Endura paper",
@@ -463,7 +463,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 30.34000015258789
+            "grain": 30.34000015258789,
         },
         {
             "caption": "Kodak Gold 200",
@@ -479,7 +479,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 20
+            "grain": 20,
         },
         {
             "caption": "Kodak Kodachrome 64 (Experimental)",
@@ -495,7 +495,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 15.520000457763672
+            "grain": 15.520000457763672,
         },
         {
             "caption": "Kodak Portra 400 + Endura",
@@ -511,7 +511,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 6.510000228881836
+            "grain": 6.510000228881836,
         },
         {
             "caption": "Kodak Supra 100 + 2383",
@@ -527,7 +527,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 100,
             "is_grain_enabled": True,
-            "grain": 10.119999885559082
+            "grain": 10.119999885559082,
         },
         {
             "caption": "Kodak Supra 100 + Kodak Endura",
@@ -543,7 +543,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 100,
             "is_grain_enabled": True,
-            "grain": 10.119999885559082
+            "grain": 10.119999885559082,
         },
         {
             "caption": "Kodak Ultramax 400 + 2383",
@@ -559,7 +559,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 27.6299991607666
+            "grain": 27.6299991607666,
         },
         {
             "caption": "Kodak Ultramax 400 + Kodak Endura",
@@ -575,7 +575,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 27.530000686645508
+            "grain": 27.530000686645508,
         },
         {
             "caption": "Kodak Vision3 200T + 2383",
@@ -591,7 +591,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 59.939998626708984,
             "is_grain_enabled": True,
-            "grain": 10.760000228881836
+            "grain": 10.760000228881836,
         },
         {
             "caption": "Kodak Vision3 200T + Kodak Endura",
@@ -607,7 +607,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 59.939998626708984,
             "is_grain_enabled": True,
-            "grain": 10.760000228881836
+            "grain": 10.760000228881836,
         },
         {
             "caption": "Kodak Vision3 250D + 2383",
@@ -623,7 +623,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 70,
             "is_grain_enabled": True,
-            "grain": 20.139999389648438
+            "grain": 20.139999389648438,
         },
         {
             "caption": "Kodak Vision3 500T + 2383",
@@ -639,7 +639,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 11.4399995803833
+            "grain": 11.4399995803833,
         },
         {
             "caption": "Kodak Vision3 50D + 2383",
@@ -655,7 +655,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 59.939998626708984,
             "is_grain_enabled": True,
-            "grain": 11.140000343322754
+            "grain": 11.140000343322754,
         },
         {
             "caption": "Kodak Vision3 50D + Kodak Endura",
@@ -671,7 +671,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 59.939998626708984,
             "is_grain_enabled": True,
-            "grain": 11.140000343322754
+            "grain": 11.140000343322754,
         },
         {
             "caption": "Konica Centuria 100 DNP + 3513",
@@ -687,7 +687,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 70,
             "is_grain_enabled": True,
-            "grain": 11.699999809265137
+            "grain": 11.699999809265137,
         },
         {
             "caption": "Konica Centuria 100 DNP + Kodak Endura",
@@ -703,7 +703,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 70,
             "is_grain_enabled": True,
-            "grain": 11.699999809265137
+            "grain": 11.699999809265137,
         },
         {
             "caption": "Konica Impresa 50 (Exp. 2006) + 2383",
@@ -719,7 +719,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 17.1200008392334
+            "grain": 17.1200008392334,
         },
         {
             "caption": "Konica Impresa 50 (Exp. 2006) + Kodak Endura",
@@ -735,7 +735,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 17.1200008392334
+            "grain": 17.1200008392334,
         },
         {
             "caption": "Konica Minolta VX400 Super",
@@ -751,7 +751,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 6.510000228881836
+            "grain": 6.510000228881836,
         },
         {
             "caption": "ORWO Chrom UT21 Daylight (Exp. 1992)",
@@ -767,7 +767,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 39.470001220703125
+            "grain": 39.470001220703125,
         },
         {
             "caption": "Polaroid Polachrome 35 mm (Exp. 1986)",
@@ -783,7 +783,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 0
+            "grain": 0,
         },
         {
             "caption": "Prokudin-Gorskiy 1906 (experimental)",
@@ -799,7 +799,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 20.559999465942383
+            "grain": 20.559999465942383,
         },
         {
             "caption": "Rollei CN200 + 2383",
@@ -815,7 +815,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 35.7599983215332
+            "grain": 35.7599983215332,
         },
         {
             "caption": "Rollei CN200 + Kodak Endura",
@@ -831,7 +831,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 35.7599983215332
+            "grain": 35.7599983215332,
         },
         {
             "caption": "Agfa Scala 200x",
@@ -847,7 +847,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 48.47999954223633,
             "is_grain_enabled": True,
-            "grain": 18.649999618530273
+            "grain": 18.649999618530273,
         },
         {
             "caption": "Ambrotype (by Anatolee Green) normal",
@@ -863,7 +863,7 @@ whoami_success_response = {
             "is_halation_enabled": False,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 0
+            "grain": 0,
         },
         {
             "caption": "Fujifilm Neopan Acros 100",
@@ -879,7 +879,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 56.220001220703125,
             "is_grain_enabled": True,
-            "grain": 22.93000030517578
+            "grain": 22.93000030517578,
         },
         {
             "caption": "Ilford HP5 Plus 400",
@@ -895,7 +895,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 60.7400016784668,
             "is_grain_enabled": True,
-            "grain": 20.469999313354492
+            "grain": 20.469999313354492,
         },
         {
             "caption": "Ilford XP2 Super 400",
@@ -911,7 +911,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 48.43000030517578
+            "grain": 48.43000030517578,
         },
         {
             "caption": "Kodak Eastman Double-X 5222",
@@ -927,7 +927,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 17.239999771118164
+            "grain": 17.239999771118164,
         },
         {
             "caption": "Kodak Plus-X Pan 125 (Exp. 1979)",
@@ -943,7 +943,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 56.220001220703125,
             "is_grain_enabled": True,
-            "grain": 23.43000030517578
+            "grain": 23.43000030517578,
         },
         {
             "caption": "Polaroid Type 100 Sepia (Exp. 2009)",
@@ -959,7 +959,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 56.220001220703125,
             "is_grain_enabled": True,
-            "grain": 20.540000915527344
+            "grain": 20.540000915527344,
         },
         {
             "caption": "Rollei Ortho 25",
@@ -975,7 +975,7 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 9.649999618530273
+            "grain": 9.649999618530273,
         },
         {
             "caption": "Svema Type-42 (Exp. 1991)",
@@ -991,25 +991,25 @@ whoami_success_response = {
             "is_halation_enabled": True,
             "halation": 80,
             "is_grain_enabled": True,
-            "grain": 21.360000610351562
-        }
+            "grain": 21.360000610351562,
+        },
     ],
     "presetSections": {
         "0": "Featured",
         "7": "Color films",
-        "52": "Black and white films"
+        "52": "Black and white films",
     },
     "isWorkstationAuthorized": True,
     "subscriptionPriceMonthlyHr": "$4.99",
     "subscriptionPriceYearlyHr": "$49.99",
     "trialDurationDays": 8,
-    "dehancerDomain": "www.dehancer.com"
+    "dehancerDomain": "www.dehancer.com",
 }
 
 whoami_not_success_response = {
     "success": False,
     "presets": [],
-    "dehancerDomain": "www.dehancer.com"
+    "dehancerDomain": "www.dehancer.com",
 }
 
-whoami_invalid_response = 'Error'
+whoami_invalid_response = "Error"
