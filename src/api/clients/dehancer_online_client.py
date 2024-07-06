@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from requests import Response  # pragma: no cover
+    from requests import Response
 
 import logging.config
 from dataclasses import asdict
