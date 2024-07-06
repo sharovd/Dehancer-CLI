@@ -36,7 +36,7 @@ jobs:
         run: |
           pytest_output=$(pytest --cov=src/ -m "unit" || true)
           echo $pytest_output
-          total_coverage=$(echo "$pytest_output" | grep 'TOTAL' | awk '{print $NF} | sed 's/%//')
+          total_coverage=$(echo "$pytest_output" | grep 'TOTAL' | awk '{print $NF}' | sed 's/%//')
           printf "Total unit test coverage is %s%%\n" "$total_coverage"
           anybadge --value=$total_coverage --file=unit-test-coverage.svg coverage
       - name: Publish coverage badge to GitHub Pages
