@@ -155,7 +155,7 @@ def get_filename_without_extension(file_path: str) -> str:
 
 def download_file(file_url: str, file_dir: str) -> None:
     """
-    Downloads a file from the given URL and save it to the specified directory.
+    Download a file from the given URL and save it to the specified directory.
 
     The method makes an HTTP GET request to the specified file URL
     and saves the response content to the specified directory.
