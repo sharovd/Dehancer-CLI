@@ -18,3 +18,31 @@ jobs:
         run: |
           ruff check . --output-format=github
         continue-on-error: true
+  Tests:
+    needs: [Verification]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run unit tests with coverage calculation
+        run: |
+          pytest_output=$(pytest --cov=src/ -m "unit" || true)
+          echo $pytest_output
+          total_coverage=$(echo "$pytest_output" | grep 'TOTAL' | awk '{print $NF} | sed 's/%//')
+          printf "Total unit test coverage is %s%%\n" "$total_coverage"
+          anybadge --value=$total_coverage --file=unit-test-coverage.svg coverage
+      - name: Publish coverage badge to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: unit-test-coverage.svg
+      - name: Run e2e tests
+        run: |
+          pytest -m "e2e"

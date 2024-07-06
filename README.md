@@ -1,3 +1,5 @@
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+
 # Dehancer CLI
 
 Dehancer CLI is an unofficial command line application that interacts with the [Dehancer Online API](https://online.dehancer.com/) to process images using various film presets. <br>
