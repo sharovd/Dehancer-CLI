@@ -38,11 +38,12 @@ jobs:
           echo $pytest_output
           total_coverage=$(echo "$pytest_output" | grep 'TOTAL' | awk '{print $NF}' | sed 's/%//')
           printf "Total unit test coverage is %s%%\n" "$total_coverage"
-          anybadge --value=$total_coverage --file=unit-test-coverage.svg coverage
+          mkdir badges
+          anybadge --value=$total_coverage --file=badges/unit-test-coverage.svg coverage
       - name: Publish coverage badge to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: unit-test-coverage.svg
+          folder: badges
       - name: Run e2e tests
         run: |
           pytest -m "e2e"
