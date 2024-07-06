@@ -46,4 +46,5 @@ jobs:
           folder: badges
       - name: Run e2e tests
         run: |
+          mkdir out
           pytest -m "e2e"

@@ -1,5 +1,5 @@
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-![Test Coverage](https://raw.githubusercontent.com/dnsxns/Dehancer-CLI/gh-pages/unit-test-coverage.svg?token=GHSAT0AAAAAACT5SENDTJMNKOLCS6FP6XCCZUJKB6A)
+![Test Coverage](https://github.com/dnsxns/Dehancer-CLI/blob/gh-pages/unit-test-coverage.svg?raw=true)
 
 # Dehancer CLI
 
