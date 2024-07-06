@@ -3,7 +3,7 @@ from enum import Enum
 
 
 @dataclass
-class Preset:
+class Preset:  # noqa: D101
     caption: str
     creator: str
     preset: str
@@ -21,7 +21,7 @@ class Preset:
 
 
 @dataclass
-class PresetSettings:
+class PresetSettings:  # noqa: D101
     exposure: float
     contrast: float
     temperature: float
@@ -32,6 +32,6 @@ class PresetSettings:
     grain: float
 
 
-class ImageSize(Enum):
+class ImageSize(Enum):  # noqa: D101
     SMALL = "small"
     LARGE = "large"

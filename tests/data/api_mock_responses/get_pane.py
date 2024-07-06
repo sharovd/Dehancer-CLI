@@ -62,12 +62,12 @@ get_pane_success_response = {
         "https://dho.dehancer.com/local/e10f9911-49a8-4e6f-b206-55c0bab81a68/69f024b4_small.jpeg",
         "https://dho.dehancer.com/local/e10f9911-49a8-4e6f-b206-55c0bab81a68/4ac9602e_small.jpeg",
         "https://dho.dehancer.com/local/e10f9911-49a8-4e6f-b206-55c0bab81a68/93e02d7a_small.jpeg",
-        "https://dho.dehancer.com/local/e10f9911-49a8-4e6f-b206-55c0bab81a68/f6a9ee54_small.jpeg"
-    ]
+        "https://dho.dehancer.com/local/e10f9911-49a8-4e6f-b206-55c0bab81a68/f6a9ee54_small.jpeg",
+    ],
 }
 
 get_pane_not_success_response = {
-    "success": False
+    "success": False,
 }
 
-get_pane_invalid_response = 'Error'
+get_pane_invalid_response = "Error"

@@ -6,37 +6,37 @@ HEADER_ACCEPT_LANGUAGE_EN = "en-US,en;q=0.5"
 HEADER_JSON_CONTENT_TYPE = "application/json"
 HEADER_TRANSFER_ENCODING_TRAILERS = "trailers"
 BASE_HEADERS = {
-    'User-Agent': HEADER_USER_AGENT,
-    'Accept-Language': HEADER_ACCEPT_LANGUAGE_EN,
-    'Referer': f'{DEHANCER_ONLINE_BASE_URL}',
-    'Origin': f'{DEHANCER_ONLINE_BASE_URL}',
+    "User-Agent": HEADER_USER_AGENT,
+    "Accept-Language": HEADER_ACCEPT_LANGUAGE_EN,
+    "Referer": f"{DEHANCER_ONLINE_BASE_URL}",
+    "Origin": f"{DEHANCER_ONLINE_BASE_URL}",
 }
 SECURITY_HEADERS = {
-    'DNT': '1',  # Do Not Track
-    'Sec-GPC': '1',  # Google's "SameSite" Cookie Policy
-    'Sec-Fetch-Dest': 'empty',  # Destination
-    'Sec-Fetch-Mode': 'cors',  # Cross-Origin Resource Sharing
-    'Sec-Fetch-Site': 'cross-site'  # Cross-Site Request
+    "DNT": "1",  # Do Not Track
+    "Sec-GPC": "1",  # Google"s "SameSite" Cookie Policy
+    "Sec-Fetch-Dest": "empty",  # Destination
+    "Sec-Fetch-Mode": "cors",  # Cross-Origin Resource Sharing
+    "Sec-Fetch-Site": "cross-site",  # Cross-Site Request
 }
 
 IMAGE_VALID_TYPES = {
-    'jpeg': 'image/jpeg',
-    'tiff': 'image/tiff',
-    'heif': 'image/heif',
-    'heic': 'image/heic',
-    'avif': 'image/avif',
-    'webp': 'image/webp',
-    'dng': 'image/x-adobe-dng',
-    'png': 'image/png'
+    "jpeg": "image/jpeg",
+    "tiff": "image/tiff",
+    "heif": "image/heif",
+    "heic": "image/heic",
+    "avif": "image/avif",
+    "webp": "image/webp",
+    "dng": "image/x-adobe-dng",
+    "png": "image/png",
 }
 
 PRESET_DEFAULT_STATE = {
-    'contrast': 0,
-    'exposure': 0,
-    'temperature': 0,
-    'tint': 0,
-    'color_boost': 0,
-    'bloom': 0,
-    'halation': 0,
-    'grain': 0
+    "contrast": 0,
+    "exposure": 0,
+    "temperature": 0,
+    "tint": 0,
+    "color_boost": 0,
+    "bloom": 0,
+    "halation": 0,
+    "grain": 0,
 }

@@ -9,11 +9,11 @@ upload_file_put_success_response = {
            "&X-Amz-Expires=3600"
            "&X-Amz-Signature=d3e5a712c4f3b6a9d0f8e4b3a1c2d9e7b5f4c2a1b6e7d8c3f0a1b2c4e5d3f6a1"
            "&X-Amz-SignedHeaders=host"
-           "&x-id=PutObject"
+           "&x-id=PutObject",
 }
 
 upload_file_put_not_success_response = {
-    "success": False
+    "success": False,
 }
 
-upload_file_put_invalid_response = 'Error'
+upload_file_put_invalid_response = "Error"
