@@ -36,7 +36,7 @@ class FileBackupContext:
         except those beginning with 'backup_'.
         It then removes the original files and directories to prepare for new operations.
         """
-        if len(os.listdir(self.directory)) != 0:
+        if Path(self.directory).exists() and len(os.listdir(self.directory)) != 0:
             Path(self.backup_dir).mkdir(parents=True)
             for file in os.listdir(self.directory):
                 if not file.startswith("backup_"):

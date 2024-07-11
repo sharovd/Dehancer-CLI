@@ -12,7 +12,7 @@ from src import utils
 from src.api.clients.dehancer_online_client import DehancerOnlineAPIClient
 from src.api.constants import DEHANCER_ONLINE_API_BASE_URL, IMAGE_VALID_TYPES
 from src.api.models.preset import ImageSize, Preset, PresetSettings
-from src.utils import get_filename_without_extension, is_supported_format_file, read_settings_file
+from src.utils import get_filename_without_extension, is_supported_format_file, read_settings_file, safe_join
 
 logging.config.fileConfig(utils.get_logger_config_file_path())
 logger = logging.getLogger()
@@ -82,7 +82,9 @@ def print_contacts(file_path: str) -> None:
     for idx, preset in enumerate(requested_presets, 1):
         image_url = dehancer_api_client.render_image(image_id, available_presets[idx-1], presets_default_settings)
         logger.info("%d. '%s' : %s", idx, preset, image_url)
-        utils.download_file(image_url, f"out/{get_filename_without_extension(file_path)}_{preset}.jpeg")
+        output_dir = "out"
+        safe_filename = safe_join(output_dir, f"{get_filename_without_extension(file_path)}_{preset}.jpeg")
+        utils.download_file(image_url, safe_filename)
 
 
 def __process_image(file_path: str, preset: Preset, preset_settings: PresetSettings, preset_number: int) -> None:
@@ -130,7 +132,7 @@ def develop_images(path: str, preset_number: int, custom_preset_settings: dict[s
     elif Path(path).is_dir():
         for filename in os.listdir(path):
             file_path = os.path.join(path, filename)
-            if Path.is_file(file_path) and is_supported_format_file(file_path, IMAGE_VALID_TYPES):
+            if Path.is_file(Path(file_path)) and is_supported_format_file(file_path, IMAGE_VALID_TYPES):
                 __process_image(file_path, preset, preset_settings, preset_number)
 
 

@@ -60,7 +60,6 @@ jobs:
           pip install -r requirements.txt
       - name: Run e2e tests
         run: |
-          mkdir out
           pytest -m "e2e"
   Check-for-vulnerabilities:
     needs: [ Run-unit-tests ]
@@ -80,9 +79,3 @@ jobs:
         uses: snyk/actions/python-3.10@master
         env:
           SNYK_TOKEN: ${{secrets.SNYK_TOKEN}}
-        with:
-          args: --sarif-file-output=snyk.sarif
-      - name: Upload result to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: snyk.sarif
