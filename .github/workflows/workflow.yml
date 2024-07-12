@@ -41,12 +41,12 @@ jobs:
           total_coverage=$(echo "$pytest_output" | grep 'TOTAL' | awk '{print $NF}' | sed 's/%//')
           printf "Total unit test coverage is %s%%\n" "$total_coverage"
           mkdir -p badges/unit
-          anybadge --value=$total_coverage --file=badges/unit/unit-test-coverage.svg coverage
+          anybadge --value=$total_coverage --file=badges/unit-test/unit-test-coverage.svg coverage
       - name: Upload unit test coverage badge as artifact
         uses: actions/upload-artifact@v4
         with:
           name: unit-test-coverage-badge
-          path: badges/unit/unit-test-coverage.svg
+          path: badges/unit-test/unit-test-coverage.svg
 
   Run-e2e-tests:
     needs: [ Check-code-style-and-format ]
@@ -93,12 +93,12 @@ jobs:
             badge_color="red"
           fi
           mkdir -p badges/snyk
-          anybadge --label "vulnerabilities | snyk" --value=tested --file=badges/snyk/vulnerabilities-snyk-result.svg tested=$badge_color
+          anybadge --label "vulnerabilities | snyk" --value=tested --file=badges/vulnerabilities/vulnerabilities-snyk-result.svg tested=$badge_color
       - name: Upload vulnerabilities status badge as artifact
         uses: actions/upload-artifact@v4
         with:
           name: vulnerabilities-status-badge
-          path: badges/snyk/vulnerabilities-snyk-result.svg
+          path: badges/vulnerabilities/vulnerabilities-snyk-result.svg
 
   Publish-badges:
     needs: [ Run-unit-tests, Check-for-vulnerabilities ]
@@ -110,12 +110,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: unit-test-coverage-badge
-          path: badges/unit
+          path: badges/unit-test
       - name: Download vulnerabilities status badge
         uses: actions/download-artifact@v4
         with:
           name: vulnerabilities-status-badge
-          path: badges/snyk
+          path: badges/vulnerabilities
       - name: Publish all badges to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
