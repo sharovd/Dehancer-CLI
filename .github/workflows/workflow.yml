@@ -38,12 +38,12 @@ jobs:
           echo $pytest_output
           total_coverage=$(echo "$pytest_output" | grep 'TOTAL' | awk '{print $NF}' | sed 's/%//')
           printf "Total unit test coverage is %s%%\n" "$total_coverage"
-          mkdir badges
-          anybadge --value=$total_coverage --file=badges/unit-test-coverage.svg coverage
+          mkdir -p badges/unit
+          anybadge --value=$total_coverage --file=badges/unit/unit-test-coverage.svg coverage
       - name: Publish coverage badge to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: badges
+          folder: badges/unit
   Run-e2e-tests:
     needs: [ Check-code-style-and-format ]
     runs-on: ubuntu-latest
@@ -87,9 +87,9 @@ jobs:
           else
             badge_color="red"
           fi
-          mkdir badges
-          anybadge --label "vulnerabilities | snyk" --value=tested --file=badges/vulnerabilities-snyk-result.svg tested=$badge_color
+          mkdir -p badges/snyk
+          anybadge --label "vulnerabilities | snyk" --value=tested --file=badges/snyk/vulnerabilities-snyk-result.svg tested=$badge_color
       - name: Publish snyk result badge to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: badges
+          folder: badges/snyk
