@@ -40,7 +40,7 @@ jobs:
           echo $pytest_output
           total_coverage=$(echo "$pytest_output" | grep 'TOTAL' | awk '{print $NF}' | sed 's/%//')
           printf "Total unit test coverage is %s%%\n" "$total_coverage"
-          mkdir -p badges/unit
+          mkdir -p badges/unit-test
           anybadge --value=$total_coverage --file=badges/unit-test/unit-test-coverage.svg coverage
       - name: Upload unit test coverage badge as artifact
         uses: actions/upload-artifact@v4
@@ -92,7 +92,7 @@ jobs:
           else
             badge_color="red"
           fi
-          mkdir -p badges/snyk
+          mkdir -p badges/vulnerabilities
           anybadge --label "vulnerabilities | snyk" --value=tested --file=badges/vulnerabilities/vulnerabilities-snyk-result.svg tested=$badge_color
       - name: Upload vulnerabilities status badge as artifact
         uses: actions/upload-artifact@v4
