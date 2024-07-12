@@ -1,7 +1,8 @@
 name: Dehancer-CLI's pipeline
 on: push
 jobs:
-  Verification:
+
+  Check-code-style-and-format:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -18,8 +19,9 @@ jobs:
         run: |
           ruff check . --output-format=github
         continue-on-error: true
-  Unit-Tests:
-    needs: [Verification]
+
+  Run-unit-tests:
+    needs: [ Check-code-style-and-format ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -38,14 +40,16 @@ jobs:
           echo $pytest_output
           total_coverage=$(echo "$pytest_output" | grep 'TOTAL' | awk '{print $NF}' | sed 's/%//')
           printf "Total unit test coverage is %s%%\n" "$total_coverage"
-          mkdir badges
-          anybadge --value=$total_coverage --file=badges/unit-test-coverage.svg coverage
-      - name: Publish coverage badge to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
+          mkdir -p badges/unit-test
+          anybadge --value=$total_coverage --file=badges/unit-test/unit-test-coverage.svg coverage
+      - name: Upload unit test coverage badge as artifact
+        uses: actions/upload-artifact@v4
         with:
-          folder: badges
-  E2E-Tests:
-    needs: [Verification]
+          name: unit-test-coverage-badge
+          path: badges/unit-test/unit-test-coverage.svg
+
+  Run-e2e-tests:
+    needs: [ Check-code-style-and-format ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -60,5 +64,59 @@ jobs:
           pip install -r requirements.txt
       - name: Run e2e tests
         run: |
-          mkdir out
           pytest -m "e2e"
+
+  Check-for-vulnerabilities:
+    needs: [ Run-unit-tests ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run Snyk to check for vulnerabilities
+        id: snyk
+        uses: snyk/actions/python-3.10@master
+        env:
+          SNYK_TOKEN: ${{secrets.SNYK_TOKEN}}
+      - name: Check Snyk result and make a badge
+        run: |
+          if [ "${{ steps.snyk.outcome }}" == "success" ]; then
+            badge_color="green"
+          else
+            badge_color="red"
+          fi
+          mkdir -p badges/vulnerabilities
+          anybadge --label "vulnerabilities | snyk" --value=tested --file=badges/vulnerabilities/vulnerabilities-snyk-result.svg tested=$badge_color
+      - name: Upload vulnerabilities status badge as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vulnerabilities-status-badge
+          path: badges/vulnerabilities/vulnerabilities-snyk-result.svg
+
+  Publish-badges:
+    needs: [ Run-unit-tests, Check-for-vulnerabilities ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Download unit test coverage badge
+        uses: actions/download-artifact@v4
+        with:
+          name: unit-test-coverage-badge
+          path: badges/unit-test
+      - name: Download vulnerabilities status badge
+        uses: actions/download-artifact@v4
+        with:
+          name: vulnerabilities-status-badge
+          path: badges/vulnerabilities
+      - name: Publish all badges to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: badges

@@ -4,6 +4,7 @@ import imghdr
 import logging.config
 import logging.handlers
 import mimetypes
+import urllib.parse
 from pathlib import Path
 
 import requests
@@ -190,3 +191,34 @@ def download_file(file_url: str, file_dir: str) -> None:
         logger.debug("File '%s' downloaded successfully.", file_url)
     else:
         logger.error("Failed to download the file '%s'. Status code: %s", file_url, response.status_code)
+
+
+def safe_join(base: str, *paths: str) -> str:
+    """
+    Safely join one or more path components to a base path, preventing directory traversal attacks.
+
+    Parameters
+    ----------
+    base : str
+        The base directory path.
+    paths : str
+        Additional path components to be joined to the base path.
+
+    Returns
+    -------
+    str
+        The safely joined absolute path.
+
+    Raises
+    ------
+    ValueError
+        If the final path attempts to traverse outside the base directory.
+
+    """
+    base = Path(base).resolve()
+    paths = [urllib.parse.unquote(p) for p in paths]
+    final_path = Path(base).joinpath(*paths).resolve()
+    if not str(final_path).startswith(str(base)):
+        msg = "Attempted path traversal detected"
+        raise ValueError(msg)
+    return str(final_path)

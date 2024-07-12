@@ -14,6 +14,7 @@ from src.utils import (
     is_file_exist,
     is_supported_format_file,
     read_settings_file,
+    safe_join,
 )
 
 
@@ -192,3 +193,53 @@ def test_download_file_downloads_file_if_200_ok_or_logs_error_message_otherwise(
         else:
             log_messages = [call[0][0] % call[0][1:] for call in mock_logger.error.call_args_list]
             assert expected_logging in log_messages
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(("paths", "expected_result"), [
+    # Single file
+    (("file.txt",), "/safe/base/file.txt"),
+    # Path join
+    (("subdir", "file.txt"), "/safe/base/subdir/file.txt"),
+    # Nested directories
+    (("dir1", "dir2", "file.txt"), "/safe/base/dir1/dir2/file.txt"),
+    # Special characters
+    (("dir with spaces", "file.txt"), "/safe/base/dir with spaces/file.txt"),
+    # URL-encoded special characters
+    (("dir%20with%20spaces", "file.txt"), "/safe/base/dir with spaces/file.txt"),
+    # Empty strings in paths
+    (("", "file.txt"), "/safe/base/file.txt"),
+    # Unicode characters
+    (("unicode_dir", "файл.txt"), "/safe/base/unicode_dir/файл.txt"),
+])
+def test_safe_join_returns_safe_path(paths: tuple[str, ...], expected_result: str):
+    # Arrange: init base directory
+    base = "/safe/base"
+    # Act: perform method under test and get result
+    result = safe_join(base, *paths)
+    # Assert
+    assert result == expected_result
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(("paths"), [
+    # Path traversal detection
+    ("..", "file.txt"),
+    # URL encoded path traversal
+    ("%2E%2E", "file.txt"),
+    # Absolute path traversal
+    ("/etc", "passwd"),
+    # Multiple traversal levels
+    ("..", "..", "file.txt"),
+    # Mixed traversal levels
+    ("subdir", "..", "..", "file.txt"),
+    # Mixed encoded traversal
+    ("subdir", "%2E%2E", "%2E%2E", "file.txt"),
+])
+def test_safe_join_for_path_traversals_raises_error(paths: tuple[str, ...]):
+    # Arrange: init base directory
+    base = "/safe/base"
+    # Assert: 'ValueError' error occurs with corresponding message
+    with pytest.raises(ValueError, match="Attempted path traversal detected"):
+        # Act: perform method under test
+        safe_join(base, *paths)
