@@ -81,14 +81,14 @@ jobs:
         env:
           SNYK_TOKEN: ${{secrets.SNYK_TOKEN}}
       - name: Check Snyk result and make a badge
-          run: |
-            if [ "${{ steps.snyk.outcome }}" == "success" ]; then
-              badge_color="green"
-            else
-              badge_color="red"
-            fi
-            mkdir badges
-            anybadge --label "vulnerabilities | snyk" --value=tested --file=badges/vulnerabilities-snyk-result.svg tested=$badge_color
+        run: |
+          if [ "${{ steps.snyk.outcome }}" == "success" ]; then
+            badge_color="green"
+          else
+            badge_color="red"
+          fi
+          mkdir badges
+          anybadge --label "vulnerabilities | snyk" --value=tested --file=badges/vulnerabilities-snyk-result.svg tested=$badge_color
       - name: Publish snyk result badge to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
