@@ -123,6 +123,7 @@ jobs:
         with:
           nuitka-version: main
           script-name: dehancer-cli.py
+          output-file: dehancer-cli
           onefile: true
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
