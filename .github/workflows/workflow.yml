@@ -123,16 +123,14 @@ jobs:
         with:
           nuitka-version: main
           script-name: dehancer-cli.py
-          output-filename: dehancer-cli
           onefile: true
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: Build for ${{ runner.os }}
           path: |
-            build/*.exe
-            build/*.bin
-            build/*.app/**/*
+            build/dehancer-cli.exe
+            build/dehancer-cli
 
   Publish-badges:
     needs: [ Run-unit-tests, Check-for-vulnerabilities, Build-executable-files ]
