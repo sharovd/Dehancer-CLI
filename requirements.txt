@@ -8,3 +8,4 @@ ruff==0.4.10
 certifi==2024.7.4
 urllib3==2.2.2
 zipp==3.19.2
+nuitka==2.3.11
