@@ -14,7 +14,7 @@ from src.api.constants import DEHANCER_ONLINE_API_BASE_URL, IMAGE_VALID_TYPES
 from src.api.models.preset import ImageSize, Preset, PresetSettings
 from src.utils import get_filename_without_extension, is_supported_format_file, read_settings_file, safe_join
 
-logging.config.fileConfig(utils.get_logger_config_file_path())
+logging.config.dictConfig(utils.get_logger_config_dict())
 logger = logging.getLogger()
 
 
@@ -82,7 +82,7 @@ def print_contacts(file_path: str) -> None:
     for idx, preset in enumerate(requested_presets, 1):
         image_url = dehancer_api_client.render_image(image_id, available_presets[idx-1], presets_default_settings)
         logger.info("%d. '%s' : %s", idx, preset, image_url)
-        output_dir = "out"
+        output_dir = "dehancer-cli-output-images"
         safe_filename = safe_join(output_dir, f"{get_filename_without_extension(file_path)}_{preset}.jpeg")
         utils.download_file(image_url, safe_filename)
 
@@ -106,7 +106,8 @@ def __process_image(file_path: str, preset: Preset, preset_settings: PresetSetti
     image_id = dehancer_api_client.upload_image(file_path)
     image_url = dehancer_api_client.render_image(image_id, preset, preset_settings)
     logger.info("%d. '%s' : %s", preset_number, preset.caption, image_url)
-    utils.download_file(image_url, f"out/{get_filename_without_extension(file_path)}_{preset.caption}.jpeg")
+    utils.download_file(image_url, f"dehancer-cli-output-images/"
+                                   f"{get_filename_without_extension(file_path)}_{preset.caption}.jpeg")
 
 
 def develop_images(path: str, preset_number: int, custom_preset_settings: dict[str, float]) -> None:

@@ -22,7 +22,7 @@ from src.api.constants import (
 )
 from src.api.models.preset import ImageSize, Preset, PresetSettings
 
-logging.config.fileConfig(utils.get_logger_config_file_path())
+logging.config.dictConfig(utils.get_logger_config_dict())
 logger = logging.getLogger()
 
 

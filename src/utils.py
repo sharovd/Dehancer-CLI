@@ -10,19 +10,50 @@ from pathlib import Path
 import requests
 
 
-def get_logger_config_file_path() -> str:
+def get_logger_config_dict() -> dict:
     """
-    Return the file path of the logger configuration file.
+    Return the logger configuration.
 
     Returns
     -------
-        str: The file path of the logger configuration file.
+        dict: The logger configuration.
 
     """
-    return f"{Path(Path(__file__).parent).parent}/configs/log_config.ini"
+    return {
+        "version": 1,
+        "formatters": {
+            "console_formatter": {
+                "format": "%(message)s",
+            },
+            "file_formatter": {
+                "format": "%(asctime)s %(filename)s:%(lineno)d %(levelname)s %(message)s",
+            },
+        },
+        "handlers": {
+            "console_handler": {
+                "class": "logging.StreamHandler",
+                "level": "INFO",
+                "formatter": "console_formatter",
+                "stream": "ext://sys.stdout",
+            },
+            "file_handler": {
+                "class": "logging.FileHandler",
+                "level": "DEBUG",
+                "formatter": "file_formatter",
+                "filename": "dehancer-cli.log",
+                "mode": "w",
+            },
+        },
+        "loggers": {
+            "": {  # root logger
+                "level": "INFO",
+                "handlers": ["console_handler", "file_handler"],
+            },
+        },
+    }
 
 
-logging.config.fileConfig(get_logger_config_file_path())
+logging.config.dictConfig(get_logger_config_dict())
 logger = logging.getLogger()
 
 
