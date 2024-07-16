@@ -15,6 +15,11 @@ It allows you to view available presets, create contacts for an image, and devel
 
 ## Usage
 
+### Setup the executable file
+
+- **MacOS**: Open the file from the context menu to trust the file. <br>
+You can find out more about this [here](https://support.apple.com/en-gb/guide/mac-help/mchleab3a043/mac) or [here](https://support.apple.com/en-bw/102445).
+
 ### Print list of available presets
 
 ```bash
