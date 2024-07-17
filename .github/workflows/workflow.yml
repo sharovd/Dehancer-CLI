@@ -124,10 +124,25 @@ jobs:
           script-name: dehancer-cli.py
           output-file: dehancer-cli
           onefile: true
+      - name: Get OS version (Linux)
+        if: runner.os == 'Linux'
+        id: get-os-version-linux
+        run: |
+          echo "runner_os_version=$(lsb_release -r | awk '{print $2}')" >> $GITHUB_ENV
+      - name: Get OS version (macOS)
+        if: runner.os == 'macOS'
+        id: get-os-version-macos
+        run: |
+          echo "runner_os_version=$(sw_vers -productVersion)" >> $GITHUB_ENV
+      - name: Get OS version (Windows)
+        if: runner.os == 'Windows'
+        id: get-os-version-windows
+        run: |
+          echo "runner_os_version=$(cmd /c ver | findstr /C:"Microsoft" | sed 's/.*\[//;s/\].*//')" >> $GITHUB_ENV
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Build for ${{ runner.os }}
+          name: Build for ${{ runner.os }} ${{ env.runner_os_version }}
           path: |
             build/dehancer-cli.exe
             build/dehancer-cli
