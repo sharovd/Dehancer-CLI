@@ -13,32 +13,30 @@ It allows you to view available presets, create contacts for an image, and devel
 - **Create contacts**: Uploads an image and creates contacts using all available presets.
 - **Develop image(s)**: Processes image(s) using specified film preset and custom settings.
 
-## Setup python virtual environment
-
-```bash
-$ python -m venv .venv
-$ source .venv/bin/activate
-$ pip install -r requirements.txt
-```
-
 ## Usage
+
+### Setup the executable file
+
+- **Linux**: There are no additional steps required.
+- **MacOS**: Open the file from the context menu to trust the file. You can find out more about this [here](https://support.apple.com/en-gb/guide/mac-help/mchleab3a043/mac) or [here](https://support.apple.com/en-bw/102445).
+- **Windows**: Unfortunately, there is no stable and free solution for running build for Windows to bypass antivirus. See [this page](https://nuitka.net/user-documentation/common-issue-solutions.html#windows-virus-scanners) for more details.
 
 ### Print list of available presets
 
 ```bash
-$ python app.py presets
+$ dehancer-cli presets
 ```
 
 ### Create contacts for an image
 
 ```bash
-$ python app.py contacts path/to/image.jpg
+$ dehancer-cli contacts path/to/image.jpg
 ```
 
 ### Develop image(s)
 
 ```bash
-$ python app.py develop path/to/image_or_directory --preset PRESET_NUMBER [OPTIONS]
+$ dehancer-cli develop path/to/image_or_directory --preset PRESET_NUMBER [OPTIONS]
 ```
 
 Options
@@ -52,6 +50,44 @@ Options
     --settings_file: Path to a settings file containing key-value pairs for settings.
     --logs, -l: Enable debug logs (1 for enabled, 0 for disabled).
 
+## Developer mode: setup python virtual environment
+
+```bash
+$ python -m venv .venv
+$ source .venv/bin/activate
+$ pip install -r requirements.txt
+```
+
+## Developer mode: usage
+
+### Print list of available presets
+
+```bash
+$ python dehancer-cli.py presets
+```
+
+### Create contacts for an image
+
+```bash
+$ python dehancer-cli.py contacts path/to/image.jpg
+```
+
+### Develop image(s)
+
+```bash
+$ python dehancer-cli.py develop path/to/image_or_directory --preset PRESET_NUMBER [OPTIONS]
+```
+
+Options
+
+    --preset, -p: Preset number (required).
+    --set_contrast, -s: Contrast setting.
+    --set_exposure, -e: Exposure setting.
+    --set_temperature, -t: Temperature setting.
+    --set_tint, -i: Tint setting.
+    --set_color_boost, -b: Color boost setting.
+    --settings_file: Path to a settings file containing key-value pairs for settings.
+    --logs, -l: Enable debug logs (1 for enabled, 0 for disabled).
 
 ### License
 

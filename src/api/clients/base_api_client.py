@@ -7,7 +7,7 @@ from requests_toolbelt.utils import dump
 
 from src import utils
 
-logging.config.fileConfig(utils.get_logger_config_file_path())
+logging.config.dictConfig(utils.get_logger_config_dict())
 logger = logging.getLogger()
 
 

@@ -29,7 +29,7 @@ def test_presets_command_prints_available_presets():
     expected_output = presets_success_output
     # Act: perform command under test
     result = subprocess.run(
-        ["python", "app.py", "presets"],  # noqa: S603, S607
+        ["python", "dehancer-cli.py", "presets"],  # noqa: S603, S607
         cwd=project_root,
         capture_output=True,
         text=True, check=False,
@@ -45,13 +45,13 @@ def test_contacts_command_creates_contacts_for_chosen_image(test_images: list[st
     random_test_image_path = choice(test_images)
     random_test_image_name = get_filename_without_extension(random_test_image_path)
     # Arrange: define expected outputs
-    expected_output_dir = "out"
+    expected_output_dir = "dehancer-cli-output-images"
     expected_output = contacts_success_output
     expected_presets = [name for name in re.findall(r"'(.*?)'", expected_output) if not re.match(r"\{.*}", name)]
     # Act: perform command under test
     with FileBackupContext(expected_output_dir):
         result = subprocess.run(
-            ["python", "app.py", "contacts", random_test_image_path],  # noqa: S603, S607
+            ["python", "dehancer-cli.py", "contacts", random_test_image_path],  # noqa: S603, S607
             cwd=project_root,
             capture_output=True,
             text=True, check=False,
