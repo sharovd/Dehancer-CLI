@@ -18,7 +18,7 @@ jobs:
           poetry install
       - name: Run linter and code formatter
         run: |
-          ruff check . --output-format=github
+          poetry run ruff check . --output-format=github
         continue-on-error: true
 
   Run-unit-tests:
@@ -38,12 +38,12 @@ jobs:
           poetry install
       - name: Run unit tests with coverage calculation
         run: |
-          pytest_output=$(pytest --cov=src/ -m "unit" || true)
+          pytest_output=$(poetry run pytest --cov=src/ -m "unit" || true)
           echo $pytest_output
           total_coverage=$(echo "$pytest_output" | grep 'TOTAL' | awk '{print $NF}' | sed 's/%//')
           printf "Total unit test coverage is %s%%\n" "$total_coverage"
           mkdir -p badges/unit-test
-          anybadge --value=$total_coverage --file=badges/unit-test/unit-test-coverage.svg coverage
+          poetry run anybadge --value=$total_coverage --file=badges/unit-test/unit-test-coverage.svg coverage
       - name: Upload unit test coverage badge as artifact
         uses: actions/upload-artifact@v4
         with:
@@ -67,7 +67,7 @@ jobs:
           poetry install
       - name: Run e2e tests
         run: |
-          pytest -m "e2e"
+          poetry run pytest -m "e2e"
 
   Check-for-vulnerabilities:
     needs: [ Run-unit-tests ]
@@ -97,7 +97,7 @@ jobs:
             badge_color="red"
           fi
           mkdir -p badges/vulnerabilities
-          anybadge --label "vulnerabilities | snyk" --value=tested --file=badges/vulnerabilities/vulnerabilities-snyk-result.svg tested=$badge_color
+          poetry run anybadge --label "vulnerabilities | snyk" --value=tested --file=badges/vulnerabilities/vulnerabilities-snyk-result.svg tested=$badge_color
       - name: Upload vulnerabilities status badge as artifact
         uses: actions/upload-artifact@v4
         with:
