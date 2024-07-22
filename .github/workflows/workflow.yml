@@ -123,7 +123,8 @@ jobs:
         uses: abatilo/actions-poetry@v2
       - name: Export dependencies to requirements.txt
         run: |
-          poetry export -f requirements.txt --output requirements.txt --without-hashes
+          # poetry export -f requirements.txt --output requirements.txt --without-hashes
+          echo "Debug"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
