@@ -126,7 +126,7 @@ jobs:
         uses: Nuitka/Nuitka-Action@main
         with:
           nuitka-version: main
-          script-name: dehancer-cli.py
+          script-name: dehancer_cli.py
           output-file: dehancer-cli
           onefile: true
       - name: Get application build version
