@@ -86,7 +86,7 @@ jobs:
           poetry install
       - name: Run Snyk to check for vulnerabilities
         id: snyk
-        uses: snyk/actions/python-3.12@master
+        uses: snyk/actions/python-3.10@master
         env:
           SNYK_TOKEN: ${{secrets.SNYK_TOKEN}}
       - name: Check Snyk result and make a badge
