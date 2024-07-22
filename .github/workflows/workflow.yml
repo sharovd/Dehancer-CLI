@@ -108,7 +108,8 @@ jobs:
     needs: [ Check-for-vulnerabilities ]
     strategy:
       matrix:
-        os: [ macos-latest, ubuntu-latest, windows-latest ]
+        os: [ macos-latest ]
+        # os: [ macos-latest, ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -122,10 +123,14 @@ jobs:
       - name: Install dependencies
         run: |
           poetry install
+      - name: Export dependencies to requirements.txt
+        run: |
+          poetry export -f requirements.txt --output requirements.txt --without-hashes
       - name: Build executable file
         uses: Nuitka/Nuitka-Action@main
         with:
           nuitka-version: main
+          requirements: requirements.txt
           script-name: dehancer_cli.py
           output-file: dehancer-cli
           onefile: true
