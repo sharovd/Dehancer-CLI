@@ -1,13 +1,15 @@
 from __future__ import annotations
 
-import imghdr
 import logging.config
 import logging.handlers
 import mimetypes
 import urllib.parse
 from pathlib import Path
 
+import puremagic
 import requests
+
+from . import app_name
 
 
 def get_logger_config_dict() -> dict:
@@ -40,7 +42,7 @@ def get_logger_config_dict() -> dict:
                 "class": "logging.FileHandler",
                 "level": "DEBUG",
                 "formatter": "file_formatter",
-                "filename": "dehancer-cli.log",
+                "filename": f"{app_name.lower()}.log",
                 "mode": "w",
             },
         },
@@ -124,7 +126,7 @@ def is_supported_format_file(file_path: str, valid_types: dict[str, str]) -> boo
 
     This method checks if the file at the given file path matches any of the
     formats provided in the valid_types dictionary.
-    It first uses the imghdr module to determine the file type
+    It first uses the puremagic module to determine the file type
     and then checks the MIME type as a fallback.
 
     Args:
@@ -145,15 +147,13 @@ def is_supported_format_file(file_path: str, valid_types: dict[str, str]) -> boo
     if not Path(file_path).exists():
         msg = f"The file {file_path} does not exist."
         raise FileNotFoundError(msg)
-    # Check format using imghdr
-    file_type = imghdr.what(file_path)
+    # Check format using puremagic
+    file_type = puremagic.what(file_path)
     if file_type in valid_types:
         return True
-    # Additional check using mimetypes (for types not covered by imghdr)
+    # Additional check using mimetypes (for types not covered by puremagic)
     mime_type, _ = mimetypes.guess_type(file_path)
-    if mime_type in valid_types.values():
-        return True
-    return False
+    return mime_type in valid_types.values()
 
 
 def get_filename_without_extension(file_path: str) -> str:

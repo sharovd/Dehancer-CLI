@@ -50,32 +50,42 @@ Options
     --settings_file: Path to a settings file containing key-value pairs for settings.
     --logs, -l: Enable debug logs (1 for enabled, 0 for disabled).
 
-## Developer mode: setup python virtual environment
+### Print application version
 
 ```bash
-$ python -m venv .venv
-$ source .venv/bin/activate
-$ pip install -r requirements.txt
+$ dehancer-cli --version
 ```
 
-## Developer mode: usage
+## Developer mode: install and setup [poetry](https://python-poetry.org/)
+
+```bash
+$ poetry install
+```
+
+## Developer mode: usage (you can choose between python and poetry)
 
 ### Print list of available presets
 
 ```bash
-$ python dehancer-cli.py presets
+$ python dehancer_cli.py presets
+
+$ poetry run dehancer-cli presets
 ```
 
 ### Create contacts for an image
 
 ```bash
-$ python dehancer-cli.py contacts path/to/image.jpg
+$ python dehancer_cli.py contacts path/to/image.jpg
+
+$ poetry run dehancer-cli contacts path/to/image.jpg
 ```
 
 ### Develop image(s)
 
 ```bash
-$ python dehancer-cli.py develop path/to/image_or_directory --preset PRESET_NUMBER [OPTIONS]
+$ python dehancer_cli.py develop path/to/image_or_directory --preset PRESET_NUMBER [OPTIONS]
+
+$ poetry run dehancer-cli develop path/to/image_or_directory --preset PRESET_NUMBER [OPTIONS]
 ```
 
 Options
@@ -88,6 +98,14 @@ Options
     --set_color_boost, -b: Color boost setting.
     --settings_file: Path to a settings file containing key-value pairs for settings.
     --logs, -l: Enable debug logs (1 for enabled, 0 for disabled).
+
+### Print application version
+
+```bash
+$ python dehancer_cli.py --version
+
+$ poetry run dehancer-cli --version
+```
 
 ### License
 
