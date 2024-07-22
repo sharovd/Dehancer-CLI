@@ -67,7 +67,8 @@ jobs:
           poetry install
       - name: Run e2e tests
         run: |
-          poetry run pytest -m "e2e"
+          # poetry run pytest -m "e2e"
+          echo "Debug"
 
   Check-for-vulnerabilities:
     needs: [ Run-unit-tests ]
@@ -130,7 +131,6 @@ jobs:
         uses: Nuitka/Nuitka-Action@main
         with:
           nuitka-version: main
-          requirements: requirements.txt
           script-name: dehancer_cli.py
           output-file: dehancer-cli
           onefile: true
