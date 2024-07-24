@@ -129,10 +129,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: Get puremagic data path
-        id: puremagic-magic-data-path
+        id: get-puremagic-magic-data-path
         run: |
-          puremagic_magic_data_path=$(python -c "import puremagic; import os; print(os.path.join(os.path.dirname(puremagic.__file__), 'magic_data.json'))")
-          echo "puremagic_magic_data_path=$puremagic_magic_data_path" >> $GITHUB_ENV
+          python -c "import puremagic; import os; print(f'puremagic_magic_data_path={os.path.join(os.path.dirname(puremagic.__file__), 'magic_data.json')}')" >> $GITHUB_ENV
       - name: Build executable file
         uses: Nuitka/Nuitka-Action@main
         with:
@@ -141,18 +140,10 @@ jobs:
           output-file: dehancer-cli
           onefile: true
           include-data-files: ${{ env.puremagic_magic_data_path }}=puremagic/magic_data.json
-      - name: Get application build version (Linux and macOS)
-        if: runner.os != 'Windows'
-        id: get-build-version-linux-macos
+      - name: Get application build version
+        id: get-build-version
         run: |
-          app_version=$(python -c "import re; file = open('src/__init__.py').read(); print(re.search(r'app_version\s*=\s*\"(.*?)\"', file).group(1))")
-          echo "app_build_version=$app_version" >> $GITHUB_ENV
-      - name: Get application build version (Windows)
-        if: runner.os == 'Windows'
-        id: get-build-version-windows
-        run: |
-          $app_version = python -c "import re; file = open('src/__init__.py').read(); print(re.search(r'app_version\s*=\s*\"(.*?)\"', file).group(1))"
-          echo "app_build_version=$app_version" >> $env:GITHUB_ENV
+          python -c "import re; import os; file = open(os.path.join('src', '__init__.py')).read(); print(f'app_build_version={re.search(r'app_version\\s*=\\s*\"(.*?)\"', file).group(1)}')" >> $GITHUB_ENV
       - name: Get OS version (Linux)
         if: runner.os == 'Linux'
         id: get-os-version-linux
