@@ -141,26 +141,28 @@ jobs:
         run: |
           $puremagic_magic_data_path = python -c "import puremagic; import os; print(os.path.join(os.path.dirname(puremagic.__file__), 'magic_data.json'))"
           echo "puremagic_magic_data_path=$puremagic_magic_data_path" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-      - name: Build executable file
-        uses: Nuitka/Nuitka-Action@main
-        with:
-          nuitka-version: main
-          script-name: dehancer_cli.py
-          output-file: dehancer-cli
-          onefile: true
-          include-data-files: ${{ env.puremagic_magic_data_path }}=puremagic/magic_data.json
+#      - name: Build executable file
+#        uses: Nuitka/Nuitka-Action@main
+#        with:
+#          nuitka-version: main
+#          script-name: dehancer_cli.py
+#          output-file: dehancer-cli
+#          onefile: true
+#          include-data-files: ${{ env.puremagic_magic_data_path }}=puremagic/magic_data.json
       - name: Get application build version (Linux and macOS)
         if: runner.os != 'Windows'
         id: get-build-version-linux-macos
         run: |
           app_version=$(python -c "import re; file = open(os.path.join('src', '__init__.py')).read(); print(re.search(r'app_version\s*=\s*\"(.*?)\"', file).group(1))")
           echo "app_build_version=$app_version" >> $GITHUB_ENV
+          echo "app_build_version=$app_version"
       - name: Get application build version (Windows)
         if: runner.os == 'Windows'
         id: get-build-version-windows
         run: |
-          $app_version = python -c "import re; import os; file = open(os.path.join('src', '__init__.py')).read(); print(re.search(r'app_version\s*=\s*\"(.*?)\"', file).group(1))"
-          echo "app_build_version=$app_version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          $app_version = python -c \"import re; import os; file = open(os.path.join('src', '__init__.py')).read(); print(re.search(r'app_version\s*=\s*\\\"(.*?)\\\"', file).group(1))\"
+          echo \"app_build_version=$app_version\" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo \"app_build_version=$app_version\"
       - name: Get OS version (Linux)
         if: runner.os == 'Linux'
         id: get-os-version-linux
