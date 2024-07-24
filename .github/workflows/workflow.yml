@@ -152,7 +152,7 @@ jobs:
         if: runner.os != 'Windows'
         id: get-build-version-linux-macos
         run: |
-          app_version=$(python -c "import re; file = open(os.path.join('src', '__init__.py')).read(); print(re.search(r'app_version\s*=\s*\"(.*?)\"', file).group(1))")
+          app_version=$(python -c "import re; import os; file = open(os.path.join('src', '__init__.py')).read(); print(re.search(r'app_version\s*=\s*\"(.*?)\"', file).group(1))")
           echo "app_build_version=$app_version" >> $GITHUB_ENV
       - name: Get application build version (Windows)
         if: runner.os == 'Windows'
