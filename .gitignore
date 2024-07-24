@@ -30,9 +30,9 @@ MANIFEST
 dehancer-cli
 dehancer-cli.exe
 dehancer-cli.bin
-dehancer-cli.build/
-dehancer-cli.dist/
-dehancer-cli.onefile-build/
+dehancer_cli.build/
+dehancer_cli.dist/
+dehancer_cli.onefile-build/
 
 # Installer logs
 pip-log.txt

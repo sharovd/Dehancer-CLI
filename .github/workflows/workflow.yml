@@ -129,6 +129,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+      - name: Get puremagic data path
+        id: puremagic-magic-data-path
+        run: |
+          puremagic_magic_data_path=$(python -c "import puremagic; import os; print(os.path.join(os.path.dirname(puremagic.__file__), 'magic_data.json'))")
+          echo "puremagic_magic_data_path=$puremagic_magic_data_path" >> $GITHUB_ENV
       - name: Build executable file
         uses: Nuitka/Nuitka-Action@main
         with:
@@ -136,6 +141,7 @@ jobs:
           script-name: dehancer_cli.py
           output-file: dehancer-cli
           onefile: true
+          include-data-file: ${{ env.puremagic_magic_data_path }}=puremagic/magic_data.json
       - name: Get application build version
         id: get-build-version
         run: |
