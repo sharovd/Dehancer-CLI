@@ -109,7 +109,7 @@ jobs:
     needs: [ Check-for-vulnerabilities ]
     strategy:
       matrix:
-        os: [ macos-latest ]
+        os: [ macos-latest, windows-latest ]
         # os: [ macos-latest, ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
     steps:
@@ -141,11 +141,18 @@ jobs:
           output-file: dehancer-cli
           onefile: true
           include-data-files: ${{ env.puremagic_magic_data_path }}=puremagic/magic_data.json
-      - name: Get application build version
-        id: get-build-version
+      - name: Get application build version (Linux and macOS)
+        if: runner.os != 'Windows'
+        id: get-build-version-linux-macos
         run: |
           app_version=$(python -c "import re; file = open('src/__init__.py').read(); print(re.search(r'app_version\s*=\s*\"(.*?)\"', file).group(1))")
           echo "app_build_version=$app_version" >> $GITHUB_ENV
+      - name: Get application build version (Windows)
+        if: runner.os == 'Windows'
+        id: get-build-version-windows
+        run: |
+          $app_version = python -c "import re; file = open('src/__init__.py').read(); print(re.search(r'app_version\s*=\s*\"(.*?)\"', file).group(1))"
+          echo "app_build_version=$app_version" >> $env:GITHUB_ENV
       - name: Get OS version (Linux)
         if: runner.os == 'Linux'
         id: get-os-version-linux
