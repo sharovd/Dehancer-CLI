@@ -160,9 +160,14 @@ jobs:
         if: runner.os == 'Windows'
         id: get-build-version-windows
         run: |
-          $app_version = python -c \"import re; import os; file = open(os.path.join('src', '__init__.py')).read(); print(re.search(r'app_version\s*=\s*\\\"(.*?)\\\"', file).group(1))\"
-          echo \"app_build_version=$app_version\" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          echo \"app_build_version=$app_version\"
+          $app_version = python -c @"
+            import re
+            import os
+            file = open(os.path.join('src', '__init__.py')).read()
+            print(re.search(r'app_version\s*=\s*"(.*?)"', file).group(1))
+          "@
+          echo "app_build_version=$app_version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "app_build_version=$app_version"
       - name: Get OS version (Linux)
         if: runner.os == 'Linux'
         id: get-os-version-linux
