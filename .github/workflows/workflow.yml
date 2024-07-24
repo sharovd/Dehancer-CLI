@@ -109,7 +109,7 @@ jobs:
     needs: [ Check-for-vulnerabilities ]
     strategy:
       matrix:
-        os: [ macos-latest, windows-latest ]
+        os: [ windows-latest ]
         # os: [ macos-latest, ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
     steps:
@@ -179,7 +179,11 @@ jobs:
         if: runner.os == 'Windows'
         id: get-os-version-windows
         run: |
-          echo "runner_os_version=$(cmd /c ver | findstr /C:"Microsoft" | sed 's/.*\[//;s/\].*//')" >> $GITHUB_ENV
+          cmd /c ver | findstr /C:"Microsoft" | ForEach-Object {
+            if ($_ -match 'Version (\d+)\.') {
+              echo "runner_os_version=$($matches[1])" >> $env:GITHUB_ENV
+            }
+          }
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
