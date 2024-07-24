@@ -159,6 +159,7 @@ jobs:
       - name: Get application build version (Windows)
         if: runner.os == 'Windows'
         id: get-build-version-windows
+        shell: pwsh
         run: |
           $app_version = python -c @"
             import re
