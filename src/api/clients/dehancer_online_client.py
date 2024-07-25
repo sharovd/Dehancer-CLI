@@ -95,7 +95,7 @@ class DehancerOnlineAPIClient(BaseAPIClient):
                 return image_id
         return None
 
-    def get_pane(self, image_id: str, image_size: ImageSize, presets: list[Preset]) -> dict[str, str]:
+    def get_pane(self, image_id: str, image_size: ImageSize, presets: list[Preset]):
         """
         Get links to images in accordance with the provide presets for a given image ID and size.
 
