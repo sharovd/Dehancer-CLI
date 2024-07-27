@@ -8,7 +8,7 @@ from pathlib import Path
 
 import click
 
-from src import utils
+from src import app_name, app_version, utils
 from src.api.clients.dehancer_online_client import DehancerOnlineAPIClient
 from src.api.constants import DEHANCER_ONLINE_API_BASE_URL, IMAGE_VALID_TYPES
 from src.api.models.preset import ImageSize, Preset, PresetSettings
@@ -82,7 +82,7 @@ def print_contacts(file_path: str) -> None:
     for idx, preset in enumerate(requested_presets, 1):
         image_url = dehancer_api_client.render_image(image_id, available_presets[idx-1], presets_default_settings)
         logger.info("%d. '%s' : %s", idx, preset, image_url)
-        output_dir = "dehancer-cli-output-images"
+        output_dir = f"{app_name.lower()}-output-images"
         safe_filename = safe_join(output_dir, f"{get_filename_without_extension(file_path)}_{preset}.jpeg")
         utils.download_file(image_url, safe_filename)
 
@@ -106,7 +106,7 @@ def __process_image(file_path: str, preset: Preset, preset_settings: PresetSetti
     image_id = dehancer_api_client.upload_image(file_path)
     image_url = dehancer_api_client.render_image(image_id, preset, preset_settings)
     logger.info("%d. '%s' : %s", preset_number, preset.caption, image_url)
-    utils.download_file(image_url, f"dehancer-cli-output-images/"
+    utils.download_file(image_url, f"{app_name.lower()}-output-images/"
                                    f"{get_filename_without_extension(file_path)}_{preset.caption}.jpeg")
 
 
@@ -153,29 +153,20 @@ def enable_debug_logs() -> None:
 
 
 @click.group()
-@click.option("-l", "--logs", type=int, default=0, help="Enable debug logs (1 for enabled, 0 for disabled).")
+@click.version_option(prog_name=app_name, version=app_version, message=("%(prog)s %(version)s"))
+@click.option("--logs", type=int, default=0, help="Enable debug logs (1 for enabled, 0 for disabled).")
 def cli(logs: int) -> None:
     """
-    Entry point for the CLI application.
-
-    This function sets up the CLI group and handles the global option for enabling debug logs.
-
-    Parameters
-    ----------
-    logs : int
-        Enable debug logs (1 for enabled, 0 for disabled).
-
-    Returns
-    -------
-    None
-
-    """
+    Unofficial command line application that interacts with the Dehancer Online API to process images
+    using various film presets. It allows you to view available presets, create contacts for an image,
+    and develop images using specific film presets and settings.
+    """  # noqa: D205
     if logs == 1:
         enable_debug_logs()
 
 
 @cli.command()
-@click.option("-l", "--logs", type=int, default=0,
+@click.option("--logs", type=int, default=0,
               help="Enable debug logs (1 for enabled, 0 for disabled).")
 def presets(logs: int) -> None:
     """
@@ -200,7 +191,7 @@ def presets(logs: int) -> None:
 
 @cli.command()
 @click.argument("input")
-@click.option("-l", "--logs", type=int, default=0,
+@click.option("--logs", type=int, default=0,
               help="Enable debug logs (1 for enabled, 0 for disabled).")
 def contacts(input, logs: int) -> None:  # noqa: A002, ANN001
     """
@@ -239,7 +230,7 @@ def contacts(input, logs: int) -> None:  # noqa: A002, ANN001
               type=float, help="Tint setting.")
 @click.option("-b", "--set_color_boost", "color_boost", type=float, help="Color boost setting.")
 @click.option("-settings", "--settings_file", type=click.Path(exists=True), help="Settings file.")
-@click.option("-l", "--logs", type=int, default=0, help="Enable debug logs (1 for enabled, 0 for disabled).")
+@click.option("--logs", type=int, default=0, help="Enable debug logs (1 for enabled, 0 for disabled).")
 def develop(input, preset: int,  # noqa: A002, ANN001, PLR0913
             contrast: float, exposure: float, temperature: float, tint: float, color_boost: float,
             settings_file: click.Path(exists=True), logs: int) -> None:

@@ -18,8 +18,9 @@ It allows you to view available presets, create contacts for an image, and devel
 ### Setup the executable file
 
 - **Linux**: There are no additional steps required.
-- **MacOS**: Open the file from the context menu to trust the file. You can find out more about this [here](https://support.apple.com/en-gb/guide/mac-help/mchleab3a043/mac) or [here](https://support.apple.com/en-bw/102445).
-- **Windows**: Unfortunately, there is no stable and free solution for running build for Windows to bypass antivirus. See [this page](https://nuitka.net/user-documentation/common-issue-solutions.html#windows-virus-scanners) for more details.
+- **MacOS**: Run `xattr -c dehancer-cli` to remove all extended attributes from the specified file. You can find out more about this [here](https://support.apple.com/en-gb/guide/mac-help/mchleab3a043/mac) or [here](https://support.apple.com/en-bw/102445).
+- **Windows**: Unfortunately, there is no stable and free solution for running build for Windows to bypass antivirus. See [this page](https://nuitka.net/user-documentation/common-issue-solutions.html#windows-virus-scanners) for more details. <br>
+You can disable the Microsoft Defender Antivirus service the first time you start the application.
 
 ### Print list of available presets
 
@@ -50,32 +51,42 @@ Options
     --settings_file: Path to a settings file containing key-value pairs for settings.
     --logs, -l: Enable debug logs (1 for enabled, 0 for disabled).
 
-## Developer mode: setup python virtual environment
+### Print application version
 
 ```bash
-$ python -m venv .venv
-$ source .venv/bin/activate
-$ pip install -r requirements.txt
+$ dehancer-cli --version
 ```
 
-## Developer mode: usage
+## Developer mode: install and setup [poetry](https://python-poetry.org/)
+
+```bash
+$ poetry install
+```
+
+## Developer mode: usage (you can choose between python and poetry)
 
 ### Print list of available presets
 
 ```bash
-$ python dehancer-cli.py presets
+$ python dehancer_cli.py presets
+
+$ poetry run dehancer-cli presets
 ```
 
 ### Create contacts for an image
 
 ```bash
-$ python dehancer-cli.py contacts path/to/image.jpg
+$ python dehancer_cli.py contacts path/to/image.jpg
+
+$ poetry run dehancer-cli contacts path/to/image.jpg
 ```
 
 ### Develop image(s)
 
 ```bash
-$ python dehancer-cli.py develop path/to/image_or_directory --preset PRESET_NUMBER [OPTIONS]
+$ python dehancer_cli.py develop path/to/image_or_directory --preset PRESET_NUMBER [OPTIONS]
+
+$ poetry run dehancer-cli develop path/to/image_or_directory --preset PRESET_NUMBER [OPTIONS]
 ```
 
 Options
@@ -88,6 +99,14 @@ Options
     --set_color_boost, -b: Color boost setting.
     --settings_file: Path to a settings file containing key-value pairs for settings.
     --logs, -l: Enable debug logs (1 for enabled, 0 for disabled).
+
+### Print application version
+
+```bash
+$ python dehancer_cli.py --version
+
+$ poetry run dehancer-cli --version
+```
 
 ### License
 
