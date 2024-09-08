@@ -104,6 +104,68 @@ def read_settings_file(file_path: str) -> dict[str, float]:
     return settings
 
 
+def update_auth_data(auth_file_path: str, auth_data: dict[str, str]) -> None:
+    """
+    Update the 'access-token' and 'auth' values in the specified authentication file.
+
+    This method writes the provided auth data to the specified file, overwriting any existing content in the file.
+    The auth data will only be written if it is not None or an empty dict.
+    It is used to store the latest auth data for future use.
+
+    Args:
+    ----
+        auth_file_path (str): The path to the authentication file where the auth data will be stored.
+        auth_data (dict[str, str]): The 'access-token' and 'auth' values to be written to the file.
+
+    Returns:
+    -------
+        None
+
+    """
+    if auth_data and len(auth_data) > 0:
+        with Path(auth_file_path).open("w") as file:
+            auth_string = ""
+            for name, value in auth_data.items():
+                auth_string += f"{name}={value};"
+            file.write(auth_string)
+
+
+def get_auth_data(auth_file_path: str) -> dict[str, str] | None:
+    """
+    Get the 'access-token' and 'auth' values from the specified authentication file.
+
+    This method reads the first line as an auth data from the specified file path.
+    It expects the file to exist and contain a valid auth data.
+    If the file does not exist, a FileNotFoundError is thrown.
+
+    Args:
+    ----
+        auth_file_path (str): The path to the authentication file from which the access token is read.
+
+    Returns:
+    -------
+        dict[str, str]: The 'access-token' and 'auth' values read from the first line of the file.
+
+    Raises:
+    ------
+        FileNotFoundError: If the specified authentication file does not exist.
+
+    """
+    if not Path(auth_file_path).exists():
+        return None
+    with Path(auth_file_path).open("r") as file:
+        result = {}
+        values = file.readline().split(";")
+        for value in values:
+            if value.startswith("access-token="):
+                access_token = value.split("=", 1)[1]
+                result["access-token"] = access_token
+            if value.startswith("auth="):
+                auth_data = value.split("=", 1)[1]
+                result["auth"] = auth_data
+        return result if result else None
+
+
 def is_file_exist(file_path: str) -> bool:
     """
     Check if the file exists.
@@ -183,6 +245,40 @@ def get_filename_without_extension(file_path: str) -> str:
     if "." not in path.stem:
         return path.stem
     return ".".join(path.name.split(".")[:-1])
+
+
+def get_file_extension(file_path: str) -> str:
+    """
+    Extract and return the file extension from the given file path, excluding the leading dot.
+
+    This method returns the extension of the file without the leading dot.
+    If the file has no extension, an empty string is returned.
+
+    Args:
+    ----
+        file_path (str): The full path to the file.
+
+    Returns:
+    -------
+        str: The file extension without the leading dot, or an empty string if no extension is present.
+
+    Example:
+    -------
+        >>> get_file_extension("/path/to/file/example.txt")
+        'txt'
+        >>> get_file_extension("/path/to/file/archive.tar.gz")
+        'gz'
+        >>> get_file_extension("/path/to/file/no_extension")
+        ''
+        >>> get_file_extension("/path/to/file/.dotfile")
+        ''
+
+    """
+    path = Path(file_path)
+    # Return an empty string if the file has no extension or is a dotfile
+    if not path.suffix or (path.name.startswith(".") and path.suffix == ""):
+        return ""
+    return path.suffix.lstrip(".")
 
 
 def download_file(file_url: str, file_dir: str) -> None:

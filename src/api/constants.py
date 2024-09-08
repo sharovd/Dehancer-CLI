@@ -1,9 +1,12 @@
 DEHANCER_ONLINE_BASE_URL = "https://online.dehancer.com"
 DEHANCER_ONLINE_API_BASE_URL = f"{DEHANCER_ONLINE_BASE_URL}/api"
+DEHANCER_ONLINE_API_AUTH_FILE = "auth.txt"
 
 HEADER_USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:125.0) Gecko/20100101 Firefox/125.0"
 HEADER_ACCEPT_LANGUAGE_EN = "en-US,en;q=0.5"
+HEADER_ACCEPT_ENCODING = "gzip, deflate, br, zstd"
 HEADER_JSON_CONTENT_TYPE = "application/json"
+HEADER_PRIORITY_U_0 = "u=0"
 HEADER_TRANSFER_ENCODING_TRAILERS = "trailers"
 BASE_HEADERS = {
     "User-Agent": HEADER_USER_AGENT,

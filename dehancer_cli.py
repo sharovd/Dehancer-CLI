@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import getpass
 import logging.config
 import logging.handlers
 import os
@@ -10,15 +11,47 @@ import click
 
 from src import app_name, app_version, utils
 from src.api.clients.dehancer_online_client import DehancerOnlineAPIClient
-from src.api.constants import DEHANCER_ONLINE_API_BASE_URL, IMAGE_VALID_TYPES
-from src.api.models.preset import ImageSize, Preset, PresetSettings
-from src.utils import get_filename_without_extension, is_supported_format_file, read_settings_file, safe_join
+from src.api.constants import DEHANCER_ONLINE_API_AUTH_FILE, DEHANCER_ONLINE_API_BASE_URL, IMAGE_VALID_TYPES
+from src.api.enums import ExportFormat, ImageQuality, ImageSize, UnknownImageQualityError
+from src.api.models.preset import Preset, PresetSettings
+from src.utils import (
+    get_auth_data,
+    get_file_extension,
+    get_filename_without_extension,
+    is_supported_format_file,
+    read_settings_file,
+    safe_join,
+    update_auth_data,
+)
 
 logging.config.dictConfig(utils.get_logger_config_dict())
 logger = logging.getLogger()
 
 
-dehancer_api_client = DehancerOnlineAPIClient(DEHANCER_ONLINE_API_BASE_URL)
+dehancer_api_client = DehancerOnlineAPIClient(DEHANCER_ONLINE_API_BASE_URL,
+                                              get_auth_data(DEHANCER_ONLINE_API_AUTH_FILE))
+
+
+def login(email: str, password: str) -> None:
+    """
+    Login to Dehancer Online via the API using the email and password provided and update access token and auth data.
+
+    This method attempts to authenticate as an user using the provided email and password.
+    If the authentication is successful, it updates the 'access-token' and 'auth' values in the authentication file.
+    If the authentication fails, an error message is displayed.
+
+    Args:
+    ----
+        email (str): The email address of the user.
+        password (str): The password of the user.
+
+    """
+    auth_data = dehancer_api_client.login_and_get_auth_cookies(email, password)
+    if auth_data:
+        update_auth_data(DEHANCER_ONLINE_API_AUTH_FILE, auth_data)
+        click.echo(f"User '{email}' successfully authorized.")
+    else:
+        click.echo(f"User '{email}' is not authorised. Please check email and password and try again.")
 
 
 def print_presets() -> None:
@@ -64,7 +97,9 @@ def print_contacts(file_path: str) -> None:
     Returns:
     -------
         None
+
     Example:
+    -------
         >>> print_contacts("path/to/image.jpg")
         Create contacts for the image 'path/to/image.jpg':
         1. 'AGFA Chrome RSX II 200 (Exp. 2006)' : 'https://dho-m2.dehancer.com/local/<image_id>/<rendered_image_id>.jpeg'
@@ -87,7 +122,8 @@ def print_contacts(file_path: str) -> None:
         utils.download_file(image_url, safe_filename)
 
 
-def __process_image(file_path: str, preset: Preset, preset_settings: PresetSettings, preset_number: int) -> None:
+def __process_image(file_path: str, preset: Preset, export_format: ExportFormat,
+                    preset_settings: PresetSettings, preset_number: int) -> None:
     """
     Upload an image, applies the given preset with specified settings and downloads the processed image.
 
@@ -95,6 +131,7 @@ def __process_image(file_path: str, preset: Preset, preset_settings: PresetSetti
     ----
         file_path (str): The path to the image file.
         preset (Preset): The preset object used for processing.
+        export_format (ExportFormat): The export format object used for processing.
         preset_settings (PresetSettings): The preset settings object applied to the preset.
         preset_number (int): The preset number.
 
@@ -104,15 +141,24 @@ def __process_image(file_path: str, preset: Preset, preset_settings: PresetSetti
 
     """
     image_id = dehancer_api_client.upload_image(file_path)
-    image_url = dehancer_api_client.render_image(image_id, preset, preset_settings)
+    image_file_extension = "jpeg"
+    if dehancer_api_client.is_authorized:
+        logger.info("Develop the image '%s' with the preset '%s' in '%s' quality:",
+                    file_path, preset.caption, ImageQuality.from_export_format(export_format).name.title())
+        export_image_response_data = dehancer_api_client.export_image(image_id, preset, export_format, preset_settings)
+        image_url = export_image_response_data.get("url")
+        image_file_extension = get_file_extension(export_image_response_data.get("filename"))
+    else:
+        logger.info("Develop the image '%s' with the preset '%s':", file_path, preset.caption)
+        image_url = dehancer_api_client.render_image(image_id, preset, preset_settings)
     logger.info("%d. '%s' : %s", preset_number, preset.caption, image_url)
     utils.download_file(image_url, f"{app_name.lower()}-output-images/"
-                                   f"{get_filename_without_extension(file_path)}_{preset.caption}.jpeg")
+                                   f"{get_filename_without_extension(file_path)}_{preset.caption}.{image_file_extension}")
 
 
-def develop_images(path: str, preset_number: int, custom_preset_settings: dict[str, float]) -> None:
+def develop_images(path: str, preset_number: int, quality: str, custom_preset_settings: dict[str, float]) -> None:
     """
-    Develop images in the specified path using the specified preset and settings.
+    Develop images in the specified path using the specified preset, quality and settings.
 
     If the path is a file, it processes the single file.
     If the path is a directory, it processes all image files in the directory.
@@ -121,6 +167,7 @@ def develop_images(path: str, preset_number: int, custom_preset_settings: dict[s
     ----
         path (str): The path to the file or directory.
         preset_number (int): The preset number.
+        quality (str): The quality level for image develop ["low" (default), "medium", "high"].
         custom_preset_settings (Dict[str, float]): Custom settings for the preset.
 
     """
@@ -128,13 +175,19 @@ def develop_images(path: str, preset_number: int, custom_preset_settings: dict[s
     preset = available_presets[preset_number - 1]
     preset_settings = PresetSettings(0, 0, 0, 0, 0, 0, 0, 0)
     preset_settings = replace(preset_settings, **custom_preset_settings)
+    export_format = ImageQuality.LOW.value
+    try:
+        export_format = ImageQuality.from_string(quality).value
+    except UnknownImageQualityError:
+        logger.warning("Unknown quality level '%s'. Default '%s' is used instead.",
+                       quality, ImageQuality.from_export_format(export_format).name.title())
     if Path(path).is_file():
-        __process_image(path, preset, preset_settings, preset_number)
+        __process_image(path, preset, export_format, preset_settings, preset_number)
     elif Path(path).is_dir():
         for filename in os.listdir(path):
             file_path = os.path.join(path, filename)
             if Path.is_file(Path(file_path)) and is_supported_format_file(file_path, IMAGE_VALID_TYPES):
-                __process_image(file_path, preset, preset_settings, preset_number)
+                __process_image(file_path, preset, export_format, preset_settings, preset_number)
 
 
 def enable_debug_logs() -> None:
@@ -163,6 +216,34 @@ def cli(logs: int) -> None:
     """  # noqa: D205
     if logs == 1:
         enable_debug_logs()
+
+
+@cli.command()
+@click.argument("input")
+@click.option("--logs", type=int, default=0,
+              help="Enable debug logs (1 for enabled, 0 for disabled).")
+def auth(input, logs: int) -> None:  # noqa: A002, ANN001
+    """
+    Command to authorize and save auth data.
+
+    This command saves access token for provided username and password.
+
+    Parameters
+    ----------
+    input : str
+        The user e-mail for authorization.
+    logs : int
+        Enable debug logs (1 for enabled, 0 for disabled).
+
+    Returns
+    -------
+    None
+
+    """
+    if logs == 1:
+        enable_debug_logs()
+    password = getpass.getpass("Password: ")
+    login(input, password)
 
 
 @cli.command()
@@ -220,6 +301,11 @@ def contacts(input, logs: int) -> None:  # noqa: A002, ANN001
 @click.argument("input")
 @click.option("-p", "--preset", "preset",
               type=int, required=True, help="Preset number.")
+@click.option("-q", "--quality", "quality",
+              type=str, help="Image quality level.\n\n"
+                             ' "low": 2160 x 2160px | JPEG 80%\n\n'
+                             ' "medium": Up to 3024 x 3024px | JPEG 100%\n\n'
+                             ' "high": Up to 3024 x 3024px | TIFF 16 bit')
 @click.option("-s", "--set_contrast", "contrast",
               type=float, help="Contrast setting.")
 @click.option("-e", "--set_exposure", "exposure",
@@ -232,13 +318,14 @@ def contacts(input, logs: int) -> None:  # noqa: A002, ANN001
 @click.option("-settings", "--settings_file", type=click.Path(exists=True), help="Settings file.")
 @click.option("--logs", type=int, default=0, help="Enable debug logs (1 for enabled, 0 for disabled).")
 def develop(input, preset: int,  # noqa: A002, ANN001, PLR0913
+            quality: str,
             contrast: float, exposure: float, temperature: float, tint: float, color_boost: float,
             settings_file: click.Path(exists=True), logs: int) -> None:
     """
-    Command to develop images with specified film preset and settings.
+    Command to develop images with specified film preset, quality and settings.
 
     This function processes images in the specified path
-    using the provided film preset number, custom settings and downloads the results.
+    using the provided film preset number, quality, custom settings and downloads the results.
 
     Parameters
     ----------
@@ -246,6 +333,8 @@ def develop(input, preset: int,  # noqa: A002, ANN001, PLR0913
         The path to the file or directory.
     preset : int
         The film preset number.
+    quality : str
+        The quality level for image develop ["low" (default), "medium", "high"].
     contrast : float
         Contrast setting.
     exposure : float
@@ -268,6 +357,8 @@ def develop(input, preset: int,  # noqa: A002, ANN001, PLR0913
     """
     if logs == 1:
         enable_debug_logs()
+    if quality is None:
+        quality = "low"
     settings = {}
     if settings_file:
         settings.update(read_settings_file(settings_file))
@@ -281,7 +372,7 @@ def develop(input, preset: int,  # noqa: A002, ANN001, PLR0913
         settings["tint"] = tint
     if color_boost is not None:
         settings["color_boost"] = color_boost
-    develop_images(input, preset, settings)
+    develop_images(input, preset, quality, settings)
 
 
 if __name__ == "__main__":

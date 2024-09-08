@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from requests import Response  # pragma: no cover
 
+    from src.api.enums import ExportFormat, ImageSize  # pragma: no cover
+
 import logging.config
 from dataclasses import asdict
 from json import dumps, loads
@@ -15,12 +17,14 @@ from src import utils
 from src.api.clients.base_api_client import BaseAPIClient
 from src.api.constants import (
     BASE_HEADERS,
+    HEADER_ACCEPT_ENCODING,
     HEADER_JSON_CONTENT_TYPE,
+    HEADER_PRIORITY_U_0,
     HEADER_TRANSFER_ENCODING_TRAILERS,
     IMAGE_VALID_TYPES,
     SECURITY_HEADERS,
 )
-from src.api.models.preset import ImageSize, Preset, PresetSettings
+from src.api.models.preset import Preset, PresetSettings
 
 logging.config.dictConfig(utils.get_logger_config_dict())
 logger = logging.getLogger()
@@ -30,19 +34,93 @@ class DehancerOnlineAPIClient(BaseAPIClient):
     """
     A client for interacting with the Dehancer Online API.
 
-    This class provides methods for uploading images, getting available presets,
-    getting a pane of images with presets, and rendering an image with presets and settings.
+    This class provides methods for:
+     - Getting available presets.
+     - Uploading images.
+     - Getting a pane of images with defined size and presets.
+     - Rendering an image with defined preset and settings.
+     - Exporting an image with defined preset, quality settings.
 
     Attributes
     ----------
-    api_base_url : str
-        The base URL for the Dehancer Online API.
+    api_base_url (str): The base URL for the Dehancer Online API.
 
     """
 
-    def __init__(self, dehancer_online_api_base_url: str) -> None:
+    def __init__(self, dehancer_online_api_base_url: str, auth_cookies: dict[str, str]) -> None:
         super().__init__()
         self.api_base_url = dehancer_online_api_base_url
+        self.set_session_cookies(auth_cookies)
+
+    @property
+    def is_authorized(self) -> bool:
+        """
+        Check that the non-empty authorisation data is present in the session cookies.
+
+        The presence of an "access-token" cookie indicates that the user has successfully logged in and is authorised
+        to perform actions requiring authentication, such as rendering and exporting without a watermark.
+
+        Returns
+        -------
+        bool: True if the access token is present in the session cookies, otherwise, False.
+
+        """
+        return self.session.cookies.get("access-token", None) is not None
+
+    def login_and_get_auth_cookies(self, email: str, password: str) -> dict[str, str] | None:
+        """
+        Login with the provided email and password, and retrieves authorisation cookies from the response.
+
+        This method attempts to authenticate a user using the provided email and password.
+        If authentication is successful, it extracts 'access-token' and 'auth' values from the 'Set-Cookie' header
+        in the response.
+        If authentication fails or the 'access-token' and 'auth' values are not found, the method returns None.
+
+        Returns
+        -------
+            dict[str, str] | None: The 'access-token' and 'auth' values if authentication is successful, otherwise None.
+
+        Raises
+        ------
+            JSONDecodeError: If the response body cannot be parsed as JSON.
+            KeyError: If the response JSON does not contain the expected keys.
+
+        """
+        logger.debug("Login and getting access token and auth data...")
+        login_response = self.__login_with_email_and_password(email, password)
+        login_response_body = loads(login_response.text)
+        if not (isinstance(login_response_body, dict) and login_response_body.get("success")):
+            return None
+        set_cookie_header = login_response.headers.get("set-cookie")
+        if not set_cookie_header:
+            return None
+        auth_cookies = self.__extract_auth_cookies(set_cookie_header)
+        for name, value in auth_cookies.items():
+            self.session.cookies.set(name, value)
+        return auth_cookies if auth_cookies else None
+
+    @staticmethod
+    def __extract_auth_cookies(set_cookie_header: str) -> dict[str, str]:  # pragma: no cover
+        """
+        Extract 'access-token' and 'auth' cookies from the 'Set-Cookie' header.
+
+        Args:
+        ----
+        set_cookie_header (str): The value of the 'Set-Cookie' header from which cookies should be extracted.
+
+        Returns:
+        -------
+        dict[str, str]: A dictionary containing 'access-token' and 'auth' if present.
+
+        """
+        cookies = set_cookie_header.split("; ")
+        auth_cookies = {}
+        for cookie in cookies:
+            if cookie.startswith("access-token="):
+                auth_cookies["access-token"] = cookie.split("=", 1)[1]
+            elif cookie.startswith("Secure, auth="):
+                auth_cookies["auth"] = cookie.split("=", 1)[1]
+        return auth_cookies
 
     def get_available_presets(self) -> list[Preset]:
         """
@@ -167,6 +245,82 @@ class DehancerOnlineAPIClient(BaseAPIClient):
         headers.update(SECURITY_HEADERS)
         response = self.session.post(url, headers=headers, data=payload)
         return loads(response.text).get("url", None)
+
+    def export_image(self, image_id: str, preset: Preset, export_format: ExportFormat,
+                     preset_settings: PresetSettings) -> dict[str, str]:
+        """
+        Render a single image for export based on the provided image ID, preset, export format and preset settings.
+
+        Args:
+        ----
+            image_id (str): The ID of the uploaded image to render.
+            preset (Preset): The preset to apply during rendering.
+            export_format (ExportFormat): The export format to use when rendering.
+            preset_settings (PresetSettings): The settings to be applied to the preset during rendering.
+
+        Returns:
+        -------
+            dict[str, str]: The dictionary with 'url' and 'filename' of the rendered image.
+
+        Raises:
+        ------
+            Exception: If there is an error in retrieving or processing the API response.
+
+        """
+        url = f"{self.api_base_url}/render-export-image"
+        state = {"preset": preset.preset}
+        state.update(asdict(preset_settings))
+        payload = dumps({
+            "format": export_format.value,
+            "imageId": image_id,
+            "state": state,
+        })
+        headers = BASE_HEADERS
+        headers.update({
+            "Content-Type": HEADER_JSON_CONTENT_TYPE,
+        })
+        headers.update(SECURITY_HEADERS)
+        response = self.session.post(url, headers=headers, data=payload)
+        response_body = loads(response.text)
+        url = response_body.get("url", None)
+        file_name = response_body.get("filename", None)
+        return {"url": url, "filename": file_name}
+
+    def __login_with_email_and_password(self, email: str, password: str) -> Response:  # pragma: no cover
+        """
+        Send an HTTP POST request with email and password to login to the Dehancer Online API.
+
+        Args:
+        ----
+            email (str): The email address of the user for authentication.
+            password (str): The password of the user for authentication.
+
+        Returns:
+        -------
+            Response: The HTTP response object.
+            In case of successful result, a JSON response object have a 'success' field with a value of 'true'.
+            In case of successful result the response also has a 'set-cookie' header with an 'access-token' value.
+
+        Raises:
+        ------
+            Exception: If there is an error during the login process.
+
+        """
+        url = f"{self.api_base_url}/auth/login-with-email-and-password"
+        payload = dumps({
+            "email": email,
+            "password": password,
+        })
+        headers = BASE_HEADERS
+        headers.update({
+            "Accept": HEADER_JSON_CONTENT_TYPE,
+            "Accept-Encoding": HEADER_ACCEPT_ENCODING,
+            "Content-Type": HEADER_JSON_CONTENT_TYPE,
+            "Priority": HEADER_PRIORITY_U_0,
+            "TE": HEADER_TRANSFER_ENCODING_TRAILERS,
+        })
+        headers.update(SECURITY_HEADERS)
+        return self.session.post(url, headers=headers, data=payload)
 
     def __upload_file(self, image_path: str) -> Response:  # pragma: no cover
         """

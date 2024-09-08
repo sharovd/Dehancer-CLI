@@ -1,9 +1,27 @@
+from __future__ import annotations
+
 import re
 
 
-def compare_command_output(expected_output: str, actual_output: str, input_image_path: str) -> bool:
-    # Replace anchor {input_image_path} with a real value
-    expected_output = expected_output.replace("{input_image_path}", input_image_path)
+def _compare_command_output(expected_output: str, actual_output: str, replacements: dict[str, str]) -> bool:
+    """
+    Compare the expected and actual command outputs with dynamic replacements.
+
+    Args:
+    ----
+        expected_output (str): The output template or final data that is expected.
+        actual_output (str): The actual output received.
+        replacements (dict[str, str]): A dictionary where the key is the placeholder in the expected output
+        and the value is the and the value is the actual value to replace it with.
+
+    Returns:
+    -------
+        bool: True if the outputs match, False otherwise.
+
+    """
+    # Apply replacements - replace anchor {...} with a real value
+    for placeholder, value in replacements.items():
+        expected_output = expected_output.replace(f"{{{placeholder}}}", value)
     # Split outputs into separate lines
     expected_lines = expected_output.strip().split("\n")
     actual_lines = actual_output.strip().split("\n")
@@ -23,3 +41,18 @@ def compare_command_output(expected_output: str, actual_output: str, input_image
             print(f"Mismatch:\nExpected: {expected_line}\nActual: {actual_line}")  # noqa: T201
             return False
     return True
+
+
+def compare_contacts_command_output(expected_output: str, actual_output: str, input_image_path: str) -> bool:
+    replacements = {"input_image_path": input_image_path}
+    return _compare_command_output(expected_output, actual_output, replacements)
+
+
+def compare_develop_command_output(expected_output: str, actual_output: str, input_image_path: str,
+                                   input_preset_name: str, input_preset_number: str | int) -> bool:
+    replacements = {
+        "input_image_path": input_image_path,
+        "preset_name": input_preset_name,
+        "preset_number": str(input_preset_number),
+    }
+    return _compare_command_output(expected_output, actual_output, replacements)

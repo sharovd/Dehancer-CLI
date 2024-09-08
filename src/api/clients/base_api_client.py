@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import logging
 import logging.config
-from typing import Any, Dict, Tuple
+from typing import Any
 
 from requests import Response, Session
 from requests_toolbelt.utils import dump
@@ -17,7 +19,12 @@ class BaseAPIClient:  # noqa: D101
         self.session = Session()
         self.session.hooks["response"] = [self.logging_hook]
 
+    def set_session_cookies(self, cookies: dict[str, str]) -> None:  # noqa: D102
+        if cookies:
+            for name, value in cookies.items():
+                self.session.cookies.set(name, value)
+
     @staticmethod
-    def logging_hook(response: Response, *args: Tuple[Any, ...], **kwargs: Dict[str, Any]) -> None:  # noqa: D102, ARG004, FA100
+    def logging_hook(response: Response, *args: tuple[Any, ...], **kwargs: dict[str, Any]) -> None:  # noqa: D102, ARG004
         data = dump.dump_all(response)
         logging.debug(data.decode("utf-8", errors="replace"))
