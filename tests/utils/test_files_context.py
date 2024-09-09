@@ -1,3 +1,4 @@
+import os
 import shutil
 import time
 from pathlib import Path
@@ -29,64 +30,74 @@ class FileBackupContext:
 
     def _get_backup_path(self) -> Path:
         """Determine the backup path based on whether it's a file or directory."""
+        backup_name = f"backup_{int(time.time())}_{self.path_to_backup.name}"
         if self.path_to_backup.is_dir():
-            return self.path_to_backup.parent / f"backup_{self.path_to_backup.name}_{int(time.time())}"
-        return self.path_to_backup.with_name(f"backup_{self.path_to_backup.name}")
+            return self.path_to_backup.parent / backup_name
+        return self.path_to_backup.with_name(backup_name)
 
-    def _backup_directory(self) -> None:
-        """Backup all files in the specified directory."""
-        if not self.path_to_backup.exists():
-            return
-        self.backup_path.mkdir(parents=True, exist_ok=True)
-        for file in self.path_to_backup.iterdir():
-            if not file.name.startswith("backup_"):
-                backup_file_path = self.backup_path / file.name
-                if file.is_dir():
-                    shutil.copytree(file, backup_file_path)
-                else:
-                    shutil.copy(file, backup_file_path)
-                self.files_to_backup.append((file, backup_file_path))
+    def backup_directory(self) -> None:
+        """
+        Backs up files in the specified directory, excluding any existing backup directories.
 
-    def _backup_file(self) -> None:
-        """Backup the specified file."""
-        if self.path_to_backup.exists():
-            shutil.copy(self.path_to_backup, self.backup_path)
+        This method creates a backup of all files and subdirectories in the specified directory,
+        except those beginning with 'backup_'.
+        It then removes the original files and directories to prepare for new operations.
+        """
+        if Path(self.path_to_backup).exists() and len(os.listdir(self.path_to_backup)) != 0:
+            Path(self.backup_path).mkdir(parents=True)
+            for file in os.listdir(self.path_to_backup):
+                if not file.startswith("backup_"):
+                    src_path = os.path.join(self.path_to_backup, file)
+                    backup_path = os.path.join(self.backup_path, file)
+                    if Path(src_path).is_dir():
+                        shutil.copytree(src_path, backup_path)
+                        shutil.rmtree(src_path)
+                    else:
+                        shutil.copy(src_path, backup_path)
+                        Path(src_path).unlink()
+                    self.files_to_backup.append((src_path, backup_path))
+
+    def backup_file(self) -> None:
+        """
+        Backs up single file.
+
+        This method creates a backup of the file in the specified path.
+        It then removes the original file to prepare for new operations.
+        """
+        if Path(self.path_to_backup).exists() and Path(self.path_to_backup).is_file():
+            shutil.copy(self.path_to_backup, self.backup_path  )
+            Path(self.path_to_backup).unlink()
             self.files_to_backup.append((self.path_to_backup, self.backup_path))
 
-    def _restore_directory(self) -> None:
-        """Restore files in the directory from the backup."""
-        for file in self.path_to_backup.iterdir():
-            if not file.name.startswith("backup_"):
-                if file.is_dir():
-                    shutil.rmtree(file)
-                else:
-                    file.unlink()
-        for original_path, backup_path in self.files_to_backup:
-            if backup_path.is_dir():
-                shutil.copytree(backup_path, original_path)
+    def restore_files(self) -> None:
+        """
+        Restore files from the backup directory to their original locations.
+
+        This method clears the specified directory of any new files or directories created during operations,
+        and then restores the original files and directories from the backup.
+        The backup directory is removed after the restoration.
+        """
+        if Path(self.path_to_backup).is_dir():
+            # Clear the directory before restoring files
+            for file in os.listdir(self.path_to_backup):
+                if not file.startswith("backup_"):
+                    file_path = os.path.join(self.path_to_backup, file)
+                    if Path(file_path).is_dir():
+                        shutil.rmtree(file_path)
+                    else:
+                        Path(file_path).unlink()
+        # Restore files from the backup
+        for src_path, backup_path in self.files_to_backup:
+            if Path(backup_path).is_dir():
+                shutil.copytree(backup_path, src_path)
             else:
-                shutil.copy(backup_path, original_path)
-
-    def _restore_file(self) -> None:
-        """Restore the file from the backup."""
-        if self.backup_path.exists():
-            shutil.copy(self.backup_path, self.path_to_backup)
-
-    def backup(self) -> None:
-        """Perform backup based on whether the path is a file or directory."""
-        if self.path_to_backup.is_dir():
-            self._backup_directory()
-        elif self.path_to_backup.is_file():
-            self._backup_file()
-
-    def restore(self) -> None:
-        """Restore from backup based on whether the path is a file or directory."""
-        if self.path_to_backup.is_dir():
-            self._restore_directory()
+                shutil.copy(backup_path, src_path)
+        # Remove the backup directory
+        if self.backup_path is not None and Path(self.backup_path).is_dir():
             shutil.rmtree(self.backup_path)
-        elif self.path_to_backup.is_file():
-            self._restore_file()
-            self.backup_path.unlink()
+        # Remove the backup file
+        if self.backup_path is not None and Path(self.backup_path).is_file():
+            Path(self.backup_path).unlink()
 
     def __enter__(self) -> "FileBackupContext":
         """
@@ -98,7 +109,10 @@ class FileBackupContext:
             The context manager instance with files backed up.
 
         """
-        self.backup()
+        if Path(self.path_to_backup).is_dir():
+            self.backup_directory()
+        if Path(self.path_to_backup).is_file():
+            self.backup_file()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:  # noqa: ANN001
@@ -115,4 +129,4 @@ class FileBackupContext:
             The traceback object, if any exception was raised.
 
         """
-        self.restore()
+        self.restore_files()
