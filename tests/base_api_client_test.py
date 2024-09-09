@@ -8,7 +8,7 @@ from src.api.clients.base_api_client import BaseAPIClient
 
 
 @pytest.fixture()
-def base_api_client():
+def base_api_client() -> BaseAPIClient:
     return BaseAPIClient()
 
 
@@ -22,6 +22,50 @@ def test_init_have_session_initialization(base_api_client: BaseAPIClient):
 def test_init_have_logging_hook(base_api_client: BaseAPIClient):
     assert base_api_client.logging_hook in base_api_client.session.hooks["response"], \
         "Logging hook should be added to session hooks"
+
+
+@pytest.mark.unit
+def test_set_session_cookies_with_empty_dict_do_nothing(base_api_client: BaseAPIClient):
+    # Act: perform method under test
+    base_api_client.set_session_cookies({})
+    # Assert: check that there are no cookies in the session
+    assert len(base_api_client.session.cookies) == 0
+
+
+@pytest.mark.unit
+def test_set_session_cookies_with_single_value_adds_it(base_api_client: BaseAPIClient):
+    # Arrange: define test data
+    cookies = {"test-cookie": "test-value"}
+    # Act: perform method under test
+    base_api_client.set_session_cookies(cookies)
+    # Assert: check expected cookies in the session
+    assert base_api_client.session.cookies["test-cookie"] == "test-value"
+
+
+@pytest.mark.unit
+def test_set_session_cookies_with_multiple_values_adds_it(base_api_client: BaseAPIClient):
+    # Arrange: define test data
+    cookies = {
+        "cookie1": "value1",
+        "cookie2": "value2",
+        "cookie3": "value3",
+    }
+    # Act: perform method under test
+    base_api_client.set_session_cookies(cookies)
+    # Assert: check expected cookies in the session
+    for name, value in cookies.items():
+        assert base_api_client.session.cookies[name] == value
+
+
+@pytest.mark.unit
+def test_set_session_cookies_overwrites_existing_cookie(base_api_client: BaseAPIClient):
+    # Arrange: define test data
+    base_api_client.session.cookies.set("cookie", "old-value")
+    # Act: perform method under test
+    cookies = {"cookie": "new-value"}
+    base_api_client.set_session_cookies(cookies)
+    # Assert: check expected cookies in the session
+    assert base_api_client.session.cookies["cookie"] == "new-value"
 
 
 @pytest.mark.unit

@@ -15,11 +15,23 @@ from src.api.constants import (
     HEADER_TRANSFER_ENCODING_TRAILERS,
     SECURITY_HEADERS,
 )
-from src.api.models.preset import ImageSize, Preset, PresetSettings
+from src.api.enums import ExportFormat, ImageSize
+from src.api.models.preset import Preset, PresetSettings
 from tests.data.api_mock_responses.get_pane import (
     get_pane_invalid_response,
     get_pane_not_success_response,
     get_pane_success_response,
+)
+from tests.data.api_mock_responses.login_with_email_and_password import (
+    login_with_email_and_password_invalid_response,
+    login_with_email_and_password_not_success_response,
+    login_with_email_and_password_success_headers,
+    login_with_email_and_password_success_response,
+)
+from tests.data.api_mock_responses.render_export_image import (
+    render_export_image_invalid_response,
+    render_export_image_not_success_response,
+    render_export_image_success_response,
 )
 from tests.data.api_mock_responses.render_single_image import (
     render_single_image_invalid_response,
@@ -46,7 +58,7 @@ def mock_requests_session_get() -> MagicMock:
 
 @pytest.fixture()
 def mock_api_client() -> DehancerOnlineAPIClient:
-    return DehancerOnlineAPIClient("https://mock.com/api")
+    return DehancerOnlineAPIClient("https://mock.com/api", {})
 
 
 @pytest.fixture()
@@ -61,6 +73,94 @@ def generate_presets(count: int) -> list[Preset]:
                    is_bloom_enabled=True, bloom=0.5, is_halation_enabled=True, halation=0.5,
                    is_grain_enabled=True, grain=0.1)
             for i, caption in enumerate(captions, 1)]
+
+
+@pytest.mark.unit
+def test_login_and_get_auth_cookies_success(mock_api_client: DehancerOnlineAPIClient):
+    # Arrange: setup mock objects
+    with patch.object(mock_api_client, "_DehancerOnlineAPIClient__login_with_email_and_password",
+                      return_value=Mock(headers=login_with_email_and_password_success_headers,
+                                        text=json.dumps(login_with_email_and_password_success_response))) as mock_post:
+        mock_cookies = login_with_email_and_password_success_headers.get("set-cookie").split("; ")
+        expected_auth_data = {}
+        for mock_cookie in mock_cookies:
+            if mock_cookie.startswith("access-token="):
+                expected_auth_data["access-token"] = mock_cookie.split("=", 1)[1]
+            if mock_cookie.startswith("Secure, auth="):
+                expected_auth_data["auth"] = mock_cookie.split("=", 1)[1]
+        email = "test@test.com"
+        password = "test"  # noqa: S105
+        # Act: perform method under test
+        result = mock_api_client.login_and_get_auth_cookies(email, password)
+        # Assert: check that the expected method have been called by the tested method
+        mock_post.assert_called_once_with(email, password)
+        # Assert: check that the method result contains the expected data
+        assert result == expected_auth_data
+
+
+@pytest.mark.unit
+def test_login_and_get_auth_cookies_success_wo_cookies(mock_api_client: DehancerOnlineAPIClient):
+    login_with_email_and_password_success_headers.pop("set-cookie")
+    login_with_email_and_password_headers_wo_cookies = login_with_email_and_password_success_headers
+    # Arrange: setup mock objects
+    with patch.object(mock_api_client, "_DehancerOnlineAPIClient__login_with_email_and_password",
+                      return_value=Mock(headers=login_with_email_and_password_headers_wo_cookies,
+                                        text=json.dumps(login_with_email_and_password_success_response))) as mock_post:
+        email = "test@test.com"
+        password = "test"  # noqa: S105
+        # Act: perform method under test
+        result = mock_api_client.login_and_get_auth_cookies(email, password)
+        # Assert: check that the expected method have been called by the tested method
+        mock_post.assert_called_once_with(email, password)
+        # Assert: check that the method result contains the expected data
+        assert result is None
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(("auth_cookies", "expected_result"), [
+    ({"access-token": "valid_token", "auth": "valid_auth_value"}, True),
+    ({"access-token": "valid_token"}, True),
+    ({"auth": "valid_auth_value"}, False),
+    ({}, False),
+    (None, False),
+])
+def test_is_authorized_returns_auth_state_as_bool_value(mock_api_client: DehancerOnlineAPIClient,
+                                                        auth_cookies: dict[str, str], expected_result: bool):  # noqa: FBT001
+    # Arrange: setup mock object
+    mock_api_client.set_session_cookies(auth_cookies)
+    # Act: perform method under test
+    is_authorized = mock_api_client.is_authorized
+    # Assert: check that the method result contains the expected data
+    assert is_authorized == expected_result
+
+
+@pytest.mark.unit
+def test_login_and_get_auth_cookies_not_success(mock_api_client: DehancerOnlineAPIClient):
+    # Arrange: setup mock objects
+    with (patch.object(mock_api_client, "_DehancerOnlineAPIClient__login_with_email_and_password",
+                      return_value=Mock(text=json.dumps(login_with_email_and_password_not_success_response)))
+          as mock_post):
+        email = "test@test.com"
+        password = "test"  # noqa: S105
+        # Act: perform method under test
+        result = mock_api_client.login_and_get_auth_cookies(email, password)
+        # Assert: check that the expected method have been called by the tested method
+        mock_post.assert_called_once_with(email, password)
+        # Assert: check that the method result contains the expected data
+        assert result is None
+
+
+@pytest.mark.unit
+def test_login_and_get_auth_cookies_failure(mock_api_client: DehancerOnlineAPIClient):
+    # Arrange: setup mock objects
+    with patch.object(mock_api_client, "_DehancerOnlineAPIClient__login_with_email_and_password",
+                      return_value=Mock(text=json.dumps(login_with_email_and_password_invalid_response))):
+        email = "test@test.com"
+        password = "test"  # noqa: S105
+        # Act: perform method under test
+        result = mock_api_client.login_and_get_auth_cookies(email, password)
+        # Assert: check that the method result contains no data and that no logs has been printed
+        assert result is None
 
 
 @pytest.mark.unit
@@ -303,3 +403,72 @@ def test_render_failure(mock_api_client: DehancerOnlineAPIClient):
             pytest.raises(json.JSONDecodeError):  # Assert: check that the expected failure caused by the tested method
         # Act: perform method under test
         mock_api_client.render_image(image_id, preset, preset_settings)
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("preset_settings", [
+    pytest.param(PresetSettings(0, 0, 0, 0, 0, 0, 0, 0), id="Default settings"),
+    pytest.param(
+        PresetSettings(exposure=1.5, contrast=3.5, temperature=-15,
+                       tint=1, color_boost=3, bloom=4.5, halation=2.2, grain=4.1), id="Custom settings"),
+])
+def test_export_image_success(mock_api_client: DehancerOnlineAPIClient, preset_settings: PresetSettings):
+    image_id = "123"
+    preset = choice(generate_presets(62))
+    state = {**asdict(preset), **asdict(preset_settings)}
+    for key in ["caption", "creator", "is_bloom_enabled", "is_halation_enabled", "is_grain_enabled"]:
+        state.pop(key, None)
+    export_format = choice(list(ExportFormat))
+    # Arrange: setup mock objects
+    with patch.object(mock_api_client.session, "post",
+                      return_value=Mock(text=json.dumps(render_export_image_success_response))) as mock_post:
+        # Act: perform method under test
+        result = mock_api_client.export_image(image_id, preset, export_format, preset_settings)
+        expected_payload = json.dumps({
+            "format": export_format.value,
+            "imageId": image_id,
+            "state": state,
+        })
+        expected_headers = BASE_HEADERS.copy()
+        expected_headers.update({
+            "Content-Type": HEADER_JSON_CONTENT_TYPE,
+        })
+        expected_headers.update(SECURITY_HEADERS)
+        # Assert: check that the expected request has been sent by the tested method
+        mock_post.assert_called_once_with(f"{mock_api_client.api_base_url}/render-export-image",
+                                          headers=expected_headers, data=expected_payload)
+        # Assert: check that the method result contains the expected data
+        assert result == {"url": render_export_image_success_response["url"],
+                          "filename": render_export_image_success_response["filename"]}
+
+
+@pytest.mark.unit
+def test_export_image_not_success(mock_api_client: DehancerOnlineAPIClient):
+    image_id = "123"
+    preset = choice(generate_presets(62))
+    preset_settings = PresetSettings(0, 0, 0, 0, 0, 0, 0, 0)
+    state = {**asdict(preset), **asdict(preset_settings)}
+    for key in ["caption", "creator", "is_bloom_enabled", "is_halation_enabled", "is_grain_enabled"]:
+        state.pop(key, None)
+    export_format = choice(list(ExportFormat))
+    # Arrange: setup mock objects
+    with patch.object(mock_api_client.session, "post",
+                      return_value=Mock(text=json.dumps(render_export_image_not_success_response))):
+        # Act: perform method under test
+        result = mock_api_client.export_image(image_id, preset, export_format, preset_settings)
+        # Assert: check that the method result contains no data
+        assert result == {"url": None, "filename": None}
+
+
+@pytest.mark.unit
+def test_export_failure(mock_api_client: DehancerOnlineAPIClient):
+    image_id = "123"
+    preset = choice(generate_presets(62))
+    preset_settings = PresetSettings(0, 0, 0, 0, 0, 0, 0, 0)
+    export_format = choice(list(ExportFormat))
+    # Arrange: setup mock objects
+    with patch.object(mock_api_client.session, "post",
+                      return_value=Mock(status_code=500, text=render_export_image_invalid_response)), \
+            pytest.raises(json.JSONDecodeError):  # Assert: check that the expected failure caused by the tested method
+        # Act: perform method under test
+        mock_api_client.export_image(image_id, preset, export_format, preset_settings)

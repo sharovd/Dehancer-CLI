@@ -10,12 +10,86 @@ import requests
 from src.api.constants import IMAGE_VALID_TYPES
 from src.utils import (
     download_file,
+    get_auth_data,
+    get_file_extension,
     get_filename_without_extension,
     is_file_exist,
     is_supported_format_file,
     read_settings_file,
     safe_join,
+    update_auth_data,
 )
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(("auth_data", "expected_content"), [
+    # Valid auth data
+    ({"access-token": "abc123", "auth": "def456"}, "access-token=abc123;auth=def456;"),
+    ({"access-token": "abc123"}, "access-token=abc123;"),
+    ({"auth": "def456"}, "auth=def456;"),
+    # Special characters in auth data
+    ({"access-token": "special!@#$%^&*()_+", "auth": "def456"}, "access-token=special!@#$%^&*()_+;auth=def456;"),
+    ({"access-token": "abc123", "auth": "special!@#$%^&*()_+"}, "access-token=abc123;auth=special!@#$%^&*()_+;"),
+    ({"access-token": "special_1!@#$%^&*()_+", "auth": "special_2!@#$%^&*()_+"},
+        "access-token=special_1!@#$%^&*()_+;auth=special_2!@#$%^&*()_+;"),
+    # Empty auth data
+    ({}, ""),
+    (None, ""),
+])
+def test_update_auth_data_writes_to_exiting_file(auth_data: dict[str, str], expected_content: str):
+    # Arrange: setup mock object
+    auth_file_path = "test_auth.txt"
+    with patch("pathlib.Path.open", new_callable=mock_open) as mock_auth_file:
+        # Act: perform method under test
+        update_auth_data(auth_file_path, auth_data)
+        # Assert: check that the file was opened in write mode if auth data is not empty
+        # and the correct content was written
+        if auth_data:
+            mock_auth_file.assert_called_once_with("w")
+            mock_auth_file().write.assert_called_once_with(expected_content)
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(("file_content", "expected_result"), [
+    # Valid auth data
+    ("access-token=valid_access_token;auth=valid_auth_data;",
+     {"access-token": "valid_access_token", "auth": "valid_auth_data"}),
+    ("access-token=valid_access_token;",
+     {"access-token": "valid_access_token"}),
+    ("auth=valid_auth_data;",
+     {"auth": "valid_auth_data"}),
+    # Special characters in auth data
+    ("access-token=special_1!@#$%^&*()_+;auth=special_2!@#$%^&*()_+;",
+     {"access-token": "special_1!@#$%^&*()_+", "auth": "special_2!@#$%^&*()_+"}),
+    # Empty file data
+    ("", None),
+    # Multiline file data (only first line should be read)
+    ("access-token=valid_access_token_1;auth=valid_auth_data_1;\naccess-token=valid_access_token_2;auth=valid_auth_data_2;",
+     {"access-token": "valid_access_token_1", "auth": "valid_auth_data_1"}),
+])
+def test_get_auth_data_returns_auth_data(file_content: str, expected_result: dict[str, str] | None):
+    # Arrange: create temporary auth file with content
+    with NamedTemporaryFile(delete=False) as tmp_file:
+        tmp_file.write(file_content.encode())
+        tmp_file_path = tmp_file.name
+    try:
+        # Act: perform method under test and get result
+        actual_result = get_auth_data(tmp_file_path)
+        # Assert
+        assert actual_result == expected_result
+    finally:
+        # Cleanup: remove temporary auth file
+        Path(tmp_file_path).unlink()
+
+
+@pytest.mark.unit
+def test_get_auth_data_for_nonexistent_file_returns_none():
+    # Arrange: path to a non-existent file
+    non_existent_file_path = "non_existent_file.txt"
+    # Act: perform method under test
+    actual_result = get_auth_data(non_existent_file_path)
+    # Assert: check that the method result contains the expected result
+    assert actual_result is None
 
 
 @pytest.mark.unit
@@ -149,6 +223,30 @@ def test_is_supported_format_file_for_nonexistent_file_raises_error():
 def test_get_filename_without_extension_returns_file_name(file_path: str, expected_result: str):
     # Act: perform method under test & Assert
     assert get_filename_without_extension(file_path) == expected_result
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(("file_path", "expected_result"), [
+    ("/path/to/file/example.txt", "txt"),
+    ("/path/to/file/archive.tar.gz", "gz"),
+    ("/path/to/file/image.jpg", "jpg"),
+    ("/path/to/file/no_extension", ""),
+    ("/path/to/file/.hidden", ""),
+    ("/path/to/file/.dotfile", ""),
+    ("/path/to/file/double.extension.zip", "zip"),
+    ("/path/to/file/anotherfile.tar.bz2", "bz2"),
+    ("example.txt", "txt"),
+    ("archive.tar.gz", "gz"),
+    ("image.jpg", "jpg"),
+    ("no_extension", ""),
+    (".hidden", ""),
+    ("dotfile.", ""),
+    ("double.extension.zip", "zip"),
+    ("complex.file.name.with.many.dots.md", "md"),
+])
+def test_get_file_extension_returns_extension(file_path: str, expected_result: str):
+    # Act: perform method under test & Assert
+    assert get_file_extension(file_path) == expected_result
 
 
 @pytest.mark.unit

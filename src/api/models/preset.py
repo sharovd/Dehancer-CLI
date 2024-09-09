@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from enum import Enum
 
 
 @dataclass
@@ -30,8 +29,3 @@ class PresetSettings:  # noqa: D101
     bloom: float
     halation: float
     grain: float
-
-
-class ImageSize(Enum):  # noqa: D101
-    SMALL = "small"
-    LARGE = "large"

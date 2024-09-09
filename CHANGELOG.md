@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2024-09-09
+### Added
+- Added new command 'auth' for authorisation in Dehancer Online via API to be able to develop images without watermarks.
+- Added new option ("-q", "--quality", "quality") to the 'develop' command to set the output image quality in authorised mode.
+- Support for the following image quality levels has been added "low", "medium", "high".
+- Covered 100% new or updated source code by unit tests.
+- Added two e2e tests: for 'develop' (w/o authorisation) and 'version' commands.
+
+
 ## [0.1.0] - 2024-07-27
 ### Added
 - Initial release of the 'Dehancer CLI' project.
