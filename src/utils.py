@@ -8,6 +8,10 @@ from pathlib import Path
 
 import puremagic
 import requests
+import yaml
+from yaml.scanner import ScannerError
+
+from src.api.models.preset import PresetSettings, PresetSettingsState
 
 from . import app_name
 
@@ -59,13 +63,11 @@ logging.config.dictConfig(get_logger_config_dict())
 logger = logging.getLogger()
 
 
-def read_settings_file(file_path: str) -> dict[str, float]:
+def read_settings_file(file_path: str) -> PresetSettings:
     """
-    Read a settings file and return the settings as a dictionary.
+    Read a settings file in YAML format and return the settings as a PresetSettings object.
 
-    The settings file should have key-value pairs separated by '=' on each line.
-    The method reads the file, splits each line into key-value pairs, and stores
-    them in a dictionary. The values are converted to integers.
+    The method reads the *.yaml file, parses the contents and returns a PresetSettings object with the parsed values.
 
     Args:
     ----
@@ -73,35 +75,38 @@ def read_settings_file(file_path: str) -> dict[str, float]:
 
     Returns:
     -------
-        dict: A dictionary containing the settings with keys as strings and values as floats.
-
-    Example:
-    -------
-        If the settings file contains:
-        contrast=5
-        exposure=10
-        The returned dictionary will be: {'contrast': 5, 'exposure': 10}
+        PresetSettings: An object containing the settings with values as floats or 'Off' for grain, bloom, and halation.
 
     Raises:
     ------
         FileNotFoundError: If the file does not exist.
 
     """
-    length_of_key_value_pair = 2
+    def to_float(value: any) -> float:
+        try:
+            return float(value)
+        except (ValueError, TypeError):
+            return 0.0
     if not Path(file_path).exists():
         msg = f"The file {file_path} does not exist."
         raise FileNotFoundError(msg)
-    settings = {}
     with Path(file_path).open("r") as file:
-        for line in file:
-            key_and_value = line.strip().split("=")
-            if len(key_and_value) == length_of_key_value_pair and key_and_value[1].strip():
-                key, value = key_and_value
-                try:
-                    settings[key.strip()] = float(value.strip())
-                except ValueError:
-                    continue
-    return settings
+        try:
+            data = yaml.safe_load(file) or {}
+        except ScannerError:
+            data = {}
+    adjustments = data.get("adjustments", {}) or {}
+    effects = data.get("effects", {}) or {}
+    return PresetSettings(
+        exposure=to_float(adjustments.get("exposure", 0)),
+        contrast=to_float(adjustments.get("contrast", 0)),
+        temperature=to_float(adjustments.get("temperature", 0)),
+        tint=to_float(adjustments.get("tint", 0)),
+        color_boost=to_float(adjustments.get("color_boost", 0)),
+        bloom=PresetSettingsState.from_value(effects.get("bloom", "Off")),
+        halation=PresetSettingsState.from_value(effects.get("halation", "Off")),
+        grain=PresetSettingsState.from_value(effects.get("grain", "Off")),
+    )
 
 
 def update_auth_data(auth_file_path: str, auth_data: dict[str, str]) -> None:

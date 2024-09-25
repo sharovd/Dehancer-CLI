@@ -1,4 +1,4 @@
-get_pane_success_response = {
+image_previews_success_response = {
     "success": True,
     "images": [
         "https://dho.dehancer.com/local/e10f9911-49a8-4e6f-b206-55c0bab81a68/ef5cb688_small.jpeg",
@@ -66,8 +66,8 @@ get_pane_success_response = {
     ],
 }
 
-get_pane_not_success_response = {
+image_previews_not_success_response = {
     "success": False,
 }
 
-get_pane_invalid_response = "Error"
+image_previews_invalid_response = "Error"

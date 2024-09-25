@@ -49,25 +49,48 @@ $ dehancer-cli contacts <path/to/image.jpg>
 $ dehancer-cli develop <path/to/image_or_directory> --preset <preset_number> [OPTIONS]
 ```
 
-Options
+**Options**
 
     --preset, -p: Preset number (required).
     --quality, -q: Image quality level: ["low", "medium", "high"]
-    --set_contrast, -s: Contrast setting.
-    --set_exposure, -e: Exposure setting.
-    --set_temperature, -t: Temperature setting.
-    --set_tint, -i: Tint setting.
-    --set_color_boost, -b: Color boost setting.
+    --set_contrast, -c: Contrast setting (adjustments).
+    --set_exposure, -e: Exposure setting (adjustments).
+    --set_temperature, -t: Temperature setting (adjustments).
+    --set_tint, -i: Tint setting (adjustments).
+    --set_color_boost, -cb: Color boost setting (adjustments).
+    --grain, -g: Grain setting (effects).
+    --bloom, -b: Bloom setting (effects).
+    --halation, -h: Halation setting (effects).
     --settings_file: Path to a settings file containing key-value pairs for settings.
     --logs, -l: Enable debug logs (1 for enabled, 0 for disabled).
 
-Image Quality Levels
+**Image Quality Levels**
 
     Quality Level  | Description       | Resolution               | Format & Quality
     -------------- | ----------------- | ------------------------ | ------------------
     Low            | Optimised for web | Resized to 2160x2160     | JPEG 80%
     Medium         | Best quality      | Max resolution 3024x3024 | JPEG 100%
     High           | Lossless          | Max resolution 3024x3024 | TIFF 16 bit
+
+**Preset Settings**
+
+Note that there are no limits to the values you can specify for settings.<br>
+This means that you can specify any floating point number as a value.<br>
+The following limits are respected by the Dehancer Online team:<br>
+
+    Setting          | Group       | Default value | Minimum value | Maximum value | Step
+    ---------------- | ----------- | --------------| --------------| --------------| ----
+    Exposure         | Adjustments | 0             | -2            | 2             | 0.2
+    Contrast         | Adjustments | 0             | -40           | 40            | 2
+    Temperature      | Adjustments | 0             | -90           | 90            | 2
+    Tint             | Adjustments | 0             | -90           | 90            | 2
+    Color_boost      | Adjustments | 0             | -90           | 90            | 2
+    Grain            | Effects     | ×             | 0             | 100           | 2
+    Bloom            | Effects     | ×             | 0             | 100           | 2
+    Halation         | Effects     | ×             | 0             | 100           | 2
+
+× - means that the default value of the effect depends on the selected profile.<br>
+All settings in the 'Effects' group support the 'Off' value, which is the default value from the profile.
 
 ### Print application version
 
@@ -118,25 +141,48 @@ $ python dehancer_cli.py develop <path/to/image_or_directory> --preset <preset_n
 $ poetry run dehancer-cli develop <path/to/image_or_directory> --preset <preset_number> [OPTIONS]
 ```
 
-Options
+**Options**
 
     --preset, -p: Preset number (required).
     --quality, -q: Image quality level: ["low", "medium", "high"]
-    --set_contrast, -s: Contrast setting.
-    --set_exposure, -e: Exposure setting.
-    --set_temperature, -t: Temperature setting.
-    --set_tint, -i: Tint setting.
-    --set_color_boost, -b: Color boost setting.
+    --set_contrast, -c: Contrast setting (adjustments).
+    --set_exposure, -e: Exposure setting (adjustments).
+    --set_temperature, -t: Temperature setting (adjustments).
+    --set_tint, -i: Tint setting (adjustments).
+    --set_color_boost, -cb: Color boost setting (adjustments).
+    --grain, -g: Grain setting (effects).
+    --bloom, -b: Bloom setting (effects).
+    --halation, -h: Halation setting (effects).
     --settings_file: Path to a settings file containing key-value pairs for settings.
     --logs, -l: Enable debug logs (1 for enabled, 0 for disabled).
 
-Image Quality Levels
+**Image Quality Levels**
 
     Quality Level  | Description       | Resolution               | Format & Quality
     -------------- | ----------------- | ------------------------ | ------------------
     Low            | Optimised for web | Resized to 2160x2160     | JPEG 80%
     Medium         | Best quality      | Max resolution 3024x3024 | JPEG 100%
     High           | Lossless          | Max resolution 3024x3024 | TIFF 16 bit
+
+**Preset Settings**
+
+Note that there are no limits to the values you can specify for settings.<br>
+This means that you can specify any floating point number as a value.<br>
+The following limits are respected by the Dehancer Online team:<br>
+
+    Setting          | Group       | Default value | Minimum value | Maximum value | Step
+    ---------------- | ----------- | --------------| --------------| --------------| ----
+    Exposure         | Adjustments | 0             | -2            | 2             | 0.2
+    Contrast         | Adjustments | 0             | -40           | 40            | 2
+    Temperature      | Adjustments | 0             | -90           | 90            | 2
+    Tint             | Adjustments | 0             | -90           | 90            | 2
+    Color_boost      | Adjustments | 0             | -90           | 90            | 2
+    Grain            | Effects     | ×             | 0             | 100           | 2
+    Bloom            | Effects     | ×             | 0             | 100           | 2
+    Halation         | Effects     | ×             | 0             | 100           | 2
+
+× - means that the default value of the effect depends on the selected profile.<br>
+All settings in the 'Effects' group support the 'Off' value, which is the default value from the profile.
 
 ### Print application version
 

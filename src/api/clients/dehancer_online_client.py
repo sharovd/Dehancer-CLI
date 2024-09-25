@@ -24,7 +24,7 @@ from src.api.constants import (
     IMAGE_VALID_TYPES,
     SECURITY_HEADERS,
 )
-from src.api.models.preset import Preset, PresetSettings
+from src.api.models.preset import Preset, PresetSettings, PresetSettingsState
 
 logging.config.dictConfig(utils.get_logger_config_dict())
 logger = logging.getLogger()
@@ -136,7 +136,7 @@ class DehancerOnlineAPIClient(BaseAPIClient):
 
         """
         logger.debug("Getting available presets...")
-        response = self.session.get(f"{self.api_base_url}/whoami")
+        response = self.session.get(f"{self.api_base_url}/presets")
         available_presets = [Preset(**preset) for preset in loads(response.text)["presets"]]
         sorted_available_presets = sorted(available_presets, key=lambda p: p.caption)
         logger.debug("Available presets is '%s'", sorted_available_presets)
@@ -162,18 +162,28 @@ class DehancerOnlineAPIClient(BaseAPIClient):
         if self.__check_image_file(image_path):
             utils.is_file_exist(image_path)
             logger.debug("Upload image...")
-            upload_file_response = loads(self.__upload_file(image_path).text)
-            if upload_file_response["success"]:
-                image_id = upload_file_response["imageId"]
-                url = upload_file_response["url"]
-                self.__image_options(url)
-                self.__image_put(url, image_path)
-                self.__image_uploaded(image_id, image_path)
+            upload_prepare_response = loads(self.__image_upload_prepare(image_path).text)
+            if upload_prepare_response["success"]:
+                image_id = upload_prepare_response["imageId"]
+                # Regular upload (small size image file)
+                if not upload_prepare_response.get("isMultipart", False):
+                    url = upload_prepare_response["url"]
+                    self.__image_put(url, image_path)
+                    self.__image_upload_finish(image_id, image_path)
+                # Multipart upload (big size image file)
+                else:
+                    chunk_size = upload_prepare_response["chunkSize"]
+                    urls = upload_prepare_response["urls"]
+                    upload_id = upload_prepare_response["uploadId"]
+                    responses = self.__image_put_multipart(urls, image_path, chunk_size)
+                    etags = [response.headers["ETag"] for response in responses]
+                    image_file_name = Path(image_path).name
+                    self.__image_upload_finish_multipart(image_id, upload_id, etags, image_file_name)
                 logger.debug("Image was uploaded, id is '%s'", image_id)
                 return image_id
         return None
 
-    def get_pane(self, image_id: str, image_size: ImageSize, presets: list[Preset]) -> dict[str, str]:
+    def get_image_previews(self, image_id: str, image_size: ImageSize, presets: list[Preset]) -> dict[str, str]:
         """
         Get links to images in accordance with the provide presets for a given image ID and size.
 
@@ -194,7 +204,7 @@ class DehancerOnlineAPIClient(BaseAPIClient):
 
         """
         states = [asdict(preset) for preset in presets]
-        url = f"{self.api_base_url}/get-pane"
+        url = f"{self.api_base_url}/image/previews/{image_id}"
         payload = dumps({
             "imageId": image_id,
             "size": image_size.value,
@@ -212,7 +222,8 @@ class DehancerOnlineAPIClient(BaseAPIClient):
             return {preset.caption: value for preset, value in zip(presets, result_images_links)}
         return {}
 
-    def render_image(self, image_id: str, preset: Preset, preset_settings: PresetSettings) -> str:
+    def render_image(self, image_id: str, preset: Preset,
+                     preset_settings: PresetSettings = None) -> str:
         """
         Render a single image based on the provided image ID, preset, and preset settings.
 
@@ -231,9 +242,11 @@ class DehancerOnlineAPIClient(BaseAPIClient):
             Exception: If there is an error in retrieving or processing the API response.
 
         """
-        url = f"{self.api_base_url}/render-single-image"
+        if preset_settings is None:
+            preset_settings = PresetSettings.default()
+        url = f"{self.api_base_url}/image/render/{image_id}"
         state = {"preset": preset.preset}
-        state.update(asdict(preset_settings))
+        state.update({key: value for key, value in asdict(preset_settings).items() if value != PresetSettingsState.OFF})
         payload = dumps({
             "imageId": image_id,
             "state": state,
@@ -267,9 +280,9 @@ class DehancerOnlineAPIClient(BaseAPIClient):
             Exception: If there is an error in retrieving or processing the API response.
 
         """
-        url = f"{self.api_base_url}/render-export-image"
+        url = f"{self.api_base_url}/image/export/{image_id}"
         state = {"preset": preset.preset}
-        state.update(asdict(preset_settings))
+        state.update({key: value for key, value in asdict(preset_settings).items() if value != PresetSettingsState.OFF})
         payload = dumps({
             "format": export_format.value,
             "imageId": image_id,
@@ -322,11 +335,11 @@ class DehancerOnlineAPIClient(BaseAPIClient):
         headers.update(SECURITY_HEADERS)
         return self.session.post(url, headers=headers, data=payload)
 
-    def __upload_file(self, image_path: str) -> Response:  # pragma: no cover
+    def __image_upload_prepare(self, image_path: str) -> Response:  # pragma: no cover
         """
         Send an HTTP POST request with the image's meta information to the Dehancer Online API.
 
-        Step 1/4 in the image upload flow.
+        Step 1/3 in the image upload flow.
 
         Args:
         ----
@@ -343,7 +356,7 @@ class DehancerOnlineAPIClient(BaseAPIClient):
 
         """
         utils.is_file_exist(image_path)
-        url = f"{self.api_base_url}/upload-file-put"
+        url = f"{self.api_base_url}/upload/prepare"
         payload = dumps({
             "mimetype": guess_type(image_path)[0],
             "size": Path(image_path).stat().st_size,
@@ -353,39 +366,11 @@ class DehancerOnlineAPIClient(BaseAPIClient):
         }
         return self.session.post(url, headers=headers, data=payload)
 
-    def __image_options(self, url: str) -> Response:  # pragma: no cover
-        """
-        Send an HTTP OPTIONS request to the specified URL.
-
-        Step 2/4 in image upload flow.
-
-        Args:
-        ----
-            url (str): The URL to send the OPTIONS request to.
-
-        Returns:
-        -------
-            Response: The HTTP response object.
-            In case of successful result, a response body is empty.
-
-        Raises:
-        ------
-            Exception: If there is an error during the OPTIONS request.
-
-        """
-        headers = BASE_HEADERS
-        headers.update({
-            "Access-Control-Request-Method": "PUT",
-            "Access-Control-Request-Headers": "content-type",
-        })
-        headers.update(SECURITY_HEADERS)
-        return self.session.options(url, headers=headers, data={})
-
     def __image_put(self, url: str, image_path: str) -> Response:  # pragma: no cover
         """
         Send an HTTP PUT request with the image content as bytes to the Dehancer Online API.
 
-        Step 3/4 in the image upload flow.
+        Step 2/3 in the image upload flow.
 
         Args:
         ----
@@ -411,11 +396,46 @@ class DehancerOnlineAPIClient(BaseAPIClient):
             file_bytes = image_file.read()
         return self.session.put(url, headers=headers, data=file_bytes)
 
-    def __image_uploaded(self, image_id: str, image_file_name: str) -> Response:  # pragma: no cover
+    def __image_put_multipart(self, urls: list[str], image_path: str, chunk_size: int) -> list[Response]:  # noqa: RUF100, E501 # pragma: no cover
+        """
+        Send an HTTP PUT requests with the large image content as bytes to the Dehancer Online API.
+
+        Step 2/3 in the image upload flow.
+
+        Args:
+        ----
+            urls (list[str]): The list of URLs to send the PUT request containing part of the image file to.
+            image_path (str): The path to the image file to be uploaded.
+            chunk_size (int): The size of each chunk to upload.
+
+        Returns:
+        -------
+            list[Response]: A list of HTTP response objects for each part upload.
+
+        Raises:
+        ------
+            Exception: If there is an error during the PUT request or while reading the image file.
+
+        """
+        headers = BASE_HEADERS
+        headers.update({
+            "Content-Type": guess_type(image_path)[0],
+        })
+        headers.update(SECURITY_HEADERS)
+        result = []
+        with Path(image_path).open("rb") as image_file:
+            for _, url in enumerate(urls):
+                chunk = image_file.read(chunk_size)
+                if not chunk:
+                    break
+                result.append(self.session.put(url, headers=headers, data=chunk))
+        return result
+
+    def __image_upload_finish(self, image_id: str, image_file_name: str) -> Response:  # pragma: no cover
         """
         Send an HTTP POST request notifying the server that an image has been successfully uploaded.
 
-        Step 4/4 in the image upload flow.
+        Step 3/3 in the image upload flow.
 
         Args:
         ----
@@ -433,9 +453,43 @@ class DehancerOnlineAPIClient(BaseAPIClient):
             Exception: If there is an error during the POST request.
 
         """
-        url = f"{self.api_base_url}/uploaded"
+        url = f"{self.api_base_url}/upload/finish"
         payload = dumps({
             "imageId": image_id,
+            "filename": image_file_name,
+        })
+        headers = BASE_HEADERS
+        headers.update({
+            "TE": HEADER_TRANSFER_ENCODING_TRAILERS,
+            "Content-Type": HEADER_JSON_CONTENT_TYPE,
+        })
+        headers.update(SECURITY_HEADERS)
+        return self.session.post(url, headers=headers, data=payload)
+
+    def __image_upload_finish_multipart(self, image_id: str, upload_id: str,
+                                        etags: list[str], image_file_name: str) -> None:  # pragma: no cover
+        """
+        Send an HTTP POST request notifying the server that an multipart image has been successfully uploaded.
+
+        Step 3/3 in the image upload flow.
+
+        Args:
+        ----
+            image_id (str): The ID of the uploaded image.
+            upload_id (str): The multipart upload ID.
+            etags (list[str]): The list of ETags from each part upload.
+            image_file_name (str): The name of the image file that was uploaded.
+
+        Raises:
+        ------
+            Exception: If there is an error during the POST request.
+
+        """
+        url = f"{self.api_base_url}/upload/finish"
+        payload = dumps({
+            "imageId": image_id,
+            "uploadId": upload_id,
+            "etags": etags,
             "filename": image_file_name,
         })
         headers = BASE_HEADERS
