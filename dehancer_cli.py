@@ -331,17 +331,17 @@ def contacts(input, logs: int) -> None:  # noqa: A002, ANN001
               type=float, help="Tint setting (adjustments).")
 @click.option("-cb", "--set_color_boost", "color_boost",
               type=float, help="Color boost setting (adjustments).")
-@click.option("-g", "--grain", "grain",
+@click.option("-g", "--set_grain", "grain",
               type=float, help="Grain setting (effects).")
-@click.option("-b", "--bloom", "bloom",
+@click.option("-b", "--set_bloom", "bloom",
               type=float, help="Bloom setting (effects).")
-@click.option("-h", "--halation", "halation",
+@click.option("-h", "--set_halation", "halation",
               type=float, help="Halation setting (effects).")
 @click.option("-v_e", "--set_vignette_exposure", "vignette_exposure",
               type=float, help="Vignette exposure setting (effects).")
-@click.option("-v_s", "--vignette_size", "vignette_size",
+@click.option("-v_s", "--set_vignette_size", "vignette_size",
               type=float, help="Vignette size setting (effects).")
-@click.option("-v_f", "--vignette_feather", "vignette_feather",
+@click.option("-v_f", "--set_vignette_feather", "vignette_feather",
               type=float, help="Vignette feather setting (effects).")
 @click.option("-settings", "--settings_file", type=click.Path(exists=True), help="Settings file.")
 @click.option("--logs", type=int, default=0, help="Enable debug logs (1 for enabled, 0 for disabled).")
