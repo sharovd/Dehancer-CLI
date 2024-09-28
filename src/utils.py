@@ -75,7 +75,8 @@ def read_settings_file(file_path: str) -> PresetSettings:
 
     Returns:
     -------
-        PresetSettings: An object containing the settings with values as floats or 'Off' for grain, bloom, and halation.
+        PresetSettings: An object containing the settings with values as floats
+        or 'Off' for grain, bloom, halation and vignette exposure.
 
     Raises:
     ------
@@ -97,6 +98,7 @@ def read_settings_file(file_path: str) -> PresetSettings:
             data = {}
     adjustments = data.get("adjustments", {}) or {}
     effects = data.get("effects", {}) or {}
+    effects_vignette = effects.get("vignette", {}) or {}
     return PresetSettings(
         exposure=to_float(adjustments.get("exposure", 0)),
         contrast=to_float(adjustments.get("contrast", 0)),
@@ -106,6 +108,9 @@ def read_settings_file(file_path: str) -> PresetSettings:
         bloom=PresetSettingsState.from_value(effects.get("bloom", "Off")),
         halation=PresetSettingsState.from_value(effects.get("halation", "Off")),
         grain=PresetSettingsState.from_value(effects.get("grain", "Off")),
+        vignette_exposure=PresetSettingsState.from_value(effects_vignette.get("exposure", "Off")),
+        vignette_size=to_float(effects_vignette.get("size", 55.0)),
+        vignette_feather=to_float(effects_vignette.get("feather", 15.0)),
     )
 
 

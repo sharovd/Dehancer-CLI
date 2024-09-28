@@ -337,12 +337,19 @@ def contacts(input, logs: int) -> None:  # noqa: A002, ANN001
               type=float, help="Bloom setting (effects).")
 @click.option("-h", "--halation", "halation",
               type=float, help="Halation setting (effects).")
+@click.option("-v_e", "--set_vignette_exposure", "vignette_exposure",
+              type=float, help="Vignette exposure setting (effects).")
+@click.option("-v_s", "--vignette_size", "vignette_size",
+              type=float, help="Vignette size setting (effects).")
+@click.option("-v_f", "--vignette_feather", "vignette_feather",
+              type=float, help="Vignette feather setting (effects).")
 @click.option("-settings", "--settings_file", type=click.Path(exists=True), help="Settings file.")
 @click.option("--logs", type=int, default=0, help="Enable debug logs (1 for enabled, 0 for disabled).")
 def develop(input, preset: int,  # noqa: A002, ANN001, PLR0913
             quality: str,
             contrast: float, exposure: float, temperature: float, tint: float, color_boost: float,
             grain: float, bloom: float, halation: float,
+            vignette_exposure: float, vignette_size: float, vignette_feather: float,
             settings_file: click.Path(exists=True), logs: int) -> None:
     """
     Command to develop images with specified film preset, quality and settings.
@@ -374,6 +381,12 @@ def develop(input, preset: int,  # noqa: A002, ANN001, PLR0913
         Bloom setting (effects).
     halation : float
         Halation setting (effects).
+    vignette_exposure : float
+        Vignette exposure setting (effects).
+    vignette_size : float
+        Vignette size setting (effects).
+    vignette_feather : float
+        Vignette feather setting (effects).
     settings_file : click.Path
         Path to the settings file.
     logs : int
@@ -400,6 +413,9 @@ def develop(input, preset: int,  # noqa: A002, ANN001, PLR0913
         "grain": grain,
         "bloom": bloom,
         "halation": halation,
+        "vignette_exposure": vignette_exposure,
+        "vignette_size": vignette_size,
+        "vignette_feather": vignette_feather,
     }
     for key, value in input_settings.items():
         if value is not None:

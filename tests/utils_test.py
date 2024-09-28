@@ -116,9 +116,14 @@ def test_get_auth_data_for_nonexistent_file_returns_none():
             grain: Off
             bloom: Off
             halation: Off
+            vignette:
+                exposure: Off
+                size: 55
+                feather: 15
         """,
         PresetSettings(exposure=2.2, contrast=10.0, temperature=-10.0, tint=-22.0, color_boost=0.0,
-                       grain=PresetSettingsState.OFF, bloom=PresetSettingsState.OFF, halation=PresetSettingsState.OFF),
+                       grain=PresetSettingsState.OFF, bloom=PresetSettingsState.OFF, halation=PresetSettingsState.OFF,
+                       vignette_exposure=PresetSettingsState.OFF, vignette_size=55.0, vignette_feather=15.0),
         id="Full valid adjustments and disabled effects",
     ),
     test_data(
@@ -133,10 +138,37 @@ def test_get_auth_data_for_nonexistent_file_returns_none():
             grain: 0
             bloom: 50
             halation: 40.3
+            vignette:
+                exposure: -1.2
+                size: 55
+                feather: 15
         """,
         PresetSettings(exposure=-4, contrast=2.5, temperature=0.0, tint=0, color_boost=12.2,
-                       grain=0.0, bloom=50.0, halation=40.3),
+                       grain=0.0, bloom=50.0, halation=40.3,
+                       vignette_exposure=-1.2, vignette_size=55.0, vignette_feather=15.0),
         id="Full valid adjustments and enabled effects",
+    ),
+    test_data(
+        """
+        effects:
+            grain: 64.2
+            vignette:
+                size: 40
+                exposure: -1.2
+                feather: 8
+            halation: 40.3
+            bloom: 0
+        adjustments:
+            tint: 0
+            exposure: -4
+            color_boost: 12.2
+            contrast: 2.5
+            temperature: 3.3
+        """,
+        PresetSettings(exposure=-4, contrast=2.5, temperature=3.3, tint=0, color_boost=12.2,
+                       grain=64.2, bloom=0.0, halation=40.3,
+                       vignette_exposure=-1.2, vignette_size=40.0, vignette_feather=8.0),
+        id="Full valid adjustments and enabled effects (unsorted)",
     ),
     test_data(
         """
@@ -148,7 +180,8 @@ def test_get_auth_data_for_nonexistent_file_returns_none():
             halation: Off
         """,
         PresetSettings(exposure=-1.2, contrast=0.0, temperature=14.0, tint=0.0, color_boost=0.0,
-                       grain=PresetSettingsState.OFF, bloom=PresetSettingsState.OFF, halation=PresetSettingsState.OFF),
+                       grain=PresetSettingsState.OFF, bloom=PresetSettingsState.OFF, halation=PresetSettingsState.OFF,
+                       vignette_exposure=PresetSettingsState.OFF, vignette_size=55.0, vignette_feather=15.0),
         id="Partially valid adjustments and offed effects",
     ),
     test_data(
@@ -161,7 +194,8 @@ def test_get_auth_data_for_nonexistent_file_returns_none():
             bloom: 25
         """,
         PresetSettings(exposure=3.2, contrast=0.0, temperature=0.0, tint=0.0, color_boost=-4.0,
-                       grain=PresetSettingsState.OFF, bloom=25.0, halation=PresetSettingsState.OFF),
+                       grain=PresetSettingsState.OFF, bloom=25.0, halation=PresetSettingsState.OFF,
+                       vignette_exposure=PresetSettingsState.OFF, vignette_size=55.0, vignette_feather=15.0),
         id="Partially valid adjustments and enabled effects",
     ),
     test_data(
@@ -172,7 +206,8 @@ def test_get_auth_data_for_nonexistent_file_returns_none():
         effects:
         """,
         PresetSettings(exposure=1.2, contrast=-2.1, temperature=0.0, tint=0.0, color_boost=0.0,
-                       grain=PresetSettingsState.OFF, bloom=PresetSettingsState.OFF, halation=PresetSettingsState.OFF),
+                       grain=PresetSettingsState.OFF, bloom=PresetSettingsState.OFF, halation=PresetSettingsState.OFF,
+                       vignette_exposure=PresetSettingsState.OFF, vignette_size=55.0, vignette_feather=15.0),
         id="Partially valid adjustments without effects",
     ),
     test_data(
@@ -182,7 +217,8 @@ def test_get_auth_data_for_nonexistent_file_returns_none():
             color_boost: 55
         """,
         PresetSettings(exposure=0.0, contrast=0.0, temperature=0.0, tint=45.0, color_boost=55.0,
-                       grain=PresetSettingsState.OFF, bloom=PresetSettingsState.OFF, halation=PresetSettingsState.OFF),
+                       grain=PresetSettingsState.OFF, bloom=PresetSettingsState.OFF, halation=PresetSettingsState.OFF,
+                       vignette_exposure=PresetSettingsState.OFF, vignette_size=55.0, vignette_feather=15.0),
         id="Partially valid adjustments without effects section",
     ),
     test_data(
@@ -192,10 +228,44 @@ def test_get_auth_data_for_nonexistent_file_returns_none():
             grain: Off
             bloom: 30
             halation: 12.5
+            vignette:
+                exposure: -2.8
+                size: 62.4
+                feather: 2
         """,
         PresetSettings(exposure=0.0, contrast=0.0, temperature=0.0, tint=0.0, color_boost=0.0,
-                       grain=PresetSettingsState.OFF, bloom=30.0, halation=12.5),
+                       grain=PresetSettingsState.OFF, bloom=30.0, halation=12.5,
+                       vignette_exposure=-2.8, vignette_size=62.4, vignette_feather=2.0),
         id="Full valid effects without adjustments",
+    ),
+    test_data(
+        """
+        adjustments:
+        effects:
+            grain: Off
+            bloom: 30
+            halation: 12.5
+            vignette:
+        """,
+        PresetSettings(exposure=0.0, contrast=0.0, temperature=0.0, tint=0.0, color_boost=0.0,
+                       grain=PresetSettingsState.OFF, bloom=30.0, halation=12.5,
+                       vignette_exposure=PresetSettingsState.OFF, vignette_size=55.0, vignette_feather=15.0),
+        id="Partially valid effects without vignette settings",
+    ),
+    test_data(
+        """
+        adjustments:
+        effects:
+            grain: Off
+            bloom: 30
+            halation: 12.5
+            vignette:
+                exposure: -0.4
+        """,
+        PresetSettings(exposure=0.0, contrast=0.0, temperature=0.0, tint=0.0, color_boost=0.0,
+                       grain=PresetSettingsState.OFF, bloom=30.0, halation=12.5,
+                       vignette_exposure=-0.4, vignette_size=55.0, vignette_feather=15.0),
+        id="Partially valid effects with partially vignette settings",
     ),
     test_data(
         """
@@ -204,7 +274,8 @@ def test_get_auth_data_for_nonexistent_file_returns_none():
             bloom: Off
         """,
         PresetSettings(exposure=0.0, contrast=0.0, temperature=0.0, tint=0.0, color_boost=0.0,
-                       grain=100.0, bloom=PresetSettingsState.OFF, halation=PresetSettingsState.OFF),
+                       grain=100.0, bloom=PresetSettingsState.OFF, halation=PresetSettingsState.OFF,
+                       vignette_exposure=PresetSettingsState.OFF, vignette_size=55.0, vignette_feather=15.0),
         id="Partially valid effects without adjustments section",
     ),
     test_data(
@@ -213,14 +284,16 @@ def test_get_auth_data_for_nonexistent_file_returns_none():
         effects:
         """,
         PresetSettings(exposure=0.0, contrast=0.0, temperature=0.0, tint=0.0, color_boost=0.0,
-                       grain=PresetSettingsState.OFF, bloom=PresetSettingsState.OFF, halation=PresetSettingsState.OFF),
+                       grain=PresetSettingsState.OFF, bloom=PresetSettingsState.OFF, halation=PresetSettingsState.OFF,
+                       vignette_exposure=PresetSettingsState.OFF, vignette_size=55.0, vignette_feather=15.0),
         id="Without adjustments and effects",
     ),
     test_data(
         """
         """,
         PresetSettings(exposure=0.0, contrast=0.0, temperature=0.0, tint=0.0, color_boost=0.0,
-                       grain=PresetSettingsState.OFF, bloom=PresetSettingsState.OFF, halation=PresetSettingsState.OFF),
+                       grain=PresetSettingsState.OFF, bloom=PresetSettingsState.OFF, halation=PresetSettingsState.OFF,
+                       vignette_exposure=PresetSettingsState.OFF, vignette_size=55.0, vignette_feather=15.0),
         id="Without adjustments and effects sections",
     ),
     test_data(
@@ -235,9 +308,14 @@ def test_get_auth_data_for_nonexistent_file_returns_none():
             grain: 0
             bloom: 0
             halation: 0
+            vignette:
+                exposure: 0
+                size: 0
+                feather: 0
         """,
         PresetSettings(exposure=0.0, contrast=0.0, temperature=0.0, tint=0.0, color_boost=0.0,
-                       grain=0.0, bloom=0.0, halation=0.0),
+                       grain=0.0, bloom=0.0, halation=0.0,
+                       vignette_exposure=0.0, vignette_size=0.0, vignette_feather=0.0),
         id="Full valid adjustments and effects with '0' values",
     ),
     test_data(
@@ -252,9 +330,14 @@ def test_get_auth_data_for_nonexistent_file_returns_none():
             grain: -0
             bloom: -0.0
             halation: 12345.6
+            vignette:
+                exposure: -0.0
+                size: 25.25
+                feather: -13.31
         """,
         PresetSettings(exposure=0.0, contrast=0.0, temperature=-123.456, tint=123.456, color_boost=1.23456,
-                       grain=0.0, bloom=0.0, halation=12345.6),
+                       grain=0.0, bloom=0.0, halation=12345.6,
+                       vignette_exposure=0.0, vignette_size=25.25, vignette_feather=-13.31),
         id="Full valid adjustments and effects with non '0' values",
     ),
     test_data(
@@ -269,9 +352,14 @@ def test_get_auth_data_for_nonexistent_file_returns_none():
             grain: 0x37
             bloom: 12.3015e+05
             halation: null
+            vignette:
+                exposure: abc
+                size: {}
+                feather: []
         """,
         PresetSettings(exposure=0.0, contrast=0.0, temperature=0.0, tint=0.0, color_boost=0.0,
-                       grain=55.0, bloom=1230150.0, halation=PresetSettingsState.OFF),
+                       grain=55.0, bloom=1230150.0, halation=PresetSettingsState.OFF,
+                       vignette_exposure=PresetSettingsState.OFF, vignette_size=0.0, vignette_feather=0.0),
         id="Full valid adjustments and effects with invalid values",
     ),
     test_data(
@@ -286,9 +374,14 @@ def test_get_auth_data_for_nonexistent_file_returns_none():
         grain: Off
         bloom: Off
         halation: Off
+        vignette:
+        exposure: -1.2
+        size: 55
+        feather: 10.2
         """,
         PresetSettings(exposure=0.0, contrast=0.0, temperature=0.0, tint=0.0, color_boost=0.0,
-                       grain=PresetSettingsState.OFF, bloom=PresetSettingsState.OFF, halation=PresetSettingsState.OFF),
+                       grain=PresetSettingsState.OFF, bloom=PresetSettingsState.OFF, halation=PresetSettingsState.OFF,
+                       vignette_exposure=PresetSettingsState.OFF, vignette_size=55.0, vignette_feather=15.0),
         id="Full valid adjustments and effects with invalid indent (to the left)",
     ),
     test_data(
@@ -303,9 +396,14 @@ def test_get_auth_data_for_nonexistent_file_returns_none():
                 grain: 1
                 bloom: 2
                 halation: 3
+                vignette:
+                    exposure: -1.2
+                    size: 50
+                    feather: 10
         """,
         PresetSettings(exposure=1.1, contrast=2.0, temperature=3.3, tint=-4.4, color_boost=-5.0,
-                       grain=1.0, bloom=2.0, halation=3.0),
+                       grain=1.0, bloom=2.0, halation=3.0,
+                       vignette_exposure=-1.2, vignette_size=50.0, vignette_feather=10.0),
         id="Full valid adjustments and effects with invalid indent (to the right - straight line)",
     ),
     test_data(
@@ -320,9 +418,14 @@ def test_get_auth_data_for_nonexistent_file_returns_none():
                 grain: 1
             bloom: 2
                 halation: 3
+            vignette:
+                exposure: -2.5
+                    size: 82
+                feather: 8
         """,
         PresetSettings(exposure=0.0, contrast=0.0, temperature=0.0, tint=0.0, color_boost=0.0,
-                       grain=PresetSettingsState.OFF, bloom=PresetSettingsState.OFF, halation=PresetSettingsState.OFF),
+                       grain=PresetSettingsState.OFF, bloom=PresetSettingsState.OFF, halation=PresetSettingsState.OFF,
+                       vignette_exposure=PresetSettingsState.OFF, vignette_size=55.0, vignette_feather=15.0),
         id="Full valid adjustments and effects with invalid indent (to the right - curve line)",
     ),
     test_data(
@@ -337,9 +440,14 @@ def test_get_auth_data_for_nonexistent_file_returns_none():
             grain: -6.7
             blum: 7.8
             halation: -8.9
+            vignette:
+                exposur: -1.4
+                size: 82.2
+                fither: 8
         """,
         PresetSettings(exposure=0.0, contrast=-2.3, temperature=0.0, tint=0.0, color_boost=5.6,
-                       grain=-6.7, bloom=PresetSettingsState.OFF, halation=-8.9),
+                       grain=-6.7, bloom=PresetSettingsState.OFF, halation=-8.9,
+                       vignette_exposure=PresetSettingsState.OFF, vignette_size=82.2, vignette_feather=15.0),
         id="Full valid adjustments and effects with typos in settings names",
     ),
     test_data(
@@ -354,9 +462,14 @@ def test_get_auth_data_for_nonexistent_file_returns_none():
             grain: Off
             bloom: Off
             halation: Off
+            vignette:
+                exposure: 4.2
+                size: 10
+                feather: 30
         """,
         PresetSettings(exposure=0.0, contrast=0.0, temperature=0.0, tint=0.0, color_boost=0.0,
-                       grain=PresetSettingsState.OFF, bloom=PresetSettingsState.OFF, halation=PresetSettingsState.OFF),
+                       grain=PresetSettingsState.OFF, bloom=PresetSettingsState.OFF, halation=PresetSettingsState.OFF,
+                       vignette_exposure=PresetSettingsState.OFF, vignette_size=55.0, vignette_feather=15.0),
         id="Full valid adjustments and effects with syntax error",
     ),
 ])

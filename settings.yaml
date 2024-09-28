@@ -8,3 +8,7 @@ effects:
     grain: Off
     bloom: Off
     halation: Off
+    vignette:
+        exposure: Off
+        size: 55
+        feather: 15

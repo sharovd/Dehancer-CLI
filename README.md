@@ -98,9 +98,9 @@ The following limits are respected by the Dehancer Online team:<br>
 | Grain             | Effects     | ×             | 0             | 100           | 2    |
 | Bloom             | Effects     | ×             | 0             | 100           | 2    |
 | Halation          | Effects     | ×             | 0             | 100           | 2    |
-| Vignette exposure | Effects     | 0             | -2            | 2             | 0.2  |
-| Vignette size     | Effects     | 0             | 5             | 99            | 2    |
-| Vignette feather  | Effects     | 0             | 4             | 40            | 2    |
+| Vignette exposure | Effects     | ×             | -2            | 2             | 0.2  |
+| Vignette size     | Effects     | 55            | 5             | 99            | 2    |
+| Vignette feather  | Effects     | 15            | 4             | 40            | 2    |
 
 × - means that the default value of the effect depends on the selected profile.<br>
 All settings in the 'Effects' group support the 'Off' value, which is the default value from the profile.

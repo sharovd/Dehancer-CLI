@@ -44,8 +44,8 @@ class Preset:  # noqa: D101
     grain: float
     is_vignette_enabled: bool
     vignette_exposure: float
-    vignette_feather: float
     vignette_size: float
+    vignette_feather: float
 
 
 @dataclass
@@ -60,6 +60,9 @@ class PresetSettings:  # noqa: D101
     grain: float | PresetSettingsState
     bloom: float | PresetSettingsState
     halation: float | PresetSettingsState
+    vignette_exposure: float | PresetSettingsState
+    vignette_size: float
+    vignette_feather: float
 
     def __eq__(self, other: any) -> bool:  # noqa: D105
         if not isinstance(other, PresetSettings):
@@ -72,7 +75,10 @@ class PresetSettings:  # noqa: D101
                 self.color_boost == other.color_boost and
                 self.bloom == other.bloom and
                 self.halation == other.halation and
-                self.grain == other.grain
+                self.grain == other.grain and
+                self.vignette_exposure == other.vignette_exposure and
+                self.vignette_size == other.vignette_size and
+                self.vignette_feather == other.vignette_feather
         )
 
     @staticmethod
@@ -94,6 +100,9 @@ class PresetSettings:  # noqa: D101
             grain=PresetSettingsState.OFF,
             bloom=PresetSettingsState.OFF,
             halation=PresetSettingsState.OFF,
+            vignette_exposure=PresetSettingsState.OFF,
+            vignette_size=55.0,
+            vignette_feather=15.0,
         )
 
     def __repr__(self) -> str:
@@ -108,7 +117,8 @@ class PresetSettings:  # noqa: D101
         return (
             f"Exposure: '{self.exposure}', Contrast: '{self.contrast}', Temperature: '{self.temperature}', "
             f"Tint: '{self.tint}', Color boost: '{self.color_boost}'\n"
-            f"Grain: '{self.grain}', Bloom: '{self.bloom}', Halation: '{self.halation}'"
+            f"Grain: '{self.grain}', Bloom: '{self.bloom}', Halation: '{self.halation}'\n"
+            f"Vignette exposure: '{self.vignette_exposure}', size: '{self.vignette_size}', feather: '{self.vignette_feather}'"  # noqa: E501
         )
 
     def get_adjustments_str(self) -> str:
@@ -126,5 +136,8 @@ class PresetSettings:  # noqa: D101
         return (
             f"Grain: '{self.grain}', "
             f"Bloom: '{self.bloom}', "
-            f"Halation: '{self.halation}'"
+            f"Halation: '{self.halation}', "
+            f"Vignette exposure: '{self.vignette_exposure}', "
+            f"Vignette size: '{self.vignette_size}', "
+            f"Vignette feather: '{self.vignette_feather}'"
         )

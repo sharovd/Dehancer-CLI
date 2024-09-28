@@ -388,8 +388,9 @@ def test_get_image_previews_failure(mock_api_client: DehancerOnlineAPIClient):
     test_data(None, id="Without settings"),
     test_data(PresetSettings.default(), id="Default settings"),
     test_data(
-        PresetSettings(exposure=1.5, contrast=3.5, temperature=-15,
-                       tint=1, color_boost=3, grain=4.1, bloom=4.5, halation=2.2), id="Custom settings"),
+        PresetSettings(exposure=1.5, contrast=3.5, temperature=-15, tint=1, color_boost=3,
+                       grain=4.1, bloom=4.5, halation=2.2,
+                       vignette_exposure=-1.4, vignette_size=1.2, vignette_feather=12), id="Custom settings"),
 ])
 def test_render_image_success(mock_api_client: DehancerOnlineAPIClient, preset_settings: PresetSettings):
     image_id = "123"
@@ -456,8 +457,9 @@ def test_render_failure(mock_api_client: DehancerOnlineAPIClient):
 @pytest.mark.parametrize("preset_settings", [
     test_data(PresetSettings.default(), id="Default settings"),
     test_data(
-        PresetSettings(exposure=1.5, contrast=3.5, temperature=-15,
-                       tint=1, color_boost=3, bloom=4.5, halation=2.2, grain=4.1), id="Custom settings"),
+        PresetSettings(exposure=1.5, contrast=3.5, temperature=-15, tint=1, color_boost=3,
+                       bloom=4.5, halation=2.2, grain=4.1,
+                       vignette_exposure=-0.2, vignette_size=60.5, vignette_feather=38), id="Custom settings"),
 ])
 def test_export_image_success(mock_api_client: DehancerOnlineAPIClient, preset_settings: PresetSettings):
     image_id = "123"
