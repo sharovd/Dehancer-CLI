@@ -1,0 +1,14 @@
+adjustments:
+    exposure: 0
+    contrast: 0
+    temperature: 0
+    tint: 0
+    color_boost: 0
+effects:
+    grain: Off
+    bloom: Off
+    halation: Off
+    vignette:
+        exposure: Off
+        size: 55
+        feather: 15

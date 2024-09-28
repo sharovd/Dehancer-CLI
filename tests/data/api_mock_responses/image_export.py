@@ -1,4 +1,4 @@
-render_export_image_success_response = {
+image_export_success_response = {
     "success": True,
     "url": "https://dho.dehancer.com/local/e10f9911-49a8-4e6f-b206-55c0bab81a68/66ff8d3d_056e2ec0-a1ff-4c03-b5d4-b612be"
            "a7641c.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA7DV"
@@ -558,8 +558,8 @@ render_export_image_success_response = {
     "filename": "01-dehancer.jpg",
 }
 
-render_export_image_not_success_response = {
+image_export_not_success_response = {
     "success": False,
 }
 
-render_export_image_invalid_response = "Error"
+image_export_invalid_response = "Error"

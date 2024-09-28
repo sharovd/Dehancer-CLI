@@ -2,7 +2,7 @@
 name = "dehancer-cli"
 version = "0.0.0"  # The version will be dynamically installed below
 description = "Unofficial command line application that interacts with the Dehancer Online API"
-authors = ["dnsxns"]
+authors = ["Denis Sharov"]
 readme = "README.md"
 license = "MIT"
 
@@ -16,6 +16,7 @@ pattern = "app_version\\s*=\\s*\"(.*?)\""
 [tool.poetry.dependencies]
 python = "^3.12.0"
 click = "8.1.7"
+pyyaml = "6.0.2"
 requests = "2.32.3"
 requests-toolbelt = "1.0.0"
 certifi = "2024.7.4"

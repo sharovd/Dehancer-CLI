@@ -65,7 +65,7 @@ class FileBackupContext:
         It then removes the original file to prepare for new operations.
         """
         if Path(self.path_to_backup).exists() and Path(self.path_to_backup).is_file():
-            shutil.copy(self.path_to_backup, self.backup_path  )
+            shutil.copy(self.path_to_backup, self.backup_path)
             Path(self.path_to_backup).unlink()
             self.files_to_backup.append((self.path_to_backup, self.backup_path))
 

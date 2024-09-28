@@ -48,11 +48,15 @@ def compare_contacts_command_output(expected_output: str, actual_output: str, in
     return _compare_command_output(expected_output, actual_output, replacements)
 
 
-def compare_develop_command_output(expected_output: str, actual_output: str, input_image_path: str,
-                                   input_preset_name: str, input_preset_number: str | int) -> bool:
+def compare_develop_command_output(expected_output: str, actual_output: str, input_image_path: str,  # noqa: PLR0913
+                                   input_preset_name: str,
+                                   input_settings_adjustments: str, input_settings_effects: str,
+                                   input_preset_number: str | int) -> bool:
     replacements = {
         "input_image_path": input_image_path,
         "preset_name": input_preset_name,
+        "settings_adjustments": input_settings_adjustments,
+        "settings_effects": input_settings_effects,
         "preset_number": str(input_preset_number),
     }
     return _compare_command_output(expected_output, actual_output, replacements)

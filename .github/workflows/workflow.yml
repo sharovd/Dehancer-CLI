@@ -1,7 +1,19 @@
 name: Dehancer-CLI's pipeline
-on: push
-jobs:
 
+on:
+  push:
+  workflow_dispatch:
+    inputs:
+      os:
+        description: "Select the OS for the creation of executable files"
+        required: false
+        default: "ubuntu-latest"
+        type: choice
+        options:
+          - ubuntu-latest
+          - all
+
+jobs:
   Check-code-style-and-format:
     runs-on: ubuntu-latest
     steps:
@@ -24,7 +36,6 @@ jobs:
         run: |
           poetry run ruff check . --output-format=github
         continue-on-error: true
-
 
   Run-unit-tests:
     needs: [ Check-code-style-and-format ]
@@ -60,7 +71,6 @@ jobs:
           name: unit-test-coverage-badge
           path: badges/unit-test/unit-test-coverage.svg
 
-
   Run-e2e-tests:
     needs: [ Check-code-style-and-format ]
     runs-on: ubuntu-latest
@@ -83,7 +93,6 @@ jobs:
       - name: Run e2e tests
         run: |
           poetry run pytest -m "e2e"
-
 
   Check-for-vulnerabilities:
     needs: [ Run-unit-tests ]
@@ -108,7 +117,7 @@ jobs:
         id: snyk
         uses: snyk/actions/python-3.10@master
         env:
-          SNYK_TOKEN: ${{secrets.SNYK_TOKEN}}
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       - name: Check Snyk result and make a badge
         run: |
@@ -126,12 +135,12 @@ jobs:
           name: vulnerabilities-status-badge
           path: badges/vulnerabilities/vulnerabilities-snyk-result.svg
 
-
   Build-executable-files:
     needs: [ Check-for-vulnerabilities ]
     strategy:
       matrix:
-        os: [ macos-latest, ubuntu-latest, windows-latest ]
+        os: ${{ github.event.inputs.os == 'all' && fromJson('["ubuntu-latest", "windows-latest", "macos-latest"]') || fromJson('["ubuntu-latest"]') }}
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.os)
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -225,7 +234,6 @@ jobs:
           path: |
             build/dehancer-cli.exe
             build/dehancer-cli
-
 
   Publish-badges:
     needs: [ Run-unit-tests, Check-for-vulnerabilities, Build-executable-files ]

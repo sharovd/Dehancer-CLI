@@ -4,7 +4,7 @@ import getpass
 import logging.config
 import logging.handlers
 import os
-from dataclasses import replace
+from dataclasses import asdict, replace
 from pathlib import Path
 
 import click
@@ -112,10 +112,9 @@ def print_contacts(file_path: str) -> None:
     logger.info("Create contacts for the image '%s':", file_path)
     available_presets = dehancer_api_client.get_available_presets()
     image_id = dehancer_api_client.upload_image(file_path)
-    requested_presets = dehancer_api_client.get_pane(image_id, ImageSize.SMALL, available_presets)
-    presets_default_settings = PresetSettings(0, 0, 0, 0, 0, 0, 0, 0)
+    requested_presets = dehancer_api_client.get_image_previews(image_id, ImageSize.SMALL, available_presets)
     for idx, preset in enumerate(requested_presets, 1):
-        image_url = dehancer_api_client.render_image(image_id, available_presets[idx-1], presets_default_settings)
+        image_url = dehancer_api_client.render_image(image_id, available_presets[idx-1])
         logger.info("%d. '%s' : %s", idx, preset, image_url)
         output_dir = f"{app_name.lower()}-output-images"
         safe_filename = safe_join(output_dir, f"{get_filename_without_extension(file_path)}_{preset}.jpeg")
@@ -143,20 +142,39 @@ def __process_image(file_path: str, preset: Preset, export_format: ExportFormat,
     image_id = dehancer_api_client.upload_image(file_path)
     image_file_extension = "jpeg"
     if dehancer_api_client.is_authorized:
-        logger.info("Develop the image '%s' with the preset '%s' in '%s' quality:",
-                    file_path, preset.caption, ImageQuality.from_export_format(export_format).name.title())
+        logger.info(
+            "Develop the image '%s'\n"
+            "  - Preset: '%s'\n"
+            "  - Quality: '%s'\n"
+            "  - Settings (adjustments): %s\n"
+            "  - Settings (effects): %s",
+            file_path,
+            preset.caption,
+            ImageQuality.from_export_format(export_format).name.title(),
+            preset_settings.get_adjustments_str(),
+            preset_settings.get_effects_str(),
+        )
         export_image_response_data = dehancer_api_client.export_image(image_id, preset, export_format, preset_settings)
         image_url = export_image_response_data.get("url")
         image_file_extension = get_file_extension(export_image_response_data.get("filename"))
     else:
-        logger.info("Develop the image '%s' with the preset '%s':", file_path, preset.caption)
+        logger.info(
+            "Develop the image '%s'\n"
+            "  - Preset: '%s'\n"
+            "  - Settings (adjustments): %s\n"
+            "  - Settings (effects): %s",
+            file_path,
+            preset.caption,
+            preset_settings.get_adjustments_str(),
+            preset_settings.get_effects_str(),
+        )
         image_url = dehancer_api_client.render_image(image_id, preset, preset_settings)
     logger.info("%d. '%s' : %s", preset_number, preset.caption, image_url)
     utils.download_file(image_url, f"{app_name.lower()}-output-images/"
                                    f"{get_filename_without_extension(file_path)}_{preset.caption}.{image_file_extension}")
 
 
-def develop_images(path: str, preset_number: int, quality: str, custom_preset_settings: dict[str, float]) -> None:
+def develop_images(path: str, preset_number: int, quality: str, custom_preset_settings: PresetSettings) -> None:
     """
     Develop images in the specified path using the specified preset, quality and settings.
 
@@ -173,8 +191,8 @@ def develop_images(path: str, preset_number: int, quality: str, custom_preset_se
     """
     available_presets = dehancer_api_client.get_available_presets()
     preset = available_presets[preset_number - 1]
-    preset_settings = PresetSettings(0, 0, 0, 0, 0, 0, 0, 0)
-    preset_settings = replace(preset_settings, **custom_preset_settings)
+    preset_settings = PresetSettings.default()
+    preset_settings = replace(preset_settings, **asdict(custom_preset_settings))
     export_format = ImageQuality.LOW.value
     try:
         export_format = ImageQuality.from_string(quality).value
@@ -206,7 +224,7 @@ def enable_debug_logs() -> None:
 
 
 @click.group()
-@click.version_option(prog_name=app_name, version=app_version, message=("%(prog)s %(version)s"))
+@click.version_option(prog_name=app_name, version=app_version, message="%(prog)s %(version)s")
 @click.option("--logs", type=int, default=0, help="Enable debug logs (1 for enabled, 0 for disabled).")
 def cli(logs: int) -> None:
     """
@@ -302,24 +320,36 @@ def contacts(input, logs: int) -> None:  # noqa: A002, ANN001
 @click.option("-p", "--preset", "preset",
               type=int, required=True, help="Preset number.")
 @click.option("-q", "--quality", "quality",
-              type=str, help="Image quality level.\n\n"
-                             ' "low": 2160 x 2160px | JPEG 80%\n\n'
-                             ' "medium": Up to 3024 x 3024px | JPEG 100%\n\n'
-                             ' "high": Up to 3024 x 3024px | TIFF 16 bit')
-@click.option("-s", "--set_contrast", "contrast",
-              type=float, help="Contrast setting.")
+              type=str, help="Image quality level ['low', 'medium', 'high'].")
+@click.option("-c", "--set_contrast", "contrast",
+              type=float, help="Contrast setting (adjustments).")
 @click.option("-e", "--set_exposure", "exposure",
-              type=float, help="Exposure setting.")
+              type=float, help="Exposure setting (adjustments).")
 @click.option("-t", "--set_temperature", "temperature",
-              type=float, help="Temperature setting.")
+              type=float, help="Temperature setting (adjustments).")
 @click.option("-i", "--set_tint", "tint",
-              type=float, help="Tint setting.")
-@click.option("-b", "--set_color_boost", "color_boost", type=float, help="Color boost setting.")
+              type=float, help="Tint setting (adjustments).")
+@click.option("-cb", "--set_color_boost", "color_boost",
+              type=float, help="Color boost setting (adjustments).")
+@click.option("-g", "--set_grain", "grain",
+              type=float, help="Grain setting (effects).")
+@click.option("-b", "--set_bloom", "bloom",
+              type=float, help="Bloom setting (effects).")
+@click.option("-h", "--set_halation", "halation",
+              type=float, help="Halation setting (effects).")
+@click.option("-v_e", "--set_vignette_exposure", "vignette_exposure",
+              type=float, help="Vignette exposure setting (effects).")
+@click.option("-v_s", "--set_vignette_size", "vignette_size",
+              type=float, help="Vignette size setting (effects).")
+@click.option("-v_f", "--set_vignette_feather", "vignette_feather",
+              type=float, help="Vignette feather setting (effects).")
 @click.option("-settings", "--settings_file", type=click.Path(exists=True), help="Settings file.")
 @click.option("--logs", type=int, default=0, help="Enable debug logs (1 for enabled, 0 for disabled).")
 def develop(input, preset: int,  # noqa: A002, ANN001, PLR0913
             quality: str,
             contrast: float, exposure: float, temperature: float, tint: float, color_boost: float,
+            grain: float, bloom: float, halation: float,
+            vignette_exposure: float, vignette_size: float, vignette_feather: float,
             settings_file: click.Path(exists=True), logs: int) -> None:
     """
     Command to develop images with specified film preset, quality and settings.
@@ -336,15 +366,27 @@ def develop(input, preset: int,  # noqa: A002, ANN001, PLR0913
     quality : str
         The quality level for image develop ["low" (default), "medium", "high"].
     contrast : float
-        Contrast setting.
+        Contrast setting (adjustments).
     exposure : float
-        Exposure setting.
+        Exposure setting (adjustments).
     temperature : float
-        Temperature setting.
+        Temperature setting (adjustments).
     tint : float
-        Tint setting.
+        Tint setting (adjustments).
     color_boost : float
-        Color boost setting.
+        Color boost setting (adjustments).
+    grain : float
+        Grain setting (effects).
+    bloom : float
+        Bloom setting (effects).
+    halation : float
+        Halation setting (effects).
+    vignette_exposure : float
+        Vignette exposure setting (effects).
+    vignette_size : float
+        Vignette size setting (effects).
+    vignette_feather : float
+        Vignette feather setting (effects).
     settings_file : click.Path
         Path to the settings file.
     logs : int
@@ -359,19 +401,25 @@ def develop(input, preset: int,  # noqa: A002, ANN001, PLR0913
         enable_debug_logs()
     if quality is None:
         quality = "low"
-    settings = {}
+    settings = PresetSettings.default()
     if settings_file:
-        settings.update(read_settings_file(settings_file))
-    if contrast is not None:
-        settings["contrast"] = contrast
-    if exposure is not None:
-        settings["exposure"] = exposure
-    if temperature is not None:
-        settings["temperature"] = temperature
-    if tint is not None:
-        settings["tint"] = tint
-    if color_boost is not None:
-        settings["color_boost"] = color_boost
+        settings = replace(settings, **asdict(read_settings_file(settings_file)))
+    input_settings = {
+        "contrast": contrast,
+        "exposure": exposure,
+        "temperature": temperature,
+        "tint": tint,
+        "color_boost": color_boost,
+        "grain": grain,
+        "bloom": bloom,
+        "halation": halation,
+        "vignette_exposure": vignette_exposure,
+        "vignette_size": vignette_size,
+        "vignette_feather": vignette_feather,
+    }
+    for key, value in input_settings.items():
+        if value is not None:
+            setattr(settings, key, value)
     develop_images(input, preset, quality, settings)
 
 

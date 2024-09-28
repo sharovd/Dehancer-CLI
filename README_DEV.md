@@ -23,14 +23,13 @@
 - **Create contacts**: Uploads an image and creates contacts using all available presets.
 - **Develop image(s)**: Processes image(s) using specified film preset, quality and custom settings.
 
-## Usage
+## Developer mode: install and setup [poetry](https://python-poetry.org/)
 
-### Setup the executable file
+```bash
+$ poetry install
+```
 
-- **Linux**: There are no additional steps required.
-- **MacOS**: Run `xattr -c dehancer-cli` to remove all extended attributes from the specified file. You can find out more about this [here](https://support.apple.com/en-gb/guide/mac-help/mchleab3a043/mac) or [here](https://support.apple.com/en-bw/102445).
-- **Windows**: Unfortunately, there is no stable and free solution for running build for Windows to bypass antivirus. See [this page](https://nuitka.net/user-documentation/common-issue-solutions.html#windows-virus-scanners) for more details. <br>
-You can disable the Microsoft Defender Antivirus service the first time you start the application.
+## Developer mode: usage (you can choose between python and poetry)
 
 ### Authentication in Dehancer Online
 
@@ -38,25 +37,33 @@ Authentication is only required for develop image(s) without a watermark. <br>
 All of the commands can be used without authentication as well.
 
 ```bash
-$ dehancer-cli auth <user@test.com>
+$ python auth <user@test.com>
+
+$ poetry run dehancer-cli auth <user@test.com>
 ```
 
 ### Print list of available presets
 
 ```bash
-$ dehancer-cli presets
+$ python dehancer_cli.py presets
+
+$ poetry run dehancer-cli presets
 ```
 
 ### Create contacts for an image
 
 ```bash
-$ dehancer-cli contacts <path/to/image.jpg>
+$ python dehancer_cli.py contacts <path/to/image.jpg>
+
+$ poetry run dehancer-cli contacts <path/to/image.jpg>
 ```
 
 ### Develop image(s)
 
 ```bash
-$ dehancer-cli develop <path/to/image_or_directory> --preset <preset_number> [OPTIONS]
+$ python dehancer_cli.py develop <path/to/image_or_directory> --preset <preset_number> [OPTIONS]
+
+$ poetry run dehancer-cli develop <path/to/image_or_directory> --preset <preset_number> [OPTIONS]
 ```
 
 **Options**
@@ -111,13 +118,10 @@ All settings in the 'Effects' group support the 'Off' value, which is the defaul
 ### Print application version
 
 ```bash
-$ dehancer-cli --version
+$ python dehancer_cli.py --version
+
+$ poetry run dehancer-cli --version
 ```
-
-## Developer mode
-It is also possible to use Dehancer CLI without executable files, directly from the source code.<br>
-See the [README DEV](README_DEV.md) file for more details.
-
 
 ### License
 
