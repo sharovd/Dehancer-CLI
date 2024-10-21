@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2024-09-28
+### Added
+- Support Dehancer Online API v1.
+- Support for all preset settings: adjustments and effects via CLI arguments or settings file.
+- Covered 100% new or updated source code by unit tests.
+- Added test data with different types of settings in the e2e test for the 'develop' (w/o authorisation) command.
+- Added the ability to build MacOS and Windows executable files on demand to reduce pipeline time and costs.
+
+### Changed
+- Changed the format of the settings file from '.txt' to '.yaml'.
+- Improved output of the 'develop' command: added information about the settings used.
+- Updated part of the commands to set effects (use '--set_' prefix).
+- Improved readability of unit tests: added ID for parameterised tests.
+- Updated formatting in 'README.md', moved dev part to separate file 'README_DEV.md'.
+
+### Fixed
+- Fixed problem developing large images (support multipart uploads).
+
+
 ## [0.2.0] - 2024-09-09
 ### Added
 - Added new command 'auth' for authorisation in Dehancer Online via API to be able to develop images without watermarks.
