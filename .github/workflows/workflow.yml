@@ -58,10 +58,9 @@ jobs:
 
       - name: Run unit tests with coverage calculation
         run: |
-          pytest_output=$(poetry run pytest --cov=src/ -m "unit" || true)
-          echo $pytest_output
-          total_coverage=$(echo "$pytest_output" | grep 'TOTAL' | awk '{print $NF}' | sed 's/%//')
-          printf "Total unit test coverage is %s%%\n" "$total_coverage"
+          poetry run pytest --cov=src/ -m "unit" --cov-report=json
+          total_coverage=$(jq '.totals.percent_covered' coverage.json)
+          echo "Total unit test coverage is: $total_coverage%"
           mkdir -p badges/unit-test
           poetry run anybadge --value=$total_coverage --file=badges/unit-test/unit-test-coverage.svg coverage
 
