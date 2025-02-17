@@ -72,7 +72,6 @@ jobs:
           path: badges/unit-test/unit-test-coverage.svg
 
   Run-e2e-tests:
-    if: false
     needs: [ Check-code-style-and-format ]
     runs-on: ubuntu-latest
     steps:
@@ -187,7 +186,7 @@ jobs:
           nuitka-version: main
           script-name: dehancer_cli.py
           output-dir: build
-          output-filename: dehancer-cli
+          output-file: dehancer-cli
           mode: app
           include-data-files: ${{ env.puremagic_magic_data_path }}=puremagic/magic_data.json
 
