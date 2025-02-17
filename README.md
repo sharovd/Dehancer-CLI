@@ -114,6 +114,12 @@ All settings in the 'Effects' group support the 'Off' value, which is the defaul
 $ dehancer-cli --version
 ```
 
+### Clear application cache data
+
+```bash
+$ dehancer-cli clear-cache
+```
+
 ## Developer mode
 It is also possible to use Dehancer CLI without executable files, directly from the source code.<br>
 See the [README DEV](README_DEV.md) file for more details.

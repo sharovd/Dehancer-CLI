@@ -3,10 +3,13 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from src.cache.cache_keys import PRESETS
+
 if TYPE_CHECKING:
     from requests import Response  # pragma: no cover
 
     from src.api.enums import ExportFormat, ImageSize  # pragma: no cover
+    from src.cache.cache_manager import CacheManager  # pragma: no cover
 
 import logging.config
 from dataclasses import asdict
@@ -44,13 +47,15 @@ class DehancerOnlineAPIClient(BaseAPIClient):
     Attributes
     ----------
     api_base_url (str): The base URL for the Dehancer Online API.
+    cache_manager (CacheManager): The cache manager for storing response data.
 
     """
 
-    def __init__(self, dehancer_online_api_base_url: str, auth_cookies: dict[str, str]) -> None:
+    def __init__(self, dehancer_online_api_base_url: str, cache_manager: CacheManager) -> None:
         super().__init__()
         self.api_base_url = dehancer_online_api_base_url
-        self.set_session_cookies(auth_cookies)
+        self.cache_manager = cache_manager
+        self.set_session_cookies(utils.get_auth_data_from_cache(self.cache_manager))
 
     @property
     def is_authorized(self) -> bool:
@@ -67,18 +72,17 @@ class DehancerOnlineAPIClient(BaseAPIClient):
         """
         return self.session.cookies.get("access-token", None) is not None
 
-    def login_and_get_auth_cookies(self, email: str, password: str) -> dict[str, str] | None:
+    def login(self, email: str, password: str) -> bool:
         """
-        Login with the provided email and password, and retrieves authorisation cookies from the response.
+        Login with the provided email and password, and saves authorisation cookies from the response in the cache.
 
         This method attempts to authenticate a user using the provided email and password.
         If authentication is successful, it extracts 'access-token' and 'auth' values from the 'Set-Cookie' header
-        in the response.
-        If authentication fails or the 'access-token' and 'auth' values are not found, the method returns None.
+        in the response and saves it in the cache.
 
         Returns
         -------
-            dict[str, str] | None: The 'access-token' and 'auth' values if authentication is successful, otherwise None.
+            bool: True if the login is successful, otherwise False.
 
         Raises
         ------
@@ -86,18 +90,20 @@ class DehancerOnlineAPIClient(BaseAPIClient):
             KeyError: If the response JSON does not contain the expected keys.
 
         """
+        utils.delete_access_token_and_auth_data_in_cache(self.cache_manager)
         logger.debug("Login and getting access token and auth data...")
         login_response = self.__login_with_email_and_password(email, password)
         login_response_body = loads(login_response.text)
         if not (isinstance(login_response_body, dict) and login_response_body.get("success")):
-            return None
+            return False
         set_cookie_header = login_response.headers.get("set-cookie")
         if not set_cookie_header:
-            return None
+            return False
         auth_cookies = self.__extract_auth_cookies(set_cookie_header)
         for name, value in auth_cookies.items():
             self.session.cookies.set(name, value)
-        return auth_cookies if auth_cookies else None
+            self.cache_manager.set(name, value)
+        return True
 
     @staticmethod
     def __extract_auth_cookies(set_cookie_header: str) -> dict[str, str]:  # pragma: no cover
@@ -124,7 +130,11 @@ class DehancerOnlineAPIClient(BaseAPIClient):
 
     def get_available_presets(self) -> list[Preset]:
         """
-        Get available presets, sorted by name, from the Dehancer Online API.
+        Get available presets, sorted by name, from the Dehancer Online API or cache.
+
+        This method first checks for cached presets data.
+        If found and valid - returns the cached presets.
+        Otherwise - fetches presets from the API, caches them, and returns the result.
 
         Returns
         -------
@@ -136,9 +146,13 @@ class DehancerOnlineAPIClient(BaseAPIClient):
 
         """
         logger.debug("Getting available presets...")
+        cached_presets = self.cache_manager.get(PRESETS)
+        if cached_presets is not None:
+            return cached_presets
         response = self.session.get(f"{self.api_base_url}/presets")
         available_presets = [Preset(**preset) for preset in loads(response.text)["presets"]]
         sorted_available_presets = sorted(available_presets, key=lambda p: p.caption)
+        self.cache_manager.set(PRESETS, sorted_available_presets)
         logger.debug("Available presets is '%s'", sorted_available_presets)
         return sorted_available_presets
 

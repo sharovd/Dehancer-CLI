@@ -11,33 +11,31 @@ import click
 
 from src import app_name, app_version, utils
 from src.api.clients.dehancer_online_client import DehancerOnlineAPIClient
-from src.api.constants import DEHANCER_ONLINE_API_AUTH_FILE, DEHANCER_ONLINE_API_BASE_URL, IMAGE_VALID_TYPES
+from src.api.constants import DEHANCER_ONLINE_API_BASE_URL, IMAGE_VALID_TYPES
 from src.api.enums import ExportFormat, ImageQuality, ImageSize, UnknownImageQualityError
 from src.api.models.preset import Preset, PresetSettings
+from src.cache.cache_manager import CacheManager
 from src.utils import (
-    get_auth_data,
     get_file_extension,
     get_filename_without_extension,
     is_supported_format_file,
     read_settings_file,
     safe_join,
-    update_auth_data,
 )
 
 logging.config.dictConfig(utils.get_logger_config_dict())
 logger = logging.getLogger()
 
-
-dehancer_api_client = DehancerOnlineAPIClient(DEHANCER_ONLINE_API_BASE_URL,
-                                              get_auth_data(DEHANCER_ONLINE_API_AUTH_FILE))
+cache_manager = CacheManager()
+dehancer_api_client = DehancerOnlineAPIClient(DEHANCER_ONLINE_API_BASE_URL, cache_manager)
 
 
 def login(email: str, password: str) -> None:
     """
-    Login to Dehancer Online via the API using the email and password provided and update access token and auth data.
+    Login to Dehancer Online via the API using the email and password provided and save auth data in the cache.
 
     This method attempts to authenticate as an user using the provided email and password.
-    If the authentication is successful, it updates the 'access-token' and 'auth' values in the authentication file.
+    If the authentication is successful, it updates the 'access-token' and 'auth' values in the cache.
     If the authentication fails, an error message is displayed.
 
     Args:
@@ -46,9 +44,8 @@ def login(email: str, password: str) -> None:
         password (str): The password of the user.
 
     """
-    auth_data = dehancer_api_client.login_and_get_auth_cookies(email, password)
-    if auth_data:
-        update_auth_data(DEHANCER_ONLINE_API_AUTH_FILE, auth_data)
+    is_authorized = dehancer_api_client.login(email, password)
+    if is_authorized:
         click.echo(f"User '{email}' successfully authorized.")
     else:
         click.echo(f"User '{email}' is not authorised. Please check email and password and try again.")
@@ -223,6 +220,21 @@ def enable_debug_logs() -> None:
     logger.setLevel(logging.DEBUG)
 
 
+def clear_cache_data() -> None:
+    """
+    Clear all application cached data.
+
+    This function deletes all application cached data such as auth data, API responses, etc.
+
+    Returns
+    -------
+    None
+
+    """
+    cache_manager.clear()
+
+
+
 @click.group()
 @click.version_option(prog_name=app_name, version=app_version, message="%(prog)s %(version)s")
 @click.option("--logs", type=int, default=0, help="Enable debug logs (1 for enabled, 0 for disabled).")
@@ -234,6 +246,30 @@ def cli(logs: int) -> None:
     """  # noqa: D205
     if logs == 1:
         enable_debug_logs()
+
+
+@cli.command()
+@click.option("--logs", type=int, default=0,
+              help="Enable debug logs (1 for enabled, 0 for disabled).")
+def clear_cache(logs: int) -> None:
+    """
+    Command to clear all application cached data.
+
+    Parameters
+    ----------
+    input : str
+        The user e-mail for authorization.
+    logs : int
+        Enable debug logs (1 for enabled, 0 for disabled).
+
+    Returns
+    -------
+    None
+
+    """
+    if logs == 1:
+        enable_debug_logs()
+    clear_cache_data()
 
 
 @cli.command()

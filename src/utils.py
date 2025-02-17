@@ -5,15 +5,19 @@ import logging.handlers
 import mimetypes
 import urllib.parse
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import puremagic
 import requests
 import yaml
 from yaml.scanner import ScannerError
 
+from src import app_name
 from src.api.models.preset import PresetSettings, PresetSettingsState
+from src.cache.cache_keys import ACCESS_TOKEN, AUTH
 
-from . import app_name
+if TYPE_CHECKING:
+    from src.cache.cache_manager import CacheManager  # pragma: no cover
 
 
 def get_logger_config_dict() -> dict:
@@ -114,17 +118,17 @@ def read_settings_file(file_path: str) -> PresetSettings:
     )
 
 
-def update_auth_data(auth_file_path: str, auth_data: dict[str, str]) -> None:
+def update_auth_data_in_cache(cache_manager: CacheManager, auth_data: dict[str, str]) -> None:
     """
-    Update the 'access-token' and 'auth' values in the specified authentication file.
+    Update the 'access-token' and 'auth' values in the cache.
 
-    This method writes the provided auth data to the specified file, overwriting any existing content in the file.
+    This method writes the provided auth data to the cache, overwriting any existing content.
     The auth data will only be written if it is not None or an empty dict.
     It is used to store the latest auth data for future use.
 
     Args:
     ----
-        auth_file_path (str): The path to the authentication file where the auth data will be stored.
+        cache_manager (CacheManager): The caching manager that stores and provides auth data.
         auth_data (dict[str, str]): The 'access-token' and 'auth' values to be written to the file.
 
     Returns:
@@ -133,47 +137,36 @@ def update_auth_data(auth_file_path: str, auth_data: dict[str, str]) -> None:
 
     """
     if auth_data and len(auth_data) > 0:
-        with Path(auth_file_path).open("w") as file:
-            auth_string = ""
-            for name, value in auth_data.items():
-                auth_string += f"{name}={value};"
-            file.write(auth_string)
+        for name, value in auth_data.items():
+            cache_manager.set(name, value)
 
 
-def get_auth_data(auth_file_path: str) -> dict[str, str] | None:
+def get_auth_data_from_cache(cache_manager: CacheManager) -> dict[str, str | None]:
     """
-    Get the 'access-token' and 'auth' values from the specified authentication file.
+    Get the 'access-token' and 'auth' values from the cache.
 
-    This method reads the first line as an auth data from the specified file path.
-    It expects the file to exist and contain a valid auth data.
-    If the file does not exist, a FileNotFoundError is thrown.
-
-    Args:
-    ----
-        auth_file_path (str): The path to the authentication file from which the access token is read.
-
-    Returns:
+    Returns
     -------
-        dict[str, str]: The 'access-token' and 'auth' values read from the first line of the file.
-
-    Raises:
-    ------
-        FileNotFoundError: If the specified authentication file does not exist.
+        dict[str, str]: The 'access-token' and 'auth' values read from the cache.
 
     """
-    if not Path(auth_file_path).exists():
-        return None
-    with Path(auth_file_path).open("r") as file:
-        result = {}
-        values = file.readline().split(";")
-        for value in values:
-            if value.startswith("access-token="):
-                access_token = value.split("=", 1)[1]
-                result["access-token"] = access_token
-            if value.startswith("auth="):
-                auth_data = value.split("=", 1)[1]
-                result["auth"] = auth_data
-        return result if result else None
+    return {
+        "access-token": cache_manager.get(ACCESS_TOKEN),
+        "auth": cache_manager.get(AUTH),
+    }
+
+
+def delete_access_token_and_auth_data_in_cache(cache_manager: CacheManager) -> None:
+    """
+    Delete the 'access-token' and 'auth' values in the cache.
+
+    Returns
+    -------
+        None
+
+    """
+    cache_manager.delete(ACCESS_TOKEN)
+    cache_manager.delete(AUTH)
 
 
 def is_file_exist(file_path: str) -> bool:

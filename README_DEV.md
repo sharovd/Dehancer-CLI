@@ -123,6 +123,14 @@ $ python dehancer_cli.py --version
 $ poetry run dehancer-cli --version
 ```
 
+### Clear application cache data
+
+```bash
+$ python dehancer_cli.py clear-cache
+
+$ poetry run dehancer-cli clear-cache
+```
+
 ### License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
