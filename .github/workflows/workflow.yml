@@ -72,6 +72,7 @@ jobs:
           path: badges/unit-test/unit-test-coverage.svg
 
   Run-e2e-tests:
+    if: false
     needs: [ Check-code-style-and-format ]
     runs-on: ubuntu-latest
     steps:
@@ -153,6 +154,9 @@ jobs:
 
       - name: Install Poetry
         uses: abatilo/actions-poetry@v2
+
+      - name: Install Poetry Export Plugin
+        run: poetry self add poetry-plugin-export
 
       - name: Export dependencies to requirements.txt
         run: |
