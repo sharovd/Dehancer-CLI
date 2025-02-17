@@ -237,6 +237,7 @@ jobs:
           path: |
             build/dehancer-cli.exe
             build/dehancer-cli
+            build/dehancer_cli.app/Contents/MacOS/dehancer-cli
 
   Publish-badges:
     needs: [ Run-unit-tests, Check-for-vulnerabilities, Build-executable-files ]
