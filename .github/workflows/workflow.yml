@@ -71,7 +71,6 @@ jobs:
           path: badges/unit-test/unit-test-coverage.svg
 
   Run-e2e-tests:
-    if: false
     needs: [ Check-code-style-and-format ]
     runs-on: ubuntu-latest
     steps:
@@ -237,7 +236,6 @@ jobs:
           path: |
             build/dehancer-cli.exe
             build/dehancer-cli
-            build/dehancer_cli.app/Contents/MacOS/dehancer-cli
 
   Publish-badges:
     needs: [ Run-unit-tests, Check-for-vulnerabilities, Build-executable-files ]
