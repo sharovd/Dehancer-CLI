@@ -186,7 +186,7 @@ jobs:
           nuitka-version: main
           script-name: dehancer_cli.py
           output-file: dehancer-cli
-          onefile: true
+          mode: onefile
           include-data-files: ${{ env.puremagic_magic_data_path }}=puremagic/magic_data.json
 
       - name: Get application build version (Linux and macOS)
