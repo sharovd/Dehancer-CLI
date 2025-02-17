@@ -1,6 +1,6 @@
 import shutil
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Iterator
 from unittest.mock import patch
 
 import pytest
@@ -9,7 +9,7 @@ from diskcache import Cache
 from src.cache.cache_manager import CacheManager
 
 
-@pytest.fixture()
+@pytest.fixture
 def cache_manager() -> Iterator[CacheManager]:
     cache_manager = CacheManager("test-application")
     yield cache_manager

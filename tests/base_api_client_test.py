@@ -7,7 +7,7 @@ from requests.models import Response
 from src.api.clients.base_api_client import BaseAPIClient
 
 
-@pytest.fixture()
+@pytest.fixture
 def base_api_client() -> BaseAPIClient:
     return BaseAPIClient()
 

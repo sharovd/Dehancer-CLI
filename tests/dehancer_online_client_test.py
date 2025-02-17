@@ -54,25 +54,25 @@ from tests.data.api_mock_responses.presets import (
 )
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_requests_session_get() -> MagicMock:
     with patch("requests.Session.get") as mock_get:
         yield mock_get
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_cache_manager() -> MagicMock:
     mock_cache_manager = Mock()
     mock_cache_manager.get.return_value = None
     return mock_cache_manager
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_api_client(mock_cache_manager: MagicMock) -> DehancerOnlineAPIClient:
     return DehancerOnlineAPIClient("https://mock.com/api/v1", mock_cache_manager)
 
 
-@pytest.fixture()
+@pytest.fixture
 def image_path() -> str:
     return "path/to/image.jpg"
 

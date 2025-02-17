@@ -187,6 +187,7 @@ jobs:
           nuitka-version: main
           script-name: dehancer_cli.py
           output-dir: build
+          output-filename: dehancer-cli
           mode: app
           include-data-files: ${{ env.puremagic_magic_data_path }}=puremagic/magic_data.json
 
