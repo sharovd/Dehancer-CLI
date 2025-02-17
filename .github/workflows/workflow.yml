@@ -186,7 +186,8 @@ jobs:
           script-name: dehancer_cli.py
           output-dir: build
           output-file: dehancer-cli
-          mode: app
+          mode: standalone
+          extra-flags: "--onefile"
           include-data-files: ${{ env.puremagic_magic_data_path }}=puremagic/magic_data.json
 
       - name: Get application build version (Linux and macOS)
