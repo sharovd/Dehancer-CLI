@@ -229,13 +229,18 @@ jobs:
             }
           }
 
+      - name: Create distribution directory
+        run: |
+          mkdir -p dist
+          cp build/dehancer-cli* dist/
+          cp docs/user-guide.pdf dist/
+          cp settings.yaml dist/
+
       - name: Upload build as artifact
         uses: actions/upload-artifact@v4
         with:
           name: Dehancer-CLI ${{ env.app_build_version }} for ${{ runner.os }} ${{ env.runner_os_version }}
-          path: |
-            build/dehancer-cli.exe
-            build/dehancer-cli
+          path: dist/
 
   Publish-badges:
     needs: [ Run-unit-tests, Check-for-vulnerabilities, Build-executable-files ]
