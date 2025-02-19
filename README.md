@@ -75,7 +75,7 @@ $ dehancer-cli develop <path/to/image_or_directory> --preset <preset_number> [OP
     --set_vignette_size, -v_s: Vignette size setting (effects).
     --set_vignette_feather, -v_f: Vignette feather setting (effects).
     --settings_file: Path to a settings file containing key-value pairs for settings.
-    --logs, -l: Enable debug logs (1 for enabled, 0 for disabled).
+    --logs: Enable debug logs (1 for enabled, 0 for disabled) (0 by default).
 
 **Image Quality Levels**
 
