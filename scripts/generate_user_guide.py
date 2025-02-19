@@ -1,4 +1,4 @@
-import os
+#noqa: INP001
 import re
 from pathlib import Path
 
@@ -107,11 +107,13 @@ def remove_license_section(md_content: str) -> str:
 
 
 if __name__ == "__main__":
+    script_dir = Path(__file__).parent
+    project_root = script_dir.parent
     converter = MarkdownToPDFConverter(
-        input_file_path="../README.md",
-        output_file_path="../docs/user-guide.pdf",
+        input_file_path=str(project_root / "README.md"),
+        output_file_path=str(project_root / "docs/user-guide.pdf"),
         output_file_height=650,
-        base_url=Path(Path.cwd(), os.pardir).resolve(),
+        base_url=project_root,
         transformations=[remove_badges_block,
                          add_app_version_in_header,
                          remove_developer_mode_section,
