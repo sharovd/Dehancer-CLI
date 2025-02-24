@@ -6,6 +6,8 @@ from typing import Callable
 import markdown2
 from weasyprint import HTML
 
+from src.api.constants import ENCODING_UTF_8
+
 
 class MarkdownToPDFConverter:
     """
@@ -42,7 +44,7 @@ class MarkdownToPDFConverter:
             str: The content of the Markdown file.
 
         """
-        with Path(self.input_file_path).open("r", encoding="utf-8") as f:
+        with Path(self.input_file_path).open("r", encoding=ENCODING_UTF_8) as f:
             return f.read()
 
     def transform_markdown(self, md_content: str) -> str:
@@ -126,9 +128,15 @@ class MarkdownToPDFConverter:
             background-color: {grey_color};
         }}
 
-        /* Fix the size of images inside tables */
-        table img {{
+        /* Fix the size of logo images inside tables */
+        table img.img-logo {{
             width: 60px;
+            height: auto;
+        }}
+
+        /* Fix the size of screenshots images inside tables */
+        table img.img-screenshot {{
+            width: 450px;
             height: auto;
         }}
 

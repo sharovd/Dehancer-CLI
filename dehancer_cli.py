@@ -8,6 +8,7 @@ from dataclasses import asdict, replace
 from pathlib import Path
 
 import click
+import pyperclip
 
 from src import app_name, app_version, utils
 from src.api.clients.dehancer_online_client import DehancerOnlineAPIClient
@@ -22,6 +23,7 @@ from src.utils import (
     read_settings_file,
     safe_join,
 )
+from src.web_ext.we_script_provider import WebExtensionScriptProvider
 
 logging.config.dictConfig(utils.get_logger_config_dict())
 logger = logging.getLogger()
@@ -48,7 +50,7 @@ def login(email: str, password: str) -> None:
     if is_authorized:
         click.echo(f"User '{email}' successfully authorized.")
     else:
-        click.echo(f"User '{email}' is not authorised. Please check email and password and try again.")
+        click.echo(f"User '{email}' is not authorised. Please check email and password and try again.", err=True)
 
 
 def print_presets() -> None:
@@ -234,6 +236,25 @@ def clear_cache_data() -> None:
     cache_manager.clear()
 
 
+def copy_web_extension_script_to_cb() -> None:
+    """
+    Copy the content of a web extension script to the clipboard.
+
+    This function copy the web extension script content to the system clipboard.
+    The copied script can be pasted into web browser console as needed.
+
+    Returns
+    -------
+    None
+
+    """
+    web_extension_script_content = WebExtensionScriptProvider().get_script_content()
+    if web_extension_script_content:
+        pyperclip.copy(web_extension_script_content)
+        click.echo("Web extension script copied into clipboard!")
+    else:
+        click.echo("Web extension script wasn't copied to clipboard because it was empty.", err=True)
+
 
 @click.group()
 @click.version_option(prog_name=app_name, version=app_version, message="%(prog)s %(version)s")
@@ -257,8 +278,6 @@ def clear_cache(logs: int) -> None:
 
     Parameters
     ----------
-    input : str
-        The user e-mail for authorization.
     logs : int
         Enable debug logs (1 for enabled, 0 for disabled).
 
@@ -270,6 +289,28 @@ def clear_cache(logs: int) -> None:
     if logs == 1:
         enable_debug_logs()
     clear_cache_data()
+
+
+@cli.command()
+@click.option("--logs", type=int, default=0,
+              help="Enable debug logs (1 for enabled, 0 for disabled).")
+def web_ext(logs: int) -> None:
+    """
+    Command to copy the content of a web extension script to the clipboard.
+
+    Parameters
+    ----------
+    logs : int
+        Enable debug logs (1 for enabled, 0 for disabled).
+
+    Returns
+    -------
+    None
+
+    """
+    if logs == 1:
+        enable_debug_logs()
+    copy_web_extension_script_to_cb()
 
 
 @cli.command()

@@ -25,6 +25,8 @@ zipp = "3.21.0"
 puremagic = "1.28"
 cryptography = "44.0.1"
 diskcache = "5.6.3"
+rjsmin = "1.2.4"
+pyperclip = "1.9.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "0.9.6"

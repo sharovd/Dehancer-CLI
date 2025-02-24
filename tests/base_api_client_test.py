@@ -7,6 +7,7 @@ from requests.models import Response
 from requests.structures import CaseInsensitiveDict
 
 from src.api.clients.base_api_client import LARGE_BODY_PLACEHOLDER, BaseAPIClient
+from src.api.constants import ENCODING_UTF_8
 
 
 @pytest.fixture
@@ -107,7 +108,7 @@ def test_logging_hook_logs_request_and_response_data_with_debug_level(request_bo
         mock_response = Mock(spec=Response)
         mock_response.request = mock_request
         mock_response.headers = response_headers
-        mock_dump_all.return_value = expected_raw_data.encode("utf-8")
+        mock_dump_all.return_value = expected_raw_data.encode(ENCODING_UTF_8)
         # Act: perform method under test
         BaseAPIClient.logging_hook(mock_response)
         # Assert: check that the expected methods have been called
@@ -117,7 +118,7 @@ def test_logging_hook_logs_request_and_response_data_with_debug_level(request_bo
             mock_logging_debug.assert_called_once()
             logged_data = mock_logging_debug.call_args[0][0]
             assert LARGE_BODY_PLACEHOLDER in logged_data
-            assert request_body.decode("utf-8", errors="replace") not in logged_data
+            assert request_body.decode(ENCODING_UTF_8, errors="replace") not in logged_data
         elif BaseAPIClient.should_replace_large_body(response_headers):
             # Assert: Check that the large response body has been replaced in the placeholder
             mock_logging_debug.assert_called_once()

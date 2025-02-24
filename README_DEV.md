@@ -8,7 +8,7 @@
 
 <table>
   <tr>
-    <td><img src="assets/dehancer_logo.png" width="60"/></td>
+    <td><img src="assets/dehancer-logo.png" width="60"/></td>
     <td>
       <b>Dehancer CLI</b> is an unofficial command line application that interacts with the
       <a href="https://online.dehancer.com/">Dehancer Online</a> API to process images using various film presets. <br>
@@ -69,19 +69,24 @@ $ poetry run dehancer-cli develop <path/to/image_or_directory> --preset <preset_
 **Options**
 
     --preset, -p: Preset number (required).
+
     --quality, -q: Image quality level: ["low", "medium", "high"] ("low" by default).
-    --set_contrast, -c: Contrast setting (adjustments).
+
     --set_exposure, -e: Exposure setting (adjustments).
+    --set_contrast, -c: Contrast setting (adjustments).
     --set_temperature, -t: Temperature setting (adjustments).
     --set_tint, -i: Tint setting (adjustments).
     --set_color_boost, -cb: Color boost setting (adjustments).
+
     --set_grain, -g: Grain setting (effects).
     --set_bloom, -b: Bloom setting (effects).
     --set_halation, -h: Halation setting (effects).
     --set_vignette_exposure, -v_e: Vignette exposure setting (effects).
     --set_vignette_size, -v_s: Vignette size setting (effects).
     --set_vignette_feather, -v_f: Vignette feather setting (effects).
+
     --settings_file: Path to a settings file containing key-value pairs for settings.
+
     --logs: Enable debug logs (1 for enabled, 0 for disabled) (0 by default).
 
 **Image Quality Levels**
@@ -115,20 +120,32 @@ The following limits are respected by the Dehancer Online team:<br>
 × - means that the default value of the effect depends on the selected profile.<br>
 All settings in the 'Effects' group support the 'Off' value, which is the default value from the profile.
 
-### Print application version
-
-```bash
-$ python dehancer_cli.py --version
-
-$ poetry run dehancer-cli --version
-```
-
 ### Clear application cache data
 
 ```bash
 $ python dehancer_cli.py clear-cache
 
 $ poetry run dehancer-cli clear-cache
+```
+
+### Copy web extension code to clipboard
+
+```bash
+$ python dehancer_cli.py web-ext
+
+$ poetry run dehancer-cli web-ext
+```
+
+Note that the received JavaScript snippet code in developer mode may differ from the snippet received from the binary file after build.<br>
+This is because the build process described in the [workflow.yml](.github/workflows/workflow.yml) file includes a step to obfuscate the JavaScript code.<br>
+If the obfuscated file does not exist, the JavaScript snippet code will contain a minified version of the original script.
+
+### Print application version
+
+```bash
+$ python dehancer_cli.py --version
+
+$ poetry run dehancer-cli --version
 ```
 
 ### License

@@ -7,11 +7,14 @@ import subprocess
 from pathlib import Path
 from secrets import choice
 
+import pyperclip
 import pytest
 from pytest import param as test_data  # noqa: PT013
+from rjsmin import jsmin
 
 import tests.utils.test_data_provider as td
 from src import app_name, app_version
+from src.api.constants import ENCODING_UTF_8
 from src.api.models.preset import PresetSettings, PresetSettingsState
 from src.cache.cache_keys import ACCESS_TOKEN, AUTH, PRESETS
 from src.cache.cache_manager import CacheManager
@@ -289,3 +292,24 @@ def test_clear_cache_command_clears_all_application_cached_data():
     # Assert: check command return code and that cache is empty
     assert result.returncode == 0
     assert cache_manager.get(PRESETS) is None
+
+
+@pytest.mark.e2e
+def test_web_ext_command_copies_js_script_in_clipboard():
+    script_path = Path(__file__).resolve().parents[1] / "scripts" / "web-ext" / "get-settings-via-browser-console.js"
+    obfuscated_script_path = script_path.resolve().parent / "get-settings-via-browser-console-obfuscated.js"
+    # Arrange: define expected clipboard content and output
+    expected_clipboard = jsmin(script_path.read_text(encoding=ENCODING_UTF_8))
+    expected_output = "Web extension script copied into clipboard!\n"
+    with (FileBackupContext(str(obfuscated_script_path))):
+        # Act: perform command under test
+        result = subprocess.run(  # noqa: S603
+            ["python", "dehancer_cli.py", "web-ext"],  # noqa: S607
+            cwd=project_root,
+            capture_output=True,
+            text=True, check=False,
+        )
+        # Assert: check command return code and output
+        assert result.returncode == 0
+        assert result.stdout == expected_output
+        assert pyperclip.paste() == expected_clipboard

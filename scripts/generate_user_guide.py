@@ -112,7 +112,7 @@ if __name__ == "__main__":
     converter = MarkdownToPDFConverter(
         input_file_path=str(project_root / "README.md"),
         output_file_path=str(project_root / "docs/user-guide.pdf"),
-        output_file_height=650,
+        output_file_height=1040,
         base_url=project_root,
         transformations=[remove_badges_block,
                          add_app_version_in_header,

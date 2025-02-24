@@ -198,8 +198,8 @@ def test_get_available_presets_from_api_success(mock_requests_session_get: Magic
     mock_requests_session_get.assert_called_once_with("https://mock.com/api/v1/presets")
     # Assert: check that the method result contains the expected data
     assert len(result) == expected_number_of_presets
-    assert result[0].caption == "AGFA Chrome RSX II 200 (Exp. 2006)"
-    assert result[1].caption == "Adox Color Implosion 100"
+    assert result[0].caption == "Adox Color Implosion 100"
+    assert result[1].caption == "Agfa Agfacolor 100"
     assert all(isinstance(p, Preset) for p in result)
 
 

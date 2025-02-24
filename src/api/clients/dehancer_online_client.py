@@ -151,7 +151,15 @@ class DehancerOnlineAPIClient(BaseAPIClient):
             return cached_presets
         response = self.session.get(f"{self.api_base_url}/presets")
         available_presets = [Preset(**preset) for preset in loads(response.text)["presets"]]
-        sorted_available_presets = sorted(available_presets, key=lambda p: p.caption)
+        """
+        The lower case `p.caption.lower()` is important so that the sorted list is identical to
+        the same list returned by the js script `scripts/get-settings-via-browser-console.js`.
+        Also note that there is currently at least one preset where the name of the film manufacturer
+        is written in UPPER case, even though other names of the same manufacturer are written in Capitalized case.
+
+        Example: "AGFA Chrome RSX II 200 (Exp. 2006)" and "Agfa Agfacolor XRS 200 (Exp. 1991)"
+        """
+        sorted_available_presets = sorted(available_presets, key=lambda p: p.caption.lower())
         self.cache_manager.set(PRESETS, sorted_available_presets)
         logger.debug("Available presets is '%s'", sorted_available_presets)
         return sorted_available_presets

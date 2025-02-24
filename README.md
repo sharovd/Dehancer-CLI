@@ -8,7 +8,7 @@
 
 <table>
   <tr>
-    <td><img src="assets/dehancer_logo.png" width="60"/></td>
+    <td><img src="assets/dehancer-logo.png" width="60" class="img-logo"/></td>
     <td>
       <b>Dehancer CLI</b> is an unofficial command line application that interacts with the
       <a href="https://online.dehancer.com/">Dehancer Online</a> API to process images using various film presets. <br>
@@ -28,7 +28,7 @@
 ### Setup the executable file
 
 - **Linux**: There are no additional steps required.
-- **MacOS**: Run `$ xattr -c dehancer-cli` to remove all extended attributes from the specified file. You can find out more about this [here](https://support.apple.com/en-gb/guide/mac-help/mchleab3a043/mac) or [here](https://support.apple.com/en-bw/102445).
+- **MacOS**: Run `$ xattr -d com.apple.quarantine dehancer-cli` to remove the quarantine attribute from the specified file. You can find out more about this [here](https://support.apple.com/en-gb/guide/mac-help/mchleab3a043/mac) or [here](https://support.apple.com/en-bw/102445).
 - **Windows**: Unfortunately, there is no stable and free solution for running build for Windows to bypass antivirus. See [this page](https://nuitka.net/user-documentation/common-issue-solutions.html#windows-virus-scanners) for more details. <br>
 You can disable the Microsoft Defender Antivirus service the first time you start the application.
 
@@ -62,19 +62,24 @@ $ dehancer-cli develop <path/to/image_or_directory> --preset <preset_number> [OP
 **Options**
 
     --preset, -p: Preset number (required).
+
     --quality, -q: Image quality level: ["low", "medium", "high"] ("low" by default).
-    --set_contrast, -c: Contrast setting (adjustments).
+
     --set_exposure, -e: Exposure setting (adjustments).
+    --set_contrast, -c: Contrast setting (adjustments).
     --set_temperature, -t: Temperature setting (adjustments).
     --set_tint, -i: Tint setting (adjustments).
     --set_color_boost, -cb: Color boost setting (adjustments).
+
     --set_grain, -g: Grain setting (effects).
     --set_bloom, -b: Bloom setting (effects).
     --set_halation, -h: Halation setting (effects).
     --set_vignette_exposure, -v_e: Vignette exposure setting (effects).
     --set_vignette_size, -v_s: Vignette size setting (effects).
     --set_vignette_feather, -v_f: Vignette feather setting (effects).
+
     --settings_file: Path to a settings file containing key-value pairs for settings.
+
     --logs: Enable debug logs (1 for enabled, 0 for disabled) (0 by default).
 
 **Image Quality Levels**
@@ -108,22 +113,42 @@ The following limits are respected by the Dehancer Online team:<br>
 × - means that the default value of the effect depends on the selected profile.<br>
 All settings in the 'Effects' group support the 'Off' value, which is the default value from the profile.
 
-### Print application version
-
-```bash
-$ dehancer-cli --version
-```
-
 ### Clear application cache data
 
 ```bash
 $ dehancer-cli clear-cache
 ```
 
+### Copy web extension code to clipboard
+
+```bash
+$ dehancer-cli web-ext
+```
+
+### Print application version
+
+```bash
+$ dehancer-cli --version
+```
+
+## Web extension
+
+The web extension is a JavaScript snippet code that can be executed in the browser console to get the current image settings from the [Dehancer Online](https://online.dehancer.com/) web application.<br>
+After executing the `$ dehancer-cli web-ext` command, the JavaScript snippet code will be copied to computer's clipboard and can be executed in the browser's console.<br>
+The following is an example of how the web extension works in the [Google Chrome](https://www.google.com/chrome/) browser, but it should work in other browsers as well.
+
+| Step                             | Description (using the Google Chrome as an example)                                                                                                 | 
+|:---------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1. Open the browser console      | • **Linux**: Press `Ctrl` + `Shift` + `J`<br/>• **MacOS**: Press `Command (⌘)` + `Option (⌥)` + `J`<br/>• **Windows**: Press `Ctrl` + `Shift` + `J` |
+| 2. Paste JavaScript snippet code | <img src="assets/screenshots/web-ext-chrome-01.jpg" width="450" class="img-screenshot"/>                                                            | 
+| 3. Press `Enter` to execute code | <img src="assets/screenshots/web-ext-chrome-02.jpg" width="450" class="img-screenshot"/>                                                            |
+
+After executing the script, the browser console will display the current image settings for use in the Dehancer CLI.<br>
+Both options are available: using the `settings.yaml` file, or using command line arguments.
+
 ## Developer mode
 It is also possible to use Dehancer CLI without executable files, directly from the source code.<br>
 See the [README DEV](README_DEV.md) file for more details.
-
 
 ### License
 

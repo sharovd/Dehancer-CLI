@@ -8,6 +8,7 @@ from requests import Response, Session
 from requests_toolbelt.utils import dump
 
 from src import utils
+from src.api.constants import ENCODING_UTF_8
 
 if TYPE_CHECKING:
     from requests.structures import CaseInsensitiveDict  # pragma: no cover
@@ -53,12 +54,12 @@ class BaseAPIClient:  # noqa: D101
     def logging_hook(cls, response: Response, *args: tuple[Any, ...], **kwargs: dict[str, Any]) -> None:  # noqa: ARG003
         """Log request and response, replacing large binary bodies with placeholders."""
         raw_data = (dump.dump_all(response, request_prefix=b"> ", response_prefix=b"< ")
-                    .decode("utf-8", errors="replace"))
+                    .decode(ENCODING_UTF_8, errors="replace"))
 
         # Remove request body if necessary
         request_body = response.request.body
         if isinstance(request_body, bytes) and cls.should_replace_large_body(response.request.headers):
-            request_body = request_body.decode("utf-8", errors="replace")
+            request_body = request_body.decode(ENCODING_UTF_8, errors="replace")
             raw_data = raw_data.replace(request_body, LARGE_BODY_PLACEHOLDER)
 
         # Remove response body if necessary

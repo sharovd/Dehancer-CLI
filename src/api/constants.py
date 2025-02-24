@@ -1,3 +1,7 @@
+import codecs
+
+ENCODING_UTF_8 = codecs.lookup("utf-8").name
+
 DEHANCER_ONLINE_BASE_URL = "https://online.dehancer.com"
 DEHANCER_ONLINE_API_BASE_URL = f"{DEHANCER_ONLINE_BASE_URL}/api/v1"
 
