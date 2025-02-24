@@ -1,0 +1,8 @@
+{
+  "name": "dehancer-cli-web-extension",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "javascript-obfuscator": "4.1.1"
+  }
+}

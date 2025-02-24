@@ -89,6 +89,9 @@ jobs:
         run: |
           poetry install
 
+      - name: Install xclip
+        run: apt-get update && apt-get install -y xclip
+
       - name: Run e2e tests
         run: |
           poetry run pytest -m "e2e"
@@ -150,6 +153,7 @@ jobs:
         with:
           node-version: "18"
           cache: "npm"
+          cache-dependency-path: "scripts/web-ext/package-lock.json"
 
       - name: Install JavaScript Obfuscator
         run: npm install -g javascript-obfuscator@4.1.1
