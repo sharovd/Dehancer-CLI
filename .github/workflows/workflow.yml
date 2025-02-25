@@ -90,7 +90,7 @@ jobs:
           poetry install
 
       - name: Install xclip
-        run: apt-get update && apt-get install -y xclip
+        run: sudo apt-get update && sudo apt-get install -y xclip
 
       - name: Run e2e tests
         run: |
@@ -204,7 +204,10 @@ jobs:
           script-name: dehancer_cli.py
           output-file: dehancer-cli
           mode: onefile
-          include-data-files: ${{ env.puremagic_magic_data_path }}=puremagic/magic_data.json
+          include-data-files: |
+            ${{ env.puremagic_magic_data_path }}=puremagic/magic_data.json
+            scripts/web-ext/get-settings-via-browser-console.js=scripts/web-ext/get-settings-via-browser-console.js
+            scripts/web-ext/get-settings-via-browser-console-obfuscated.js=scripts/web-ext/get-settings-via-browser-console-obfuscated.js
 
       - name: Get application build version (Linux and macOS)
         if: runner.os != 'Windows'
