@@ -87,9 +87,7 @@ $ dehancer-cli develop <path/to/image_or_directory> --preset <preset_number> [OP
 | Quality Level | Description       | Resolution               | Format & Quality |
 |:--------------|:------------------|:-------------------------|:-----------------|
 | Low           | Optimised for web | Resized to 2160x2160     | JPEG 80%         |
-
 | Medium        | Best quality      | Max resolution 3024x3024 | JPEG 100%        |
-
 | High          | Lossless          | Max resolution 3024x3024 | TIFF 16 bit      |
 
 **Preset Settings**
@@ -101,25 +99,15 @@ The following limits are respected by the Dehancer Online team:<br>
 | Setting           | Group       | Default value | Minimum value | Maximum value | Step |
 |:------------------|:------------|:--------------|:--------------|:--------------|:-----|
 | Exposure          | Adjustments | 0             | -2            | 2             | 0.2  |
-
 | Contrast          | Adjustments | 0             | -40           | 40            | 2    |
-
 | Temperature       | Adjustments | 0             | -90           | 90            | 2    |
-
 | Tint              | Adjustments | 0             | -90           | 90            | 2    |
-
 | Color boost       | Adjustments | 0             | -90           | 90            | 2    |
-
 | Grain             | Effects     | ×             | 0             | 100           | 2    |
-
 | Bloom             | Effects     | ×             | 0             | 100           | 2    |
-
 | Halation          | Effects     | ×             | 0             | 100           | 2    |
-
 | Vignette exposure | Effects     | ×             | -2            | 2             | 0.2  |
-
 | Vignette size     | Effects     | 55            | 5             | 99            | 2    |
-
 | Vignette feather  | Effects     | 15            | 4             | 40            | 2    |
 
 × - means that the default value of the effect depends on the selected profile.<br>
@@ -152,9 +140,7 @@ The following is an example of how the web extension works in the [Google Chrome
 | Step                             | Description (using the Google Chrome as an example)                                                                                                 | 
 |:---------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------|
 | 1. Open the browser console      | • **Linux**: Press `Ctrl` + `Shift` + `J`<br/>• **MacOS**: Press `Command (⌘)` + `Option (⌥)` + `J`<br/>• **Windows**: Press `Ctrl` + `Shift` + `J` |
-
 | 2. Paste JavaScript snippet code | <img src="assets/screenshots/web-ext-chrome-01.jpg" width="450" class="img-screenshot"/>                                                            | 
-
 | 3. Press `Enter` to execute code | <img src="assets/screenshots/web-ext-chrome-02.jpg" width="450" class="img-screenshot"/>                                                            |
 
 After executing the script, the browser console will display the current image settings for use in the Dehancer CLI.<br>
