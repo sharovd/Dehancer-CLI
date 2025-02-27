@@ -204,6 +204,7 @@ jobs:
           script-name: dehancer_cli.py
           output-file: dehancer-cli
           mode: onefile
+          no-deployment-flag: self-execution
           include-data-files: |
             ${{ env.puremagic_magic_data_path }}=puremagic/magic_data.json
             scripts/web-ext/get-settings-via-browser-console.js=scripts/web-ext/get-settings-via-browser-console.js
