@@ -286,7 +286,7 @@ def cli(logs: int) -> None:
         enable_debug_logs()
 
 
-@cli.command()
+@cli.command(help="Command to clear all application cached data.")
 @click.option("--logs", type=int, default=0,
               help="Enable debug logs (1 for enabled, 0 for disabled).")
 def clear_cache(logs: int) -> None:
@@ -308,7 +308,7 @@ def clear_cache(logs: int) -> None:
     clear_cache_data()
 
 
-@cli.command()
+@cli.command(help="Command to copy the content of a web extension script to the clipboard.")
 @click.option("--logs", type=int, default=0,
               help="Enable debug logs (1 for enabled, 0 for disabled).")
 def web_ext(logs: int) -> None:
@@ -330,8 +330,8 @@ def web_ext(logs: int) -> None:
     copy_web_extension_script_to_cb()
 
 
-@cli.command()
-@click.argument("input")
+@cli.command(help="Command to authorize and save auth data.")
+@click.argument("input", metavar="e-mail")
 @click.option("--logs", type=int, default=0,
               help="Enable debug logs (1 for enabled, 0 for disabled).")
 def auth(input, logs: int) -> None:  # noqa: A002, ANN001
@@ -358,7 +358,7 @@ def auth(input, logs: int) -> None:  # noqa: A002, ANN001
     login(input, password)
 
 
-@cli.command()
+@cli.command(help="Command to print available film presets.")
 @click.option("--logs", type=int, default=0,
               help="Enable debug logs (1 for enabled, 0 for disabled).")
 def presets(logs: int) -> None:
@@ -382,8 +382,8 @@ def presets(logs: int) -> None:
     print_presets()
 
 
-@cli.command()
-@click.argument("input")
+@cli.command(help="Command to create contacts for an image.")
+@click.argument("input", metavar="image-path")
 @click.option("--logs", type=int, default=0,
               help="Enable debug logs (1 for enabled, 0 for disabled).")
 def contacts(input, logs: int) -> None:  # noqa: A002, ANN001
@@ -409,8 +409,8 @@ def contacts(input, logs: int) -> None:  # noqa: A002, ANN001
     print_contacts(input)
 
 
-@cli.command()
-@click.argument("input")
+@cli.command(help="Command to develop image with specified film preset, quality and settings.")
+@click.argument("input", metavar="image-path")
 @click.option("-p", "--preset", "preset",
               type=int, required=True, help="Preset number.")
 @click.option("-q", "--quality", "quality",
