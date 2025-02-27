@@ -193,6 +193,7 @@ jobs:
           echo "puremagic_magic_data_path=$puremagic_magic_data_path" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           
       - name: Obfuscate Web extension script
+        shell: bash
         run: |
           npx javascript-obfuscator --self-defending true scripts/web-ext/get-settings-via-browser-console.js \
           --output scripts/web-ext/get-settings-via-browser-console-obfuscated.js
