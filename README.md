@@ -137,11 +137,19 @@ The web extension is a JavaScript snippet code that can be executed in the brows
 After executing the `$ dehancer-cli web-ext` command, the JavaScript snippet code will be copied to computer's clipboard and can be executed in the browser's console.<br>
 The following is an example of how the web extension works in the [Google Chrome](https://www.google.com/chrome/) browser, but it should work in other browsers as well.
 
-| Step                             | Description (using the Google Chrome as an example)                                                                                                 | 
-|:---------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1. Open the browser console      | • **Linux**: Press `Ctrl` + `Shift` + `J`<br/>• **MacOS**: Press `Command (⌘)` + `Option (⌥)` + `J`<br/>• **Windows**: Press `Ctrl` + `Shift` + `J` |
-| 2. Paste JavaScript snippet code | <img src="assets/screenshots/web-ext-chrome-01.jpg" width="450" class="img-screenshot"/>                                                            | 
-| 3. Press `Enter` to execute code | <img src="assets/screenshots/web-ext-chrome-02.jpg" width="450" class="img-screenshot"/>                                                            |
+**1.** Open the browser console<br>
+
+- **Linux**: Press `Ctrl` + `Shift` + `J`
+- **MacOS**: Press `Command (⌘)` + `Option (⌥)` + `J`
+- **Windows**: Press `Ctrl` + `Shift` + `J`
+
+**2.** Paste JavaScript snippet code
+
+<img src="assets/screenshots/web-ext-chrome-01.jpg" width="450" alt="screenshot" class="img-screenshot"/>
+
+**3.** Press `Enter` to execute code
+
+<img src="assets/screenshots/web-ext-chrome-02.jpg" width="450" alt="screenshot" class="img-screenshot"/> 
 
 After executing the script, the browser console will display the current image settings for use in the Dehancer CLI.<br>
 Both options are available: using the `settings.yaml` file, or using command line arguments.

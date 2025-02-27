@@ -140,6 +140,13 @@ class MarkdownToPDFConverter:
             height: auto;
         }}
 
+        /* Fix the size of screenshots images */
+        img.img-screenshot {{
+            width: 450px;
+            height: auto;
+            margin: 10px 0;
+        }}
+
         /* Center images outside of tables */
         img {{
             display: block;
