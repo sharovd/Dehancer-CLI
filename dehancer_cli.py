@@ -12,13 +12,14 @@ import pyperclip
 
 from src import app_name, app_version, utils
 from src.api.clients.dehancer_online_client import DehancerOnlineAPIClient
-from src.api.constants import DEHANCER_ONLINE_API_BASE_URL, IMAGE_VALID_TYPES
+from src.api.constants import DEHANCER_ONLINE_API_BASE_URL, ENCODING_UTF_8, IMAGE_VALID_TYPES
 from src.api.enums import ExportFormat, ImageQuality, ImageSize, UnknownImageQualityError
 from src.api.models.preset import Preset, PresetSettings
 from src.cache.cache_manager import CacheManager
 from src.utils import (
     get_file_extension,
     get_filename_without_extension,
+    is_clipboard_available,
     is_supported_format_file,
     read_settings_file,
     safe_join,
@@ -238,20 +239,36 @@ def clear_cache_data() -> None:
 
 def copy_web_extension_script_to_cb() -> None:
     """
-    Copy the content of a web extension script to the clipboard.
+    Copy the content of a web extension script to the system clipboard.
 
-    This function copy the web extension script content to the system clipboard.
-    The copied script can be pasted into web browser console as needed.
+    This function retrieves the content of the web extension script from the WebExtensionScriptProvider.
+    If the content is not empty, it attempts to copy the content to the system clipboard using the pyperclip library.
+    If copying to the clipboard fails, the script content will be written to the 'web-extension-script.txt' text file.
 
     Returns
     -------
     None
 
+    Raises
+    ------
+    pyperclip.PyperclipException
+        If an error occurs while attempting to copy the script content to the clipboard.
+
     """
     web_extension_script_content = WebExtensionScriptProvider().get_script_content()
     if web_extension_script_content:
-        pyperclip.copy(web_extension_script_content)
-        click.echo("Web extension script copied into clipboard!")
+        if is_clipboard_available():
+            pyperclip.copy(web_extension_script_content)
+            click.echo("Web extension script copied into clipboard!")
+        else:
+            click.echo("Web extension script wasn't copied due the error with copy/paste mechanism for your system.\n"
+                       "On Linux, you can run `sudo apt-get install xclip` "
+                       "or `sudo apt-get install xselect` to install a copy/paste mechanism.", err=True)
+            # Write the content of a web extension script to the file if copying to the clipboard is not possible.
+            web_extension_file_name = "web-extension-script.txt"
+            with Path(web_extension_file_name).open("wb") as fp:
+                fp.write(web_extension_script_content.encode(encoding=ENCODING_UTF_8))
+                click.echo(f"Web extension script, as a workaround, written to file '{web_extension_file_name}'.")
     else:
         click.echo("Web extension script wasn't copied to clipboard because it was empty.", err=True)
 

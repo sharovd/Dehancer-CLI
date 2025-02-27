@@ -4,6 +4,7 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 from unittest.mock import Mock, call, create_autospec, mock_open, patch
 
+import pyperclip
 import pytest
 import requests
 from pytest import param as test_data  # noqa: PT013
@@ -17,6 +18,7 @@ from src.utils import (
     get_auth_data_from_cache,
     get_file_extension,
     get_filename_without_extension,
+    is_clipboard_available,
     is_file_exist,
     is_supported_format_file,
     read_settings_file,
@@ -696,3 +698,26 @@ def test_safe_join_for_path_traversals_raises_error(paths: tuple[str, ...]):
     with pytest.raises(ValueError, match="Attempted path traversal detected"):
         # Act: perform method under test
         safe_join(base, *paths)
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("clipboard_content", "expected_result"), [
+        test_data("some text", True, id="Non-empty string"), # noqa: FBT003
+        test_data("", True, id="Empty string"), # noqa: FBT003
+        test_data(None, True, id="None"), # noqa: FBT003
+    ],
+)
+def test_is_clipboard_available_returns_true(clipboard_content: str | None, expected_result: bool): # noqa: FBT001
+    # Arrange: setup mock object
+    with patch("pyperclip.paste", return_value=clipboard_content):
+        # Act: perform method under test & Assert
+        assert is_clipboard_available() == expected_result
+
+
+@pytest.mark.unit
+def test_is_clipboard_available_returns_false():
+    # Arrange: setup mock object
+    with patch("pyperclip.paste", side_effect=pyperclip.PyperclipException):
+        # Act: perform method under test & Assert
+        assert is_clipboard_available() is False

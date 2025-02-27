@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import puremagic
+import pyperclip
 import requests
 import yaml
 from yaml.scanner import ScannerError
@@ -352,3 +353,27 @@ def safe_join(base: str, *paths: str) -> str:
         msg = "Attempted path traversal detected"
         raise ValueError(msg)
     return str(final_path)
+
+
+def is_clipboard_available() -> bool:
+    """
+    Check if the system clipboard is available for read and write operations.
+
+    This function attempts to access the system clipboard by reading its content.
+    If clipboard access is supported and no exception is raised, the clipboard is considered available.
+    Otherwise, clipboard unavailability is assumed (e.g., due to missing system dependencies or headless environment).
+
+    The method is tested on macOS and Ubuntu platforms and provides a more reliable availability check
+    than pyperclip's built-in `is_available()` method.
+
+    Returns
+    -------
+    bool
+        True if clipboard access is available, False otherwise.
+
+    """
+    try:
+        pyperclip.paste()
+    except pyperclip.PyperclipException:
+        return False
+    return True

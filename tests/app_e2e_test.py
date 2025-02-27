@@ -18,7 +18,7 @@ from src.api.constants import ENCODING_UTF_8
 from src.api.models.preset import PresetSettings, PresetSettingsState
 from src.cache.cache_keys import ACCESS_TOKEN, AUTH, PRESETS
 from src.cache.cache_manager import CacheManager
-from src.utils import get_filename_without_extension
+from src.utils import get_filename_without_extension, is_clipboard_available
 from tests.data.app_outputs.contacts import contacts_success_output
 from tests.data.app_outputs.develop import develop_without_auth_success_output
 from tests.data.app_outputs.presets import presets_success_output
@@ -298,9 +298,12 @@ def test_clear_cache_command_clears_all_application_cached_data():
 def test_web_ext_command_copies_js_script_in_clipboard():
     script_path = Path(__file__).resolve().parents[1] / "scripts" / "web-ext" / "get-settings-via-browser-console.js"
     obfuscated_script_path = script_path.resolve().parent / "get-settings-via-browser-console-obfuscated.js"
+    web_extension_file_name = "web-extension-script.txt"
     # Arrange: define expected clipboard content and output
     expected_clipboard = jsmin(script_path.read_text(encoding=ENCODING_UTF_8))
-    expected_output = "Web extension script copied into clipboard!\n"
+    expected_output_cp_is_available = "Web extension script copied into clipboard!\n"
+    expected_output_cp_is_not_available = \
+        f"Web extension script, as a workaround, written to file '{web_extension_file_name}'.\n"
     with (FileBackupContext(str(obfuscated_script_path))):
         # Act: perform command under test
         result = subprocess.run(  # noqa: S603
@@ -311,5 +314,14 @@ def test_web_ext_command_copies_js_script_in_clipboard():
         )
         # Assert: check command return code and output
         assert result.returncode == 0
-        assert result.stdout == expected_output
-        assert pyperclip.paste() == expected_clipboard
+        clipboard_is_available = is_clipboard_available()
+        if clipboard_is_available:
+            assert result.stdout == expected_output_cp_is_available
+            assert pyperclip.paste() == expected_clipboard
+        else:
+            assert expected_output_cp_is_not_available in result.stdout
+            web_extension_file_path = Path(web_extension_file_name)
+            if web_extension_file_path.exists():
+                assert web_extension_file_path.read_text(encoding=ENCODING_UTF_8) == expected_clipboard
+            else:
+                pytest.exit(f"Clipboard isn't available on this system and file '{web_extension_file_name}' is missing")
