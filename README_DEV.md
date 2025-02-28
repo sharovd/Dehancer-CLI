@@ -8,7 +8,7 @@
 
 <table>
   <tr>
-    <td><img src="assets/dehancer-logo.png" width="60"/></td>
+    <td><img src="assets/dehancer-logo.png" width="60" class="img-logo"/></td>
     <td>
       <b>Dehancer CLI</b> is an unofficial command line application that interacts with the
       <a href="https://online.dehancer.com/">Dehancer Online</a> API to process images using various film presets. <br>

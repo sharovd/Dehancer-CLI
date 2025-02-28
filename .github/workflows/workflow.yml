@@ -89,9 +89,6 @@ jobs:
         run: |
           poetry install
 
-      - name: Install xclip
-        run: sudo apt-get update && sudo apt-get install -y xclip
-
       - name: Run e2e tests
         run: |
           poetry run pytest -m "e2e"

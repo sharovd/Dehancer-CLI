@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.4.0] - 2025-02-28
 ### Added
 - Added cache in user home directory to store presets and auth data.
+- Added new CLI command 'clear-cache' to clear all application cached data.
 - Added 'generate_user_guide.py' script and 'md_to_pdf_converter.py' file to generate user guide.
 - Added 'user-guide.pdf' as a copy of the original 'README.md' and 'settings.yaml' files in build.
 - Added js script 'get-settings-via-browser-console.js' as the 'Web extension' feature.
