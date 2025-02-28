@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2025-02-28
+### Added
+- Added cache in user home directory to store presets and auth data.
+- Added 'generate_user_guide.py' script and 'md_to_pdf_converter.py' file to generate user guide.
+- Added 'user-guide.pdf' as a copy of the original 'README.md' and 'settings.yaml' files in build.
+- Added js script 'get-settings-via-browser-console.js' as the 'Web extension' feature.
+- Added new CLI command 'web-ext' as the 'Web extension' feature.
+- Updated 'Build-executable-files' job in CI pipeline to obfuscate web extension js script.
+- Covered 100% new or updated source code by unit tests.
+
+### Changed
+- Improved formatting for help command output.
+- Updated all outdated dependencies.
+
+### Fixed
+- Fixed issue with large log file in debug mode.
+- Fixed issue "Error, the program tried to call itself with '-c' argument. Disable with '--no-deployment-flag=self-execution'".
+- Fixed linter founded issues.
+
+### Security
+- Fixed all vulnerability issues found by the application security framework.
+
+
 ## [0.3.0] - 2024-09-28
 ### Added
 - Support Dehancer Online API v1.
