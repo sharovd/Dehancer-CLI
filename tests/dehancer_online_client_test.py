@@ -19,6 +19,7 @@ from src.api.constants import (
 )
 from src.api.enums import ExportFormat, ImageSize
 from src.api.models.preset import Preset, PresetSettings, PresetSettingsState
+from src.cache.cache_keys import ACCESS_TOKEN, AUTH, PRESETS
 from tests.data.api_mock_responses.image_export import (
     image_export_invalid_response,
     image_export_not_success_response,
@@ -53,18 +54,25 @@ from tests.data.api_mock_responses.presets import (
 )
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_requests_session_get() -> MagicMock:
     with patch("requests.Session.get") as mock_get:
         yield mock_get
 
 
-@pytest.fixture()
-def mock_api_client() -> DehancerOnlineAPIClient:
-    return DehancerOnlineAPIClient("https://mock.com/api/v1", {})
+@pytest.fixture
+def mock_cache_manager() -> MagicMock:
+    mock_cache_manager = Mock()
+    mock_cache_manager.get.return_value = None
+    return mock_cache_manager
 
 
-@pytest.fixture()
+@pytest.fixture
+def mock_api_client(mock_cache_manager: MagicMock) -> DehancerOnlineAPIClient:
+    return DehancerOnlineAPIClient("https://mock.com/api/v1", mock_cache_manager)
+
+
+@pytest.fixture
 def image_path() -> str:
     return "path/to/image.jpg"
 
@@ -81,7 +89,7 @@ def generate_presets(count: int) -> list[Preset]:
 
 
 @pytest.mark.unit
-def test_login_and_get_auth_cookies_success(mock_api_client: DehancerOnlineAPIClient):
+def test_login_success(mock_api_client: DehancerOnlineAPIClient, mock_cache_manager: MagicMock):
     # Arrange: setup mock objects
     with patch.object(mock_api_client, "_DehancerOnlineAPIClient__login_with_email_and_password",
                       return_value=Mock(headers=login_with_email_and_password_success_headers,
@@ -90,21 +98,24 @@ def test_login_and_get_auth_cookies_success(mock_api_client: DehancerOnlineAPICl
         expected_auth_data = {}
         for mock_cookie in mock_cookies:
             if mock_cookie.startswith("access-token="):
-                expected_auth_data["access-token"] = mock_cookie.split("=", 1)[1]
+                expected_auth_data[ACCESS_TOKEN] = mock_cookie.split("=", 1)[1]
             if mock_cookie.startswith("Secure, auth="):
-                expected_auth_data["auth"] = mock_cookie.split("=", 1)[1]
+                expected_auth_data[AUTH] = mock_cookie.split("=", 1)[1]
         email = "test@test.com"
         password = "test"  # noqa: S105
         # Act: perform method under test
-        result = mock_api_client.login_and_get_auth_cookies(email, password)
+        result = mock_api_client.login(email, password)
         # Assert: check that the expected method have been called by the tested method
         mock_post.assert_called_once_with(email, password)
         # Assert: check that the method result contains the expected data
-        assert result == expected_auth_data
+        assert result is True
+        # Assert: check that the method calls expected method to set cache
+        for key, value in expected_auth_data.items():
+            mock_cache_manager.set.assert_any_call(key, value)
 
 
 @pytest.mark.unit
-def test_login_and_get_auth_cookies_success_wo_cookies(mock_api_client: DehancerOnlineAPIClient):
+def test_login_success_wo_cookies(mock_api_client: DehancerOnlineAPIClient, mock_cache_manager: MagicMock):
     login_with_email_and_password_success_headers.pop("set-cookie")
     login_with_email_and_password_headers_wo_cookies = login_with_email_and_password_success_headers
     # Arrange: setup mock objects
@@ -114,11 +125,13 @@ def test_login_and_get_auth_cookies_success_wo_cookies(mock_api_client: Dehancer
         email = "test@test.com"
         password = "test"  # noqa: S105
         # Act: perform method under test
-        result = mock_api_client.login_and_get_auth_cookies(email, password)
+        result = mock_api_client.login(email, password)
         # Assert: check that the expected method have been called by the tested method
         mock_post.assert_called_once_with(email, password)
         # Assert: check that the method result contains the expected data
-        assert result is None
+        assert result is False
+        # Assert: check that the method does not call expected method to set cache
+        mock_cache_manager.set.assert_not_called()
 
 
 @pytest.mark.unit
@@ -143,7 +156,7 @@ def test_is_authorized_returns_auth_state_as_bool_value(mock_api_client: Dehance
 
 
 @pytest.mark.unit
-def test_login_and_get_auth_cookies_not_success(mock_api_client: DehancerOnlineAPIClient):
+def test_login_not_success(mock_api_client: DehancerOnlineAPIClient):
     # Arrange: setup mock objects
     with (patch.object(mock_api_client, "_DehancerOnlineAPIClient__login_with_email_and_password",
                        return_value=Mock(text=json.dumps(login_with_email_and_password_not_success_response)))
@@ -151,29 +164,29 @@ def test_login_and_get_auth_cookies_not_success(mock_api_client: DehancerOnlineA
         email = "test@test.com"
         password = "test"  # noqa: S105
         # Act: perform method under test
-        result = mock_api_client.login_and_get_auth_cookies(email, password)
+        result = mock_api_client.login(email, password)
         # Assert: check that the expected method have been called by the tested method
         mock_post.assert_called_once_with(email, password)
         # Assert: check that the method result contains the expected data
-        assert result is None
+        assert result is False
 
 
 @pytest.mark.unit
-def test_login_and_get_auth_cookies_failure(mock_api_client: DehancerOnlineAPIClient):
+def test_login_failure(mock_api_client: DehancerOnlineAPIClient):
     # Arrange: setup mock objects
     with patch.object(mock_api_client, "_DehancerOnlineAPIClient__login_with_email_and_password",
                       return_value=Mock(text=json.dumps(login_with_email_and_password_invalid_response))):
         email = "test@test.com"
         password = "test"  # noqa: S105
         # Act: perform method under test
-        result = mock_api_client.login_and_get_auth_cookies(email, password)
+        result = mock_api_client.login(email, password)
         # Assert: check that the method result contains no data and that no logs has been printed
-        assert result is None
+        assert result is False
 
 
 @pytest.mark.unit
-def test_get_available_presets_success(mock_requests_session_get: MagicMock,
-                                       mock_api_client: DehancerOnlineAPIClient):
+def test_get_available_presets_from_api_success(mock_requests_session_get: MagicMock,
+                                                mock_api_client: DehancerOnlineAPIClient):
     # Arrange: setup mock objects
     mock_response = Mock()
     mock_response.text = json.dumps(presets_success_response)
@@ -181,8 +194,38 @@ def test_get_available_presets_success(mock_requests_session_get: MagicMock,
     expected_number_of_presets = 62
     # Act: perform method under test
     result = mock_api_client.get_available_presets()
-    # Assert: check that the expected method have been called by the tested method
+    # Assert: check that the expected API method have been called by the tested method
     mock_requests_session_get.assert_called_once_with("https://mock.com/api/v1/presets")
+    # Assert: check that the method result contains the expected data
+    assert len(result) == expected_number_of_presets
+    assert result[0].caption == "Adox Color Implosion 100"
+    assert result[1].caption == "Agfa Agfacolor 100"
+    assert all(isinstance(p, Preset) for p in result)
+
+
+@pytest.mark.unit
+def test_get_available_presets_from_api_added_cache_success(mock_requests_session_get: MagicMock,
+                                                            mock_api_client: DehancerOnlineAPIClient):
+    # Arrange: setup mock objects
+    mock_response = Mock()
+    mock_response.text = json.dumps(presets_success_response)
+    mock_requests_session_get.return_value = mock_response
+    # Act: perform method under test
+    result = mock_api_client.get_available_presets()
+    # Assert: check that the expected cache method have been called by the tested method
+    mock_api_client.cache_manager.set.assert_called_once_with(PRESETS, result)
+
+
+@pytest.mark.unit
+def test_get_available_presets_from_cache_success(mock_api_client: DehancerOnlineAPIClient):
+    # Arrange: setup mock objects
+    available_presets = [Preset(**preset) for preset in presets_success_response["presets"]]
+    mock_api_client.cache_manager.get.return_value = sorted(available_presets, key=lambda p: p.caption)
+    expected_number_of_presets = 62
+    # Act: perform method under test
+    result = mock_api_client.get_available_presets()
+    # Assert: check that the expected cache method have been called by the tested method
+    mock_api_client.cache_manager.get.assert_any_call(PRESETS)
     # Assert: check that the method result contains the expected data
     assert len(result) == expected_number_of_presets
     assert result[0].caption == "AGFA Chrome RSX II 200 (Exp. 2006)"
@@ -191,8 +234,8 @@ def test_get_available_presets_success(mock_requests_session_get: MagicMock,
 
 
 @pytest.mark.unit
-def test_get_available_presets_not_success(mock_requests_session_get: MagicMock,
-                                           mock_api_client: DehancerOnlineAPIClient):
+def test_get_available_presets_from_api_not_success(mock_requests_session_get: MagicMock,
+                                                    mock_api_client: DehancerOnlineAPIClient):
     # Arrange: setup mock objects
     mock_response = Mock()
     mock_response.text = json.dumps(presets_not_success_response)
@@ -206,8 +249,8 @@ def test_get_available_presets_not_success(mock_requests_session_get: MagicMock,
 
 
 @pytest.mark.unit
-def test_get_available_presets_failure(mock_requests_session_get: MagicMock,
-                                       mock_api_client: DehancerOnlineAPIClient):
+def test_get_available_presets_from_api_failure(mock_requests_session_get: MagicMock,
+                                                mock_api_client: DehancerOnlineAPIClient):
     # Arrange: setup mock objects
     mock_response = Mock()
     mock_response.text = presets_invalid_response

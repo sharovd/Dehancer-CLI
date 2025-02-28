@@ -1,9 +1,9 @@
 presets_success_output = """The next presets are available:
-[1]	AGFA Chrome RSX II 200 (Exp. 2006)
-[2]	Adox Color Implosion 100
-[3]	Agfa Agfacolor 100
-[4]	Agfa Agfacolor Portrait XPS 160
-[5]	Agfa Agfacolor XRS 200 (Exp. 1991)
+[1]	Adox Color Implosion 100
+[2]	Agfa Agfacolor 100
+[3]	Agfa Agfacolor Portrait XPS 160
+[4]	Agfa Agfacolor XRS 200 (Exp. 1991)
+[5]	AGFA Chrome RSX II 200 (Exp. 2006)
 [6]	Agfa Scala 200x
 [7]	Ambrotype (by Anatolee Green) normal
 [8]	Astrum Color Negative 125

@@ -1,9 +1,9 @@
 contacts_success_output = """Create contacts for the image '{input_image_path}':
-1. 'AGFA Chrome RSX II 200 (Exp. 2006)' : {result_image_link}
-2. 'Adox Color Implosion 100' : {result_image_link}
-3. 'Agfa Agfacolor 100' : {result_image_link}
-4. 'Agfa Agfacolor Portrait XPS 160' : {result_image_link}
-5. 'Agfa Agfacolor XRS 200 (Exp. 1991)' : {result_image_link}
+1. 'Adox Color Implosion 100' : {result_image_link}
+2. 'Agfa Agfacolor 100' : {result_image_link}
+3. 'Agfa Agfacolor Portrait XPS 160' : {result_image_link}
+4. 'Agfa Agfacolor XRS 200 (Exp. 1991)' : {result_image_link}
+5. 'AGFA Chrome RSX II 200 (Exp. 2006)' : {result_image_link}
 6. 'Agfa Scala 200x' : {result_image_link}
 7. 'Ambrotype (by Anatolee Green) normal' : {result_image_link}
 8. 'Astrum Color Negative 125' : {result_image_link}

@@ -7,17 +7,23 @@ import subprocess
 from pathlib import Path
 from secrets import choice
 
+import pyperclip
 import pytest
 from pytest import param as test_data  # noqa: PT013
+from rjsmin import jsmin
 
 import tests.utils.test_data_provider as td
 from src import app_name, app_version
+from src.api.constants import ENCODING_UTF_8
 from src.api.models.preset import PresetSettings, PresetSettingsState
-from src.utils import get_filename_without_extension
+from src.cache.cache_keys import ACCESS_TOKEN, AUTH, PRESETS
+from src.cache.cache_manager import CacheManager
+from src.utils import get_filename_without_extension, is_clipboard_available
 from tests.data.app_outputs.contacts import contacts_success_output
 from tests.data.app_outputs.develop import develop_without_auth_success_output
 from tests.data.app_outputs.presets import presets_success_output
 from tests.utils.comparators import compare_contacts_command_output, compare_develop_command_output
+from tests.utils.test_cache_context import CacheBackupContext
 from tests.utils.test_files_context import FileBackupContext
 
 project_root = Path(__file__).resolve().parent.parent
@@ -193,11 +199,13 @@ def test_develop_command_wo_auth_develop_image(preset_settings_file_content: str
                                                preset_settings_args: str,
                                                expected_preset_settings_object: PresetSettings,
                                                test_images: list[str]):
-    run_develop_command_with_settings(preset_settings_file_content, preset_settings_args,
+    cache_manager = CacheManager(application_name=app_name)
+    run_develop_command_with_settings(cache_manager, preset_settings_file_content, preset_settings_args,
                                       expected_preset_settings_object, test_images)
 
 
-def run_develop_command_with_settings(preset_settings_file_content: str,
+def run_develop_command_with_settings(cache_manager: CacheManager,
+                                      preset_settings_file_content: str,
                                       preset_settings_args: str,
                                       expected_preset_settings_object: PresetSettings,
                                       test_images: list[str]) -> None:
@@ -213,7 +221,8 @@ def run_develop_command_with_settings(preset_settings_file_content: str,
     random_preset_name = choice(expected_presets)
     random_preset_number = expected_presets.index(random_preset_name) + 1
 
-    with FileBackupContext(expected_output_dir), FileBackupContext("auth.txt"), FileBackupContext("settings.yaml"):
+    with (FileBackupContext(expected_output_dir), FileBackupContext("settings.yaml"),
+          CacheBackupContext(cache_manager, [ACCESS_TOKEN, AUTH])):
         # Create settings.yaml if preset_settings_file_content is provided
         if preset_settings_file_content:
             with Path("settings.yaml").open("w") as settings_file:
@@ -259,3 +268,60 @@ def test_version_command_prints_application_version():
     # Assert: check command return code and output
     assert result.returncode == 0
     assert result.stdout == expected_output
+
+
+@pytest.mark.e2e
+def test_clear_cache_command_clears_all_application_cached_data():
+    cache_manager = CacheManager(application_name=app_name)
+    # Arrange: perform 'presets' command that stores the result in the cache
+    subprocess.run(  # noqa: S603
+        ["python", "dehancer_cli.py", "presets"],  # noqa: S607
+        cwd=project_root,
+        capture_output=True,
+        text=True, check=False,
+    )
+    # Arrange: check that cache isn't empty
+    assert cache_manager.get(PRESETS) is not None
+    # Act: perform command under test
+    result = subprocess.run(  # noqa: S603
+        ["python", "dehancer_cli.py", "clear-cache"],  # noqa: S607
+        cwd=project_root,
+        capture_output=True,
+        text=True, check=False,
+    )
+    # Assert: check command return code and that cache is empty
+    assert result.returncode == 0
+    assert cache_manager.get(PRESETS) is None
+
+
+@pytest.mark.e2e
+def test_web_ext_command_copies_js_script_in_clipboard():
+    script_path = Path(__file__).resolve().parents[1] / "scripts" / "web-ext" / "get-settings-via-browser-console.js"
+    obfuscated_script_path = script_path.resolve().parent / "get-settings-via-browser-console-obfuscated.js"
+    web_extension_file_name = "web-extension-script.txt"
+    # Arrange: define expected clipboard content and output
+    expected_clipboard = jsmin(script_path.read_text(encoding=ENCODING_UTF_8))
+    expected_output_cp_is_available = "Web extension script copied into clipboard!\n"
+    expected_output_cp_is_not_available = \
+        f"Web extension script, as a workaround, written to file '{web_extension_file_name}'.\n"
+    with (FileBackupContext(str(obfuscated_script_path))):
+        # Act: perform command under test
+        result = subprocess.run(  # noqa: S603
+            ["python", "dehancer_cli.py", "web-ext"],  # noqa: S607
+            cwd=project_root,
+            capture_output=True,
+            text=True, check=False,
+        )
+        # Assert: check command return code and output
+        assert result.returncode == 0
+        clipboard_is_available = is_clipboard_available()
+        if clipboard_is_available:
+            assert result.stdout == expected_output_cp_is_available
+            assert pyperclip.paste() == expected_clipboard
+        else:
+            assert expected_output_cp_is_not_available in result.stdout
+            web_extension_file_path = Path(web_extension_file_name)
+            if web_extension_file_path.exists():
+                assert web_extension_file_path.read_text(encoding=ENCODING_UTF_8) == expected_clipboard
+            else:
+                pytest.exit(f"Clipboard isn't available on this system and file '{web_extension_file_name}' is missing")

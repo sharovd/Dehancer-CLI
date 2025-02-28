@@ -5,6 +5,49 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2025-02-28
+### Added
+- Added cache in user home directory to store presets and auth data.
+- Added new CLI command 'clear-cache' to clear all application cached data.
+- Added 'generate_user_guide.py' script and 'md_to_pdf_converter.py' file to generate user guide.
+- Added 'user-guide.pdf' as a copy of the original 'README.md' and 'settings.yaml' files in build.
+- Added js script 'get-settings-via-browser-console.js' as the 'Web extension' feature.
+- Added new CLI command 'web-ext' as the 'Web extension' feature.
+- Updated 'Build-executable-files' job in CI pipeline to obfuscate web extension js script.
+- Covered 100% new or updated source code by unit tests.
+
+### Changed
+- Improved formatting for help command output.
+- Updated all outdated dependencies.
+
+### Fixed
+- Fixed issue with large log file in debug mode.
+- Fixed issue "Error, the program tried to call itself with '-c' argument. Disable with '--no-deployment-flag=self-execution'".
+- Fixed linter founded issues.
+
+### Security
+- Fixed all vulnerability issues found by the application security framework.
+
+
+## [0.3.0] - 2024-09-28
+### Added
+- Support Dehancer Online API v1.
+- Support for all preset settings: adjustments and effects via CLI arguments or settings file.
+- Covered 100% new or updated source code by unit tests.
+- Added test data with different types of settings in the e2e test for the 'develop' (w/o authorisation) command.
+- Added the ability to build MacOS and Windows executable files on demand to reduce pipeline time and costs.
+
+### Changed
+- Changed the format of the settings file from '.txt' to '.yaml'.
+- Improved output of the 'develop' command: added information about the settings used.
+- Updated part of the commands to set effects (use '--set_' prefix).
+- Improved readability of unit tests: added ID for parameterised tests.
+- Updated formatting in 'README.md', moved dev part to separate file 'README_DEV.md'.
+
+### Fixed
+- Fixed problem developing large images (support multipart uploads).
+
+
 ## [0.2.0] - 2024-09-09
 ### Added
 - Added new command 'auth' for authorisation in Dehancer Online via API to be able to develop images without watermarks.

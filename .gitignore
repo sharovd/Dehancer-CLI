@@ -132,3 +132,6 @@ cython_debug/
 # Project files and directories
 dehancer-cli-output-images/
 dehancer-cli.log
+
+# Node.js
+scripts/web-ext/node_modules/

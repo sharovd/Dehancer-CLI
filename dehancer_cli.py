@@ -8,36 +8,37 @@ from dataclasses import asdict, replace
 from pathlib import Path
 
 import click
+import pyperclip
 
 from src import app_name, app_version, utils
 from src.api.clients.dehancer_online_client import DehancerOnlineAPIClient
-from src.api.constants import DEHANCER_ONLINE_API_AUTH_FILE, DEHANCER_ONLINE_API_BASE_URL, IMAGE_VALID_TYPES
+from src.api.constants import DEHANCER_ONLINE_API_BASE_URL, ENCODING_UTF_8, IMAGE_VALID_TYPES
 from src.api.enums import ExportFormat, ImageQuality, ImageSize, UnknownImageQualityError
 from src.api.models.preset import Preset, PresetSettings
+from src.cache.cache_manager import CacheManager
 from src.utils import (
-    get_auth_data,
     get_file_extension,
     get_filename_without_extension,
+    is_clipboard_available,
     is_supported_format_file,
     read_settings_file,
     safe_join,
-    update_auth_data,
 )
+from src.web_ext.we_script_provider import WebExtensionScriptProvider
 
 logging.config.dictConfig(utils.get_logger_config_dict())
 logger = logging.getLogger()
 
-
-dehancer_api_client = DehancerOnlineAPIClient(DEHANCER_ONLINE_API_BASE_URL,
-                                              get_auth_data(DEHANCER_ONLINE_API_AUTH_FILE))
+cache_manager = CacheManager()
+dehancer_api_client = DehancerOnlineAPIClient(DEHANCER_ONLINE_API_BASE_URL, cache_manager)
 
 
 def login(email: str, password: str) -> None:
     """
-    Login to Dehancer Online via the API using the email and password provided and update access token and auth data.
+    Login to Dehancer Online via the API using the email and password provided and save auth data in the cache.
 
     This method attempts to authenticate as an user using the provided email and password.
-    If the authentication is successful, it updates the 'access-token' and 'auth' values in the authentication file.
+    If the authentication is successful, it updates the 'access-token' and 'auth' values in the cache.
     If the authentication fails, an error message is displayed.
 
     Args:
@@ -46,12 +47,11 @@ def login(email: str, password: str) -> None:
         password (str): The password of the user.
 
     """
-    auth_data = dehancer_api_client.login_and_get_auth_cookies(email, password)
-    if auth_data:
-        update_auth_data(DEHANCER_ONLINE_API_AUTH_FILE, auth_data)
+    is_authorized = dehancer_api_client.login(email, password)
+    if is_authorized:
         click.echo(f"User '{email}' successfully authorized.")
     else:
-        click.echo(f"User '{email}' is not authorised. Please check email and password and try again.")
+        click.echo(f"User '{email}' is not authorised. Please check email and password and try again.", err=True)
 
 
 def print_presets() -> None:
@@ -223,6 +223,56 @@ def enable_debug_logs() -> None:
     logger.setLevel(logging.DEBUG)
 
 
+def clear_cache_data() -> None:
+    """
+    Clear all application cached data.
+
+    This function deletes all application cached data such as auth data, API responses, etc.
+
+    Returns
+    -------
+    None
+
+    """
+    cache_manager.clear()
+
+
+def copy_web_extension_script_to_cb() -> None:
+    """
+    Copy the content of a web extension script to the system clipboard.
+
+    This function retrieves the content of the web extension script from the WebExtensionScriptProvider.
+    If the content is not empty, it attempts to copy the content to the system clipboard using the pyperclip library.
+    If copying to the clipboard fails, the script content will be written to the 'web-extension-script.txt' text file.
+
+    Returns
+    -------
+    None
+
+    Raises
+    ------
+    pyperclip.PyperclipException
+        If an error occurs while attempting to copy the script content to the clipboard.
+
+    """
+    web_extension_script_content = WebExtensionScriptProvider().get_script_content()
+    if web_extension_script_content:
+        if is_clipboard_available():
+            pyperclip.copy(web_extension_script_content)
+            click.echo("Web extension script copied into clipboard!")
+        else:
+            click.echo("Web extension script wasn't copied due the error with copy/paste mechanism for your system.\n"
+                       "On Linux, you can run `sudo apt-get install xclip` "
+                       "or `sudo apt-get install xselect` to install a copy/paste mechanism.", err=True)
+            # Write the content of a web extension script to the file if copying to the clipboard is not possible.
+            web_extension_file_name = "web-extension-script.txt"
+            with Path(web_extension_file_name).open("wb") as fp:
+                fp.write(web_extension_script_content.encode(encoding=ENCODING_UTF_8))
+                click.echo(f"Web extension script, as a workaround, written to file '{web_extension_file_name}'.")
+    else:
+        click.echo("Web extension script wasn't copied to clipboard because it was empty.", err=True)
+
+
 @click.group()
 @click.version_option(prog_name=app_name, version=app_version, message="%(prog)s %(version)s")
 @click.option("--logs", type=int, default=0, help="Enable debug logs (1 for enabled, 0 for disabled).")
@@ -236,8 +286,52 @@ def cli(logs: int) -> None:
         enable_debug_logs()
 
 
-@cli.command()
-@click.argument("input")
+@cli.command(help="Command to clear all application cached data.")
+@click.option("--logs", type=int, default=0,
+              help="Enable debug logs (1 for enabled, 0 for disabled).")
+def clear_cache(logs: int) -> None:
+    """
+    Command to clear all application cached data.
+
+    Parameters
+    ----------
+    logs : int
+        Enable debug logs (1 for enabled, 0 for disabled).
+
+    Returns
+    -------
+    None
+
+    """
+    if logs == 1:
+        enable_debug_logs()
+    clear_cache_data()
+
+
+@cli.command(help="Command to copy the content of a web extension script to the clipboard.")
+@click.option("--logs", type=int, default=0,
+              help="Enable debug logs (1 for enabled, 0 for disabled).")
+def web_ext(logs: int) -> None:
+    """
+    Command to copy the content of a web extension script to the clipboard.
+
+    Parameters
+    ----------
+    logs : int
+        Enable debug logs (1 for enabled, 0 for disabled).
+
+    Returns
+    -------
+    None
+
+    """
+    if logs == 1:
+        enable_debug_logs()
+    copy_web_extension_script_to_cb()
+
+
+@cli.command(help="Command to authorize and save auth data.")
+@click.argument("input", metavar="e-mail")
 @click.option("--logs", type=int, default=0,
               help="Enable debug logs (1 for enabled, 0 for disabled).")
 def auth(input, logs: int) -> None:  # noqa: A002, ANN001
@@ -264,7 +358,7 @@ def auth(input, logs: int) -> None:  # noqa: A002, ANN001
     login(input, password)
 
 
-@cli.command()
+@cli.command(help="Command to print available film presets.")
 @click.option("--logs", type=int, default=0,
               help="Enable debug logs (1 for enabled, 0 for disabled).")
 def presets(logs: int) -> None:
@@ -288,8 +382,8 @@ def presets(logs: int) -> None:
     print_presets()
 
 
-@cli.command()
-@click.argument("input")
+@cli.command(help="Command to create contacts for an image.")
+@click.argument("input", metavar="image-path")
 @click.option("--logs", type=int, default=0,
               help="Enable debug logs (1 for enabled, 0 for disabled).")
 def contacts(input, logs: int) -> None:  # noqa: A002, ANN001
@@ -315,8 +409,8 @@ def contacts(input, logs: int) -> None:  # noqa: A002, ANN001
     print_contacts(input)
 
 
-@cli.command()
-@click.argument("input")
+@cli.command(help="Command to develop image with specified film preset, quality and settings.")
+@click.argument("input", metavar="image-path")
 @click.option("-p", "--preset", "preset",
               type=int, required=True, help="Preset number.")
 @click.option("-q", "--quality", "quality",

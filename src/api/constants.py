@@ -1,6 +1,9 @@
+import codecs
+
+ENCODING_UTF_8 = codecs.lookup("utf-8").name
+
 DEHANCER_ONLINE_BASE_URL = "https://online.dehancer.com"
 DEHANCER_ONLINE_API_BASE_URL = f"{DEHANCER_ONLINE_BASE_URL}/api/v1"
-DEHANCER_ONLINE_API_AUTH_FILE = "auth.txt"
 
 HEADER_USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:125.0) Gecko/20100101 Firefox/125.0"
 HEADER_ACCEPT_LANGUAGE_EN = "en-US,en;q=0.5"
@@ -16,7 +19,7 @@ BASE_HEADERS = {
 }
 SECURITY_HEADERS = {
     "DNT": "1",  # Do Not Track
-    "Sec-GPC": "1",  # Google"s "SameSite" Cookie Policy
+    "Sec-GPC": "1",  # Google's "SameSite" Cookie Policy
     "Sec-Fetch-Dest": "empty",  # Destination
     "Sec-Fetch-Mode": "cors",  # Cross-Origin Resource Sharing
     "Sec-Fetch-Site": "cross-site",  # Cross-Site Request

@@ -2,104 +2,105 @@ from __future__ import annotations
 
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from unittest.mock import Mock, mock_open, patch
+from unittest.mock import Mock, call, create_autospec, mock_open, patch
 
+import pyperclip
 import pytest
 import requests
 from pytest import param as test_data  # noqa: PT013
 
 from src.api.constants import IMAGE_VALID_TYPES
 from src.api.models.preset import PresetSettings, PresetSettingsState
+from src.cache.cache_keys import ACCESS_TOKEN, AUTH
+from src.cache.cache_manager import CacheManager
 from src.utils import (
     download_file,
-    get_auth_data,
+    get_auth_data_from_cache,
     get_file_extension,
     get_filename_without_extension,
+    is_clipboard_available,
     is_file_exist,
     is_supported_format_file,
     read_settings_file,
     safe_join,
-    update_auth_data,
+    update_auth_data_in_cache,
 )
 
 
 @pytest.mark.unit
-@pytest.mark.parametrize(("auth_data", "expected_content"), [
+@pytest.mark.parametrize(("auth_data", "expected_calls"), [
     # Valid auth data
-    test_data({"access-token": "abc123", "auth": "def456"}, "access-token=abc123;auth=def456;",
+    test_data({"access-token": "abc123", "auth": "def456"},
+              [call(ACCESS_TOKEN, "abc123"), call(AUTH, "def456")],
               id="Full auth data: access-token and auth"),
-    test_data({"access-token": "abc123"}, "access-token=abc123;",
+    test_data({"access-token": "abc123"},
+              [call(ACCESS_TOKEN, "abc123")],
               id="Partial auth data: only access-token"),
-    test_data({"auth": "def456"}, "auth=def456;",
+    test_data({"auth": "def456"},
+              [call(AUTH, "def456")],
               id="Partial auth data: only auth"),
     test_data({"access-token": "special!@#$%^&*()_+", "auth": "def456"},
-              "access-token=special!@#$%^&*()_+;auth=def456;",
+              [call(ACCESS_TOKEN, "special!@#$%^&*()_+"), call(AUTH, "def456")],
               id="Special characters in access-token data"),
     test_data({"access-token": "abc123", "auth": "special!@#$%^&*()_+"},
-              "access-token=abc123;auth=special!@#$%^&*()_+;",
+              [call(ACCESS_TOKEN, "abc123"), call(AUTH, "special!@#$%^&*()_+")],
               id="Special characters in auth data"),
     test_data({"access-token": "special_1!@#$%^&*()_+", "auth": "special_2!@#$%^&*()_+"},
-              "access-token=special_1!@#$%^&*()_+;auth=special_2!@#$%^&*()_+;",
+              [call(ACCESS_TOKEN, "special_1!@#$%^&*()_+"), call(AUTH, "special_2!@#$%^&*()_+")],
               id="Special characters in access-token and auth data"),
-    test_data({}, "", id="Empty auth data: {}"),
-    test_data(None, "", id="Empty auth data: None"),
+    test_data({}, [], id="Empty auth data: {}"),
+    test_data(None, [], id="Empty auth data: None"),
 ])
-def test_update_auth_data_writes_to_exiting_file(auth_data: dict[str, str], expected_content: str):
-    # Arrange: setup mock object
-    auth_file_path = "test_auth.txt"
-    with patch("pathlib.Path.open", new_callable=mock_open) as mock_auth_file:
-        # Act: perform method under test
-        update_auth_data(auth_file_path, auth_data)
-        # Assert: check that the file was opened in write mode if auth data is not empty
-        # and the correct content was written
-        if auth_data:
-            mock_auth_file.assert_called_once_with("w")
-            mock_auth_file().write.assert_called_once_with(expected_content)
-
-
-@pytest.mark.unit
-@pytest.mark.parametrize(("file_content", "expected_result"), [
-    test_data("access-token=valid_access_token;auth=valid_auth_data;",
-              {"access-token": "valid_access_token", "auth": "valid_auth_data"},
-              id="Full auth data: access-token and auth"),
-    test_data("access-token=valid_access_token;",
-              {"access-token": "valid_access_token"},
-              id="Partial auth data: only access-token"),
-    test_data("auth=valid_auth_data;",
-              {"auth": "valid_auth_data"},
-              id="Partial auth data: only auth"),
-    test_data("access-token=special_1!@#$%^&*()_+;auth=special_2!@#$%^&*()_+;",
-              {"access-token": "special_1!@#$%^&*()_+", "auth": "special_2!@#$%^&*()_+"},
-              id="Special characters in auth data"),
-    test_data("", None,
-              id="Empty auth file data"),
-    test_data("access-token=valid_access_token_1;auth=valid_auth_data_1;\naccess-token=valid_access_token_2;auth=valid_auth_data_2;",
-              {"access-token": "valid_access_token_1", "auth": "valid_auth_data_1"},
-              id="Multiline file data (only first line should be read)"),
-])
-def test_get_auth_data_returns_auth_data(file_content: str, expected_result: dict[str, str] | None):
-    # Arrange: create temporary auth file with content
-    with NamedTemporaryFile(delete=False) as tmp_file:
-        tmp_file.write(file_content.encode())
-        tmp_file_path = tmp_file.name
-    try:
-        # Act: perform method under test and get result
-        actual_result = get_auth_data(tmp_file_path)
-        # Assert
-        assert actual_result == expected_result
-    finally:
-        # Cleanup: remove temporary auth file
-        Path(tmp_file_path).unlink()
-
-
-@pytest.mark.unit
-def test_get_auth_data_for_nonexistent_file_returns_none():
-    # Arrange: path to a non-existent file
-    non_existent_file_path = "non_existent_file.txt"
+def test_update_auth_data_in_cache(auth_data: dict[str, str], expected_calls: dict[str, str]):
+    # Arrange: setup mock cache object
+    mock_cache_manager = create_autospec(CacheManager)
     # Act: perform method under test
-    actual_result = get_auth_data(non_existent_file_path)
+    update_auth_data_in_cache(mock_cache_manager, auth_data)
+    # Assert: check that the file was opened in write mode if auth data is not empty
+    # and the correct content was written
+    if expected_calls:
+        mock_cache_manager.set.assert_has_calls(expected_calls)
+    else:
+        mock_cache_manager.set.assert_not_called()
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(("cache_data", "expected_result"), [
+    test_data({"access-token": "valid_access_token", "auth": "valid_auth_data"},
+              {ACCESS_TOKEN: "valid_access_token", AUTH: "valid_auth_data"},
+              id="Full auth data: access-token and auth"),
+    test_data({"access-token": "valid_access_token", "auth": None},
+              {ACCESS_TOKEN: "valid_access_token", AUTH: None},
+              id="Partial auth data: only access-token"),
+    test_data({"access-token": None, "auth": "valid_auth_data"},
+              {ACCESS_TOKEN: None, AUTH: "valid_auth_data"},
+              id="Partial auth data: only auth"),
+    test_data({"access-token": "special_1!@#$%^&*()_+", "auth": "special_2!@#$%^&*()_+"},
+              {ACCESS_TOKEN: "special_1!@#$%^&*()_+", AUTH: "special_2!@#$%^&*()_+"},
+              id="Special characters in auth data"),
+    test_data({"access-token": None, "auth": None},
+              {ACCESS_TOKEN: None, AUTH: None},
+              id="Empty auth file data"),
+])
+def test_get_auth_data_returns_auth_data(cache_data: dict[str, str] | None, expected_result: dict[str, str] | None):
+    # Arrange: setup mock cache object
+    mock_cache_manager = create_autospec(CacheManager)
+    mock_cache_manager.get.side_effect = lambda key: cache_data.get(key)
+    # Act: perform method under test and get result
+    actual_result = get_auth_data_from_cache(mock_cache_manager)
+    # Assert
+    assert actual_result == expected_result
+
+
+@pytest.mark.unit
+def test_get_auth_data_for_empty_cache_returns_none():
+    # Arrange: setup mock cache object
+    mock_cache_manager = create_autospec(CacheManager)
+    mock_cache_manager.get.return_value = None
+    # Act: perform method under test
+    actual_result = get_auth_data_from_cache(mock_cache_manager)
     # Assert: check that the method result contains the expected result
-    assert actual_result is None
+    assert actual_result == {ACCESS_TOKEN: None, AUTH: None}
 
 
 @pytest.mark.unit
@@ -697,3 +698,26 @@ def test_safe_join_for_path_traversals_raises_error(paths: tuple[str, ...]):
     with pytest.raises(ValueError, match="Attempted path traversal detected"):
         # Act: perform method under test
         safe_join(base, *paths)
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("clipboard_content", "expected_result"), [
+        test_data("some text", True, id="Non-empty string"), # noqa: FBT003
+        test_data("", True, id="Empty string"), # noqa: FBT003
+        test_data(None, True, id="None"), # noqa: FBT003
+    ],
+)
+def test_is_clipboard_available_returns_true(clipboard_content: str | None, expected_result: bool): # noqa: FBT001
+    # Arrange: setup mock object
+    with patch("pyperclip.paste", return_value=clipboard_content):
+        # Act: perform method under test & Assert
+        assert is_clipboard_available() == expected_result
+
+
+@pytest.mark.unit
+def test_is_clipboard_available_returns_false():
+    # Arrange: setup mock object
+    with patch("pyperclip.paste", side_effect=pyperclip.PyperclipException):
+        # Act: perform method under test & Assert
+        assert is_clipboard_available() is False
