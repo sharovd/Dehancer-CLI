@@ -67,4 +67,4 @@ class BaseAPIClient:  # noqa: D101
             header_part, _, _ = raw_data.partition("\n\n")
             raw_data = f"{header_part}\n\n{LARGE_BODY_PLACEHOLDER}"
 
-        logging.debug(raw_data)
+        logging.debug(raw_data)  # noqa: LOG015
