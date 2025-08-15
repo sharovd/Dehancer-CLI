@@ -30,7 +30,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          poetry install
+          poetry install --all-extras
 
       - name: Run linter and code formatter
         run: |
@@ -54,7 +54,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          poetry install
+          poetry install --all-extras
 
       - name: Run unit tests with coverage calculation
         run: |
@@ -87,7 +87,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          poetry install
+          poetry install --all-extras
 
       - name: Run e2e tests
         run: |
@@ -110,7 +110,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          poetry install
+          poetry install --all-extras
 
       - name: Run Snyk to check for vulnerabilities
         id: snyk
