@@ -39,7 +39,7 @@ def test_presets_command_prints_available_presets():
     # Arrange: define expected output
     expected_output = presets_success_output
     # Act: perform command under test
-    result = subprocess.run(  # noqa: S603
+    result = subprocess.run(
         ["python", "dehancer_cli.py", "presets"],  # noqa: S607
         cwd=project_root,
         capture_output=True,
@@ -259,7 +259,7 @@ def test_version_command_prints_application_version():
     # Arrange: define expected output
     expected_output = f"{app_name} {app_version}\n"
     # Act: perform command under test
-    result = subprocess.run(  # noqa: S603
+    result = subprocess.run(
         ["python", "dehancer_cli.py", "--version"],  # noqa: S607
         cwd=project_root,
         capture_output=True,
@@ -274,7 +274,7 @@ def test_version_command_prints_application_version():
 def test_clear_cache_command_clears_all_application_cached_data():
     cache_manager = CacheManager(application_name=app_name)
     # Arrange: perform 'presets' command that stores the result in the cache
-    subprocess.run(  # noqa: S603
+    subprocess.run(
         ["python", "dehancer_cli.py", "presets"],  # noqa: S607
         cwd=project_root,
         capture_output=True,
@@ -283,7 +283,7 @@ def test_clear_cache_command_clears_all_application_cached_data():
     # Arrange: check that cache isn't empty
     assert cache_manager.get(PRESETS) is not None
     # Act: perform command under test
-    result = subprocess.run(  # noqa: S603
+    result = subprocess.run(
         ["python", "dehancer_cli.py", "clear-cache"],  # noqa: S607
         cwd=project_root,
         capture_output=True,
@@ -306,7 +306,7 @@ def test_web_ext_command_copies_js_script_in_clipboard():
         f"Web extension script, as a workaround, written to file '{web_extension_file_name}'.\n"
     with (FileBackupContext(str(obfuscated_script_path))):
         # Act: perform command under test
-        result = subprocess.run(  # noqa: S603
+        result = subprocess.run(
             ["python", "dehancer_cli.py", "web-ext"],  # noqa: S607
             cwd=project_root,
             capture_output=True,

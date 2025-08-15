@@ -241,7 +241,7 @@ class DehancerOnlineAPIClient(BaseAPIClient):
         response = self.session.post(url, headers=headers, data=payload)
         result_images_links = loads(response.text).get("images", None)
         if result_images_links is not None:
-            return {preset.caption: value for preset, value in zip(presets, result_images_links)}
+            return {preset.caption: value for preset, value in zip(presets, result_images_links, strict=False)}
         return {}
 
     def render_image(self, image_id: str, preset: Preset,
