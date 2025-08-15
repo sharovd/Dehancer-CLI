@@ -2208,7 +2208,7 @@ description = "Backported and Experimental Type Hints for Python 3.8+"
 optional = true
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "extra == \"dev\" and python_version < \"3.13\""
+markers = "extra == \"dev\" and python_version == \"3.12\""
 files = [
     {file = "typing_extensions-4.13.2-py3-none-any.whl", hash = "sha256:a439e7c04b49fec3e5d3e2beaa21755cadbbdc391694e28ccdd36ca4a1408f8c"},
     {file = "typing_extensions-4.13.2.tar.gz", hash = "sha256:e6c81219bd689f51865d9e372991c540bda33a0379d5573cddb9a3a23f7caaef"},
@@ -2605,5 +2605,5 @@ dev = ["anybadge", "markdown2", "nuitka", "poetry-core", "poetry-dynamic-version
 
 [metadata]
 lock-version = "2.1"
-python-versions = "^3.12.0"
-content-hash = "f2a006c43aa83c08ebe8b8b5fcbfa902e962de39b504841b10933e65c24685fb"
+python-versions = ">=3.12,<4.0"
+content-hash = "d740ed13a8da56847aa77eb55b8f90b7a74cee3a62f2698a263d155c8e2f2ced"
