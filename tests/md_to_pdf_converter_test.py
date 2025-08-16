@@ -53,7 +53,9 @@ def test_transform_markdown_applies_transformations(md_content: str,
 @pytest.mark.parametrize(("md_content", "expected_html"), [
     test_data("# Header", "<h1>Header</h1>\n",
               id="Simple header"),
-    test_data("```python\ncode\n```", "<pre><code>code\n</code></pre>\n",
+    test_data("```python\ncode\n```", '<div class="codehilite">\n<pre><span></span>'
+                                      '<code><span class="n">code</span>\n</code>'
+                                      '</pre>\n</div>\n',
               id="Code block"),
     test_data("| A | B |\n|---|---|\n| 1 | 2 |",
               "<table>\n"
