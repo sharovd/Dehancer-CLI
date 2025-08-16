@@ -204,6 +204,24 @@ def test_develop_command_wo_auth_develop_image(preset_settings_file_content: str
                                       expected_preset_settings_object, test_images)
 
 
+@pytest.mark.parametrize("input_path", [
+    "u-test-file.jpg", "u-test-directory", "u-test-directory/",
+])
+def test_develop_command_prints_error_when_input_missing(input_path: str):
+    # Arrange: define expected output
+    expected_output = f"'{input_path}' is not a file or directory.\n"
+    # Act: perform command under test
+    result = subprocess.run(  # noqa: S603
+        ["python", "dehancer_cli.py", "develop", input_path, "--preset", str(1)],  # noqa: S607
+        cwd=project_root,
+        capture_output=True,
+        text=True, check=False,
+    )
+    # Assert: check command return code and output
+    assert result.returncode == 0
+    assert result.stdout == expected_output
+
+
 def run_develop_command_with_settings(cache_manager: CacheManager,
                                       preset_settings_file_content: str,
                                       preset_settings_args: str,
@@ -233,12 +251,12 @@ def run_develop_command_with_settings(cache_manager: CacheManager,
             cmd = ["python", "dehancer_cli.py", "develop", random_test_image_path, "--preset", str(random_preset_number)]  # noqa: E501
             if preset_settings_args:
                 cmd += shlex.split(preset_settings_args)
+        # Act: perform command under test
         result = subprocess.run(  # noqa: S603
                 cmd,
                 cwd=project_root,
                 capture_output=True,
-                text=True,
-                check=False,
+                text=True, check=False,
         )
         # Assert: check command return code and output
         assert result.returncode == 0
