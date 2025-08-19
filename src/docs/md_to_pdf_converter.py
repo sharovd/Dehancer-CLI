@@ -9,7 +9,7 @@ from weasyprint import HTML
 from src.api.constants import ENCODING_UTF_8
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable  # pragma: no cover
 
 
 class MarkdownToPDFConverter:
