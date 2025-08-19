@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.2] - 2025-08-20
+### Added
+- Covered 100% new or updated source code by unit tests.
+
+### Changed
+- Updated all outdated dependencies.
+
+### Fixed
+- Fixed issue "No error shown when input file is missing".
+- Fixed linter founded issues.
+
+### Security
+- Fixed all vulnerability issues found by the application security framework.
+
 ## [0.4.0] - 2025-02-28
 ### Added
 - Added cache in user home directory to store presets and auth data.
