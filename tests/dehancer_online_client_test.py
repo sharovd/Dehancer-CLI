@@ -396,7 +396,8 @@ def test_get_image_previews_success(mock_api_client: DehancerOnlineAPIClient):
                                           headers=expected_headers, data=expected_payload)
         # Assert: check that the method result contains the expected data
         assert result == {f"Preset {i}": link for i, link in zip(range(1, 63),
-                                                                 image_previews_success_response["images"])}
+                                                                 image_previews_success_response["images"],
+                                                                 strict=False)}
 
 
 @pytest.mark.unit

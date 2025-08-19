@@ -39,7 +39,7 @@ def test_presets_command_prints_available_presets():
     # Arrange: define expected output
     expected_output = presets_success_output
     # Act: perform command under test
-    result = subprocess.run(  # noqa: S603
+    result = subprocess.run(
         ["python", "dehancer_cli.py", "presets"],  # noqa: S607
         cwd=project_root,
         capture_output=True,
@@ -204,6 +204,24 @@ def test_develop_command_wo_auth_develop_image(preset_settings_file_content: str
                                       expected_preset_settings_object, test_images)
 
 
+@pytest.mark.parametrize("input_path", [
+    "u-test-file.jpg", "u-test-directory", "u-test-directory/",
+])
+def test_develop_command_prints_error_when_input_missing(input_path: str):
+    # Arrange: define expected output
+    expected_output = f"'{input_path}' is not a file or directory.\n"
+    # Act: perform command under test
+    result = subprocess.run(  # noqa: S603
+        ["python", "dehancer_cli.py", "develop", input_path, "--preset", str(1)],  # noqa: S607
+        cwd=project_root,
+        capture_output=True,
+        text=True, check=False,
+    )
+    # Assert: check command return code and output
+    assert result.returncode == 0
+    assert result.stdout == expected_output
+
+
 def run_develop_command_with_settings(cache_manager: CacheManager,
                                       preset_settings_file_content: str,
                                       preset_settings_args: str,
@@ -233,12 +251,12 @@ def run_develop_command_with_settings(cache_manager: CacheManager,
             cmd = ["python", "dehancer_cli.py", "develop", random_test_image_path, "--preset", str(random_preset_number)]  # noqa: E501
             if preset_settings_args:
                 cmd += shlex.split(preset_settings_args)
+        # Act: perform command under test
         result = subprocess.run(  # noqa: S603
                 cmd,
                 cwd=project_root,
                 capture_output=True,
-                text=True,
-                check=False,
+                text=True, check=False,
         )
         # Assert: check command return code and output
         assert result.returncode == 0
@@ -259,7 +277,7 @@ def test_version_command_prints_application_version():
     # Arrange: define expected output
     expected_output = f"{app_name} {app_version}\n"
     # Act: perform command under test
-    result = subprocess.run(  # noqa: S603
+    result = subprocess.run(
         ["python", "dehancer_cli.py", "--version"],  # noqa: S607
         cwd=project_root,
         capture_output=True,
@@ -274,7 +292,7 @@ def test_version_command_prints_application_version():
 def test_clear_cache_command_clears_all_application_cached_data():
     cache_manager = CacheManager(application_name=app_name)
     # Arrange: perform 'presets' command that stores the result in the cache
-    subprocess.run(  # noqa: S603
+    subprocess.run(
         ["python", "dehancer_cli.py", "presets"],  # noqa: S607
         cwd=project_root,
         capture_output=True,
@@ -283,7 +301,7 @@ def test_clear_cache_command_clears_all_application_cached_data():
     # Arrange: check that cache isn't empty
     assert cache_manager.get(PRESETS) is not None
     # Act: perform command under test
-    result = subprocess.run(  # noqa: S603
+    result = subprocess.run(
         ["python", "dehancer_cli.py", "clear-cache"],  # noqa: S607
         cwd=project_root,
         capture_output=True,
@@ -306,7 +324,7 @@ def test_web_ext_command_copies_js_script_in_clipboard():
         f"Web extension script, as a workaround, written to file '{web_extension_file_name}'.\n"
     with (FileBackupContext(str(obfuscated_script_path))):
         # Act: perform command under test
-        result = subprocess.run(  # noqa: S603
+        result = subprocess.run(
             ["python", "dehancer_cli.py", "web-ext"],  # noqa: S607
             cwd=project_root,
             capture_output=True,

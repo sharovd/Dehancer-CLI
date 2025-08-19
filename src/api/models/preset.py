@@ -81,6 +81,21 @@ class PresetSettings:  # noqa: D101
                 self.vignette_feather == other.vignette_feather
         )
 
+    def __hash__(self) -> int:  # noqa: D105
+        return hash((
+                self.exposure,
+                self.contrast,
+                self.temperature,
+                self.tint,
+                self.color_boost,
+                self.grain,
+                self.bloom,
+                self.halation,
+                self.vignette_exposure,
+                self.vignette_size,
+                self.vignette_feather,
+            ))
+
     @staticmethod
     def default() -> PresetSettings:
         """

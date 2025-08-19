@@ -21,9 +21,7 @@ def test_preset_state_str_returns_off_or_float_value_as_string(preset_state: Pre
     # Assert: check that the method result contains the expected result
     assert actual_str == expected_str
 
-
-@pytest.mark.unit
-@pytest.mark.parametrize(("settings_a", "settings_b", "expected_equal"), [
+preset_settings_test_data = [
     test_data(
         PresetSettings(0, 0, 0, 0, 0,
                        PresetSettingsState.OFF, PresetSettingsState.OFF, PresetSettingsState.OFF,
@@ -146,11 +144,25 @@ def test_preset_state_str_returns_off_or_float_value_as_string(preset_state: Pre
         None,
         False, id="Different type (None)",  # noqa: FBT003
     ),
-])
+]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(("settings_a", "settings_b", "expected_equal"), preset_settings_test_data)
 def test_preset_settings_eq_returns_true_or_false(settings_a: PresetSettings, settings_b: PresetSettings,
                                                   expected_equal: bool):  # noqa: FBT001
     # Act: perform method under test
     actual_equal = settings_a == settings_b
+    # Assert: check that the method result contains the expected result
+    assert actual_equal == expected_equal
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(("settings_a", "settings_b", "expected_equal"), preset_settings_test_data)
+def test_preset_settings_hash_returns_true_or_false(settings_a: PresetSettings, settings_b: PresetSettings,
+                                                    expected_equal: bool):  # noqa: FBT001
+    # Act: perform method under test
+    actual_equal = hash(settings_a) == hash(settings_b)
     # Assert: check that the method result contains the expected result
     assert actual_equal == expected_equal
 

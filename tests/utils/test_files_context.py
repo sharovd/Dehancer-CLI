@@ -43,12 +43,12 @@ class FileBackupContext:
         except those beginning with 'backup_'.
         It then removes the original files and directories to prepare for new operations.
         """
-        if Path(self.path_to_backup).exists() and len(os.listdir(self.path_to_backup)) != 0:
+        if Path(self.path_to_backup).exists() and any(Path(self.path_to_backup).iterdir()):
             Path(self.backup_path).mkdir(parents=True)
-            for file in os.listdir(self.path_to_backup):
-                if not file.startswith("backup_"):
-                    src_path = os.path.join(self.path_to_backup, file)
-                    backup_path = os.path.join(self.backup_path, file)
+            for file in Path(self.path_to_backup).iterdir():
+                if not file.name.startswith("backup_"):
+                    src_path = os.path.join(self.path_to_backup, file.name)
+                    backup_path = os.path.join(self.backup_path, file.name)
                     if Path(src_path).is_dir():
                         shutil.copytree(src_path, backup_path)
                         shutil.rmtree(src_path)
@@ -79,9 +79,9 @@ class FileBackupContext:
         """
         if Path(self.path_to_backup).is_dir():
             # Clear the directory before restoring files
-            for file in os.listdir(self.path_to_backup):
-                if not file.startswith("backup_"):
-                    file_path = os.path.join(self.path_to_backup, file)
+            for file in Path(self.path_to_backup).iterdir():
+                if not file.name.startswith("backup_"):
+                    file_path = os.path.join(self.path_to_backup, file.name)
                     if Path(file_path).is_dir():
                         shutil.rmtree(file_path)
                     else:

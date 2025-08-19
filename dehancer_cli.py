@@ -202,10 +202,12 @@ def develop_images(path: str, preset_number: int, quality: str, custom_preset_se
     if Path(path).is_file():
         __process_image(path, preset, export_format, preset_settings, preset_number)
     elif Path(path).is_dir():
-        for filename in os.listdir(path):
-            file_path = os.path.join(path, filename)
+        for file in Path(path).iterdir():
+            file_path = os.path.join(path, file.name)
             if Path.is_file(Path(file_path)) and is_supported_format_file(file_path, IMAGE_VALID_TYPES):
                 __process_image(file_path, preset, export_format, preset_settings, preset_number)
+    else:
+        logger.error("'%s' is not a file or directory.", path)
 
 
 def enable_debug_logs() -> None:

@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Callable
+from typing import TYPE_CHECKING
 
 import markdown2
 from weasyprint import HTML
 
 from src.api.constants import ENCODING_UTF_8
+
+if TYPE_CHECKING:
+    from collections.abc import Callable  # pragma: no cover
 
 
 class MarkdownToPDFConverter:

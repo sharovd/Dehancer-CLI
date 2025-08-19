@@ -29,7 +29,7 @@ def _compare_command_output(expected_output: str, actual_output: str, replacemen
         print(f"Line count mismatch: expected {len(expected_lines)}, got {len(actual_lines)}")  # noqa: T201
         return False
     # Compare each string
-    for expected_line, actual_line in zip(expected_lines, actual_lines):
+    for expected_line, actual_line in zip(expected_lines, actual_lines, strict=False):
         if "{result_image_link}" in expected_line:
             # Replace anchor {result_image_link} with a regex pattern to match any https URL with jpeg image
             processed_expected_line = re.escape(expected_line).replace(r"\{result_image_link\}",

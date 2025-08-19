@@ -5,7 +5,7 @@ ENCODING_UTF_8 = codecs.lookup("utf-8").name
 DEHANCER_ONLINE_BASE_URL = "https://online.dehancer.com"
 DEHANCER_ONLINE_API_BASE_URL = f"{DEHANCER_ONLINE_BASE_URL}/api/v1"
 
-HEADER_USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:125.0) Gecko/20100101 Firefox/125.0"
+HEADER_USER_AGENT = "Mozilla/5.0"
 HEADER_ACCEPT_LANGUAGE_EN = "en-US,en;q=0.5"
 HEADER_ACCEPT_ENCODING = "gzip, deflate, br, zstd"
 HEADER_JSON_CONTENT_TYPE = "application/json"
