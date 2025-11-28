@@ -13,52 +13,65 @@ contacts_success_output = """Create contacts for the image '{input_image_path}':
 12. 'Fuji Eterna Vivid 500 (Exp. 2013) + 3513' : {result_image_link}
 13. 'Fuji Reala 500D (Exp.2013) + 2383' : {result_image_link}
 14. 'Fujichrome CDU-II (cross)' : {result_image_link}
-15. 'Fujichrome Velvia 100' : {result_image_link}
-16. 'Fujichrome Velvia 50 + 2383' : {result_image_link}
-17. 'Fujicolor 100 + 3513' : {result_image_link}
-18. 'Fujicolor 100 + Kodak Endura' : {result_image_link}
-19. 'Fujicolor C200 + 3513' : {result_image_link}
-20. 'Fujicolor C200 + Kodak Endura' : {result_image_link}
-21. 'Fujicolor Natura 1600 + 3513' : {result_image_link}
-22. 'Fujicolor Natura 1600 + Kodak Endura' : {result_image_link}
-23. 'Fujifilm FP-100c' : {result_image_link}
-24. 'Fujifilm FP-100c (Digital Intermediate)' : {result_image_link}
-25. 'Fujifilm Instax + 2383' : {result_image_link}
-26. 'Fujifilm Neopan Acros 100' : {result_image_link}
-27. 'Ilford HP5 Plus 400' : {result_image_link}
-28. 'Ilford HP5 Plus 400 Push +2' : {result_image_link}
-29. 'Ilford XP2 Super 400' : {result_image_link}
-30. 'Kodak Aerocolor IV 125' : {result_image_link}
-31. 'Kodak Eastman Double-X 5222' : {result_image_link}
-32. 'Kodak Ektar 25 (Exp. 1996) + 2383' : {result_image_link}
-33. 'Kodak Ektar 25 (Exp. 1996) + Kodak Endura paper' : {result_image_link}
-34. 'Kodak Gold 200' : {result_image_link}
-35. 'Kodak Kodachrome 64 (Experimental)' : {result_image_link}
-36. 'Kodak Plus-X Pan 125 (Exp. 1979)' : {result_image_link}
-37. 'Kodak Portra 400 + Endura' : {result_image_link}
-38. 'Kodak Supra 100 + 2383' : {result_image_link}
-39. 'Kodak Supra 100 + Kodak Endura' : {result_image_link}
-40. 'Kodak Ultramax 400 + 2383' : {result_image_link}
-41. 'Kodak Ultramax 400 + Kodak Endura' : {result_image_link}
-42. 'Kodak Vision3 200T + 2383' : {result_image_link}
-43. 'Kodak Vision3 200T + Kodak Endura' : {result_image_link}
-44. 'Kodak Vision3 250D + 2383' : {result_image_link}
-45. 'Kodak Vision3 500T + 2383' : {result_image_link}
-46. 'Kodak Vision3 50D + 2383' : {result_image_link}
-47. 'Kodak Vision3 50D + Kodak Endura' : {result_image_link}
-48. 'Konica Centuria 100 DNP + 3513' : {result_image_link}
-49. 'Konica Centuria 100 DNP + Kodak Endura' : {result_image_link}
-50. 'Konica Impresa 50 (Exp. 2006) + 2383' : {result_image_link}
-51. 'Konica Impresa 50 (Exp. 2006) + Kodak Endura' : {result_image_link}
-52. 'Konica Minolta VX400 Super' : {result_image_link}
-53. 'Lomochrome Metropolis XR 100-400' : {result_image_link}
-54. 'Lomochrome Purple XR 100-400' : {result_image_link}
-55. 'ORWO Chrom UT21 Daylight (Exp. 1992)' : {result_image_link}
-56. 'Polaroid Polachrome 35 mm (Exp. 1986)' : {result_image_link}
-57. 'Polaroid Type 100 Sepia (Exp. 2009)' : {result_image_link}
-58. 'Prokudin-Gorskiy 1906 (experimental)' : {result_image_link}
-59. 'Rollei CN200 + 2383' : {result_image_link}
-60. 'Rollei CN200 + Kodak Endura' : {result_image_link}
-61. 'Rollei Ortho 25' : {result_image_link}
-62. 'Svema Type-42 (Exp. 1991)' : {result_image_link}
+15. 'Fujichrome Provia 100F' : {result_image_link}
+16. 'Fujichrome Velvia 100' : {result_image_link}
+17. 'Fujichrome Velvia 50 + 2383' : {result_image_link}
+18. 'Fujicolor 100 + 3513' : {result_image_link}
+19. 'Fujicolor 100 + Kodak Endura' : {result_image_link}
+20. 'Fujicolor C200 + 3513' : {result_image_link}
+21. 'Fujicolor C200 + Kodak Endura' : {result_image_link}
+22. 'Fujicolor Natura 1600 + 3513' : {result_image_link}
+23. 'Fujicolor Natura 1600 + Kodak Endura' : {result_image_link}
+24. 'Fujicolor Print (Industrial) 100 + 3513' : {result_image_link}
+25. 'Fujicolor Print (Industrial) 100 + Kodak Endura' : {result_image_link}
+26. 'Fujicolor Print (Industrial) 400 + 3513' : {result_image_link}
+27. 'Fujicolor Print (Industrial) 400 + Kodak Endura' : {result_image_link}
+28. 'Fujicolor Pro 400H + Kodak Endura' : {result_image_link}
+29. 'Fujicolor Superia 1600 + 3513' : {result_image_link}
+30. 'Fujicolor Superia 1600 + Kodak Endura' : {result_image_link}
+31. 'Fujicolor Superia 200 + 3513' : {result_image_link}
+32. 'Fujicolor Superia 200 + Kodak Endura' : {result_image_link}
+33. 'Fujifilm FP-100c' : {result_image_link}
+34. 'Fujifilm FP-100c (Digital Intermediate)' : {result_image_link}
+35. 'Fujifilm Instax (Digital Intermediate)' : {result_image_link}
+36. 'Fujifilm Instax + 2383' : {result_image_link}
+37. 'Fujifilm Neopan Acros 100' : {result_image_link}
+38. 'Ilford HP5 Plus 400' : {result_image_link}
+39. 'Ilford HP5 Plus 400 Push +2' : {result_image_link}
+40. 'Ilford XP2 Super 400' : {result_image_link}
+41. 'Kodak Aerocolor IV 125' : {result_image_link}
+42. 'Kodak Color Plus 200 + Kodak Endura' : {result_image_link}
+43. 'Kodak Eastman Double-X 5222' : {result_image_link}
+44. 'Kodak Ektachrome E100 (2017)' : {result_image_link}
+45. 'Kodak Ektar 25 (Exp. 1996) + 2383' : {result_image_link}
+46. 'Kodak Ektar 25 (Exp. 1996) + Kodak Endura paper' : {result_image_link}
+47. 'Kodak Gold 200' : {result_image_link}
+48. 'Kodak Kodachrome 64 (Experimental)' : {result_image_link}
+49. 'Kodak Plus-X Pan 125 (Exp. 1979)' : {result_image_link}
+50. 'Kodak Portra 400 + Endura' : {result_image_link}
+51. 'Kodak Supra 100 + 2383' : {result_image_link}
+52. 'Kodak Supra 100 + Kodak Endura' : {result_image_link}
+53. 'Kodak Ultramax 400 + 2383' : {result_image_link}
+54. 'Kodak Ultramax 400 + Kodak Endura' : {result_image_link}
+55. 'Kodak Vision3 200T + 2383' : {result_image_link}
+56. 'Kodak Vision3 200T + Kodak Endura' : {result_image_link}
+57. 'Kodak Vision3 250D + 2383' : {result_image_link}
+58. 'Kodak Vision3 500T + 2383' : {result_image_link}
+59. 'Kodak Vision3 50D + 2383' : {result_image_link}
+60. 'Kodak Vision3 50D + Kodak Endura' : {result_image_link}
+61. 'Konica Centuria 100 DNP + 3513' : {result_image_link}
+62. 'Konica Centuria 100 DNP + Kodak Endura' : {result_image_link}
+63. 'Konica Impresa 50 (Exp. 2006) + 2383' : {result_image_link}
+64. 'Konica Impresa 50 (Exp. 2006) + Kodak Endura' : {result_image_link}
+65. 'Konica Minolta VX400 Super' : {result_image_link}
+66. 'Lomochrome Metropolis XR 100-400' : {result_image_link}
+67. 'Lomochrome Purple XR 100-400' : {result_image_link}
+68. 'ORWO Chrom UT21 Daylight (Exp. 1992)' : {result_image_link}
+69. 'Polaroid Polachrome 35 mm (Exp. 1986)' : {result_image_link}
+70. 'Polaroid Type 100 Sepia (Exp. 2009)' : {result_image_link}
+71. 'Prokudin-Gorskiy 1906 (experimental)' : {result_image_link}
+72. 'Rollei CN200 + 2383' : {result_image_link}
+73. 'Rollei CN200 + Kodak Endura' : {result_image_link}
+74. 'Rollei Ortho 25' : {result_image_link}
+75. 'Svema Type-42 (Exp. 1991)' : {result_image_link}
 """
