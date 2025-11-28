@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.5.0] - 2025-11-28
 ### Added
-- Support has been added for 12 new film presets, including Kodak Color Plus, Fujicolor Superia, Fujicolor Industrial, Fujicolor Pro 400H, Fujichrome Provia, Fujifilm Instax, and Kodak Ektachrome E100. 
+- Support has been added for 13 new film presets, including Kodak Color Plus, Fujicolor Superia, Fujicolor Industrial, Fujicolor Pro 400H, Fujichrome Provia, Fujifilm Instax, and Kodak Ektachrome E100. 
 
 ### Changed
 - Updated all outdated dependencies.
