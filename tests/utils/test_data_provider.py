@@ -5,7 +5,11 @@ from pathlib import Path
 
 
 def get_all_test_images() -> list[str]:
-    return __get_test_files("*", "app_input_test_images")
+    return __get_test_files("*.jpg", "app_input_test_images")
+
+
+def get_big_test_images() -> list[str]:
+    return __get_test_files("*.jpg", "app_input_test_images", "big")
 
 
 def __get_test_files(files_pattern: str, *sub_folders: str) -> list[str]:

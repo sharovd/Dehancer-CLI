@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.2] - 2025-12-05
+### Added
+- Added contract tests for Dehancer Online API using [Pydantic](https://docs.pydantic.dev/) validation. Marked as `contract`.
+
+### Security
+- Fixed all vulnerability issues found by the application security framework.
+
 ## [0.5.0] - 2025-11-28
 ### Added
 - Support has been added for 13 new film presets, including Kodak Color Plus, Fujicolor Superia, Fujicolor Industrial, Fujicolor Pro 400H, Fujichrome Provia, Fujifilm Instax, and Kodak Ektachrome E100. 
