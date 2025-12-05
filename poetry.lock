@@ -2858,4 +2858,4 @@ dev = ["anybadge", "markdown2", "nuitka", "poetry-core", "poetry-dynamic-version
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4.0"
-content-hash = "dea0d2b385d3fa277b4b369f675afd4238921aa1f8ef05c98b9d6b00c04fb184"
+content-hash = "410252a2e2dc2121be7eca6c9973483352855a8d6a63f028fafb01151e40eea1"

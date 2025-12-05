@@ -20,8 +20,9 @@ dependencies = [
    "diskcache == 5.6.3",
    "rjsmin == 1.2.5",
    "pyperclip == 1.11.0",
-   "brotli == 1.2.0",
-   "fonttools == 4.60.2"
+    # Fix vulnerabilities
+   "brotli (>=1.2.0,<2.0.0)",
+   "fonttools (>=4.60.2,<5.0.0)"
 ]
 
 [project.optional-dependencies]
