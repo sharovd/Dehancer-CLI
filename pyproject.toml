@@ -21,7 +21,7 @@ dependencies = [
    "rjsmin == 1.2.5",
    "pyperclip == 1.11.0",
    "brotli == 1.2.0",
-   "fonttools == 4.61.0"
+   "fonttools == 4.60.2"
 ]
 
 [project.optional-dependencies]
