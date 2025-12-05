@@ -22,6 +22,7 @@ dependencies = [
    "pyperclip == 1.11.0",
     # Fix vulnerabilities
    "brotli (>=1.2.0,<2.0.0)",
+   "brotlicffi (>=1.2.0.0,<2.0.0.0)",
    "fonttools (>=4.60.2,<5.0.0)"
 ]
 
