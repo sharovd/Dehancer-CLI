@@ -38,10 +38,12 @@ class WebExtensionScriptProvider:
         If the obfuscated version exists, returns it without modifications.
         Otherwise, it returns the minified version of the original script.
 
-        Raises:
+        Raises
+        ------
             FileNotFoundError: If file with web extension script is found.
 
-        Returns:
+        Returns
+        -------
             str: The script content.
 
         """

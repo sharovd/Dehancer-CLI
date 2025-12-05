@@ -1,10 +1,11 @@
 # Test images for application
 
 This directory contains a set of test images used for testing the application.<br>
-All images are sourced from Unsplash. Below are the details and links to the original images.
+All images, except for the big one, are sourced from Unsplash. Below are the details and links to the original images.
 
 ## Image Sources
 
+* **big/01.jpg** / generated
 * **01.jpg** / [source](https://unsplash.com/photos/a-row-of-multi-family-houses-with-a-blue-sky-in-the-background-FVKS5lztUkQ)
 * **02.jpg** / [source](https://unsplash.com/photos/a-group-of-people-standing-in-front-of-an-arch-cyhFe6EX2KU)
 * **03.jpg** / [source](https://unsplash.com/photos/a-woman-standing-on-top-of-a-lush-green-hillside-CqdNsEuAAKQ)

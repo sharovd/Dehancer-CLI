@@ -91,7 +91,7 @@ def generate_presets(count: int) -> list[Preset]:
 @pytest.mark.unit
 def test_login_success(mock_api_client: DehancerOnlineAPIClient, mock_cache_manager: MagicMock):
     # Arrange: setup mock objects
-    with patch.object(mock_api_client, "_DehancerOnlineAPIClient__login_with_email_and_password",
+    with patch.object(mock_api_client, "_login_with_email_and_password_raw",
                       return_value=Mock(headers=login_with_email_and_password_success_headers,
                                         text=json.dumps(login_with_email_and_password_success_response))) as mock_post:
         mock_cookies = login_with_email_and_password_success_headers.get("set-cookie").split("; ")
@@ -119,7 +119,7 @@ def test_login_success_wo_cookies(mock_api_client: DehancerOnlineAPIClient, mock
     login_with_email_and_password_success_headers.pop("set-cookie")
     login_with_email_and_password_headers_wo_cookies = login_with_email_and_password_success_headers
     # Arrange: setup mock objects
-    with patch.object(mock_api_client, "_DehancerOnlineAPIClient__login_with_email_and_password",
+    with patch.object(mock_api_client, "_login_with_email_and_password_raw",
                       return_value=Mock(headers=login_with_email_and_password_headers_wo_cookies,
                                         text=json.dumps(login_with_email_and_password_success_response))) as mock_post:
         email = "test@test.com"
@@ -158,7 +158,7 @@ def test_is_authorized_returns_auth_state_as_bool_value(mock_api_client: Dehance
 @pytest.mark.unit
 def test_login_not_success(mock_api_client: DehancerOnlineAPIClient):
     # Arrange: setup mock objects
-    with (patch.object(mock_api_client, "_DehancerOnlineAPIClient__login_with_email_and_password",
+    with (patch.object(mock_api_client, "_login_with_email_and_password_raw",
                        return_value=Mock(text=json.dumps(login_with_email_and_password_not_success_response)))
           as mock_post):
         email = "test@test.com"
@@ -174,7 +174,7 @@ def test_login_not_success(mock_api_client: DehancerOnlineAPIClient):
 @pytest.mark.unit
 def test_login_failure(mock_api_client: DehancerOnlineAPIClient):
     # Arrange: setup mock objects
-    with patch.object(mock_api_client, "_DehancerOnlineAPIClient__login_with_email_and_password",
+    with patch.object(mock_api_client, "_login_with_email_and_password_raw",
                       return_value=Mock(text=json.dumps(login_with_email_and_password_invalid_response))):
         email = "test@test.com"
         password = "test"  # noqa: S105
@@ -265,10 +265,10 @@ def test_get_available_presets_from_api_failure(mock_requests_session_get: Magic
 def test_upload_regular_image_success(mock_api_client: DehancerOnlineAPIClient, image_path: str):
     # Arrange: setup mock objects
     with patch.object(mock_api_client, "_DehancerOnlineAPIClient__check_image_file", return_value=True), \
-            patch.object(mock_api_client, "_DehancerOnlineAPIClient__image_upload_prepare",
+            patch.object(mock_api_client, "_image_upload_prepare_raw",
                          return_value=Mock(text=json.dumps(image_upload_prepare_regular_success_response))), \
-            patch.object(mock_api_client, "_DehancerOnlineAPIClient__image_put"), \
-            patch.object(mock_api_client, "_DehancerOnlineAPIClient__image_upload_finish"), \
+            patch.object(mock_api_client, "_image_put_raw"), \
+            patch.object(mock_api_client, "_image_upload_finish_raw"), \
             patch.object(utils, "is_file_exist", return_value=True), \
             patch("src.api.clients.dehancer_online_client.logger") as mock_logger:
         # Act: perform method under test
@@ -285,14 +285,14 @@ def test_upload_regular_image_success(mock_api_client: DehancerOnlineAPIClient, 
 def test_upload_multipart_image_success(mock_api_client: DehancerOnlineAPIClient, image_path: str):
     # Arrange: setup mock objects
     with patch.object(mock_api_client, "_DehancerOnlineAPIClient__check_image_file", return_value=True), \
-            patch.object(mock_api_client, "_DehancerOnlineAPIClient__image_upload_prepare",
+            patch.object(mock_api_client, "_image_upload_prepare_raw",
                          return_value=Mock(text=json.dumps(image_upload_prepare_multipart_success_response))), \
-            patch.object(mock_api_client, "_DehancerOnlineAPIClient__image_put_multipart",
+            patch.object(mock_api_client, "_image_put_multipart_raw",
                          return_value=[
                              Mock(headers={"ETag": "etag-1"}),
                              Mock(headers={"ETag": "etag-2"}),
                          ]), \
-            patch.object(mock_api_client, "_DehancerOnlineAPIClient__image_upload_finish_multipart"), \
+            patch.object(mock_api_client, "_image_upload_finish_multipart_raw"), \
             patch.object(utils, "is_file_exist", return_value=True), \
             patch("src.api.clients.dehancer_online_client.logger") as mock_logger:
         # Act: perform method under test
@@ -301,11 +301,11 @@ def test_upload_multipart_image_success(mock_api_client: DehancerOnlineAPIClient
         expected_image_id = image_upload_prepare_multipart_success_response.get("imageId")
         assert result == expected_image_id
         # Assert: check that the expected multipart logic was triggered
-        mock_api_client._DehancerOnlineAPIClient__image_put_multipart.assert_called_once_with(  # noqa: SLF001
+        mock_api_client._image_put_multipart_raw.assert_called_once_with(  # noqa: SLF001
             image_upload_prepare_multipart_success_response["urls"], image_path,
             image_upload_prepare_multipart_success_response["chunkSize"],
         )
-        mock_api_client._DehancerOnlineAPIClient__image_upload_finish_multipart.assert_called_once_with(  # noqa: SLF001
+        mock_api_client._image_upload_finish_multipart_raw.assert_called_once_with(  # noqa: SLF001
             image_upload_prepare_multipart_success_response["imageId"],
             image_upload_prepare_multipart_success_response["uploadId"], ["etag-1", "etag-2"],
             Path(image_path).name,
@@ -319,7 +319,7 @@ def test_upload_multipart_image_success(mock_api_client: DehancerOnlineAPIClient
 def test_upload_image_file_not_success(mock_api_client: DehancerOnlineAPIClient, image_path: str):
     # Arrange: setup mock objects
     with patch.object(mock_api_client, "_DehancerOnlineAPIClient__check_image_file", return_value=True), \
-            patch.object(mock_api_client, "_DehancerOnlineAPIClient__image_upload_prepare",
+            patch.object(mock_api_client, "_image_upload_prepare_raw",
                          return_value=Mock(text=json.dumps(image_upload_prepare_not_success_response))), \
             patch.object(utils, "is_file_exist", return_value=True), \
             patch("src.api.clients.dehancer_online_client.logger") as mock_logger:
@@ -336,7 +336,7 @@ def test_upload_image_file_not_success(mock_api_client: DehancerOnlineAPIClient,
 def test_upload_image_file_failure(mock_api_client: DehancerOnlineAPIClient, image_path: str):
     # Arrange: setup mock objects
     with patch.object(mock_api_client, "_DehancerOnlineAPIClient__check_image_file", return_value=True), \
-            patch.object(mock_api_client, "_DehancerOnlineAPIClient__image_upload_prepare",
+            patch.object(mock_api_client, "_image_upload_prepare_raw",
                          return_value=Mock(text=image_upload_prepare_invalid_response)), \
             patch.object(utils, "is_file_exist", return_value=True), \
             pytest.raises(json.JSONDecodeError):  # Assert: check that the expected failure caused by the tested method

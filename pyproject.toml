@@ -19,7 +19,11 @@ dependencies = [
    "cryptography == 46.0.3",
    "diskcache == 5.6.3",
    "rjsmin == 1.2.5",
-   "pyperclip == 1.11.0"
+   "pyperclip == 1.11.0",
+    # Fix vulnerabilities
+   "brotli (>=1.2.0,<2.0.0)",
+   "brotlicffi (>=1.2.0.0,<2.0.0.0)",
+   "fonttools (>=4.60.2,<5.0.0)"
 ]
 
 [project.optional-dependencies]
@@ -27,6 +31,7 @@ dev = [
    "ruff == 0.14.6",
    "pytest == 9.0.1",
    "pytest-cov == 7.0.0",
+   "pydantic == 2.12.5",
    "anybadge == 1.16.0",
    "weasyprint == 66.0",
    "markdown2 == 2.5.4",

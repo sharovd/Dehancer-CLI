@@ -31,11 +31,11 @@ class ImageQuality(Enum):
 
     Attributes
     ----------
-    LOW : Represents a low quality export, mapped to `ExportFormat.WEB`, which is optimised for web use.
-    MEDIUM : Represents a medium quality export, mapped to `ExportFormat.JPEG`, which provides high quality JPEG images.
-    HIGH : Represents high quality export, mapped to `ExportFormat.TIFF`, which provides maximum resolution TIFF images.
+        LOW : Represents a low quality export, mapped to `ExportFormat.WEB`, which is optimised for web use.
+        MEDIUM : Represents a medium quality export, mapped to `ExportFormat.JPEG`, which provides high quality JPEG images.
+        HIGH : Represents high quality export, mapped to `ExportFormat.TIFF`, which provides maximum resolution TIFF images.
 
-    """
+    """  # noqa: E501
 
     LOW = ExportFormat.WEB
     MEDIUM = ExportFormat.JPEG
@@ -48,15 +48,15 @@ class ImageQuality(Enum):
 
         Args:
         ----
-        label (str): The string input that should be converted.
+            label (str): The string input that should be converted.
 
         Returns:
         -------
-        ImageQuality: The corresponding ImageQuality enum value.
+            ImageQuality: The corresponding ImageQuality enum value.
 
         Raises:
         ------
-        UnknownImageQualityError: If the input string does not correspond to any ImageQuality value.
+            UnknownImageQualityError: If the input string does not correspond to any ImageQuality value.
 
         """
         label_mapping = {
@@ -76,15 +76,15 @@ class ImageQuality(Enum):
 
         Args:
         ----
-        export_format (ExportFormat): The export format input that should be converted.
+            export_format (ExportFormat): The export format input that should be converted.
 
         Returns:
         -------
-        ImageQuality: The corresponding ImageQuality enum value.
+            ImageQuality: The corresponding ImageQuality enum value.
 
         Raises:
         ------
-        UnknownImageQualityError: If the input export format does not correspond to any ImageQuality value.
+            UnknownImageQualityError: If the input export format does not correspond to any ImageQuality value.
 
         """
         export_format_mapping = {
@@ -109,18 +109,18 @@ class UnknownImageQualityError(Exception):
 
     Args:
     ----
-    input_value (str | ExportFormat): The unknown image quality label or ExportFormat value that caused the exception.
+        input_value (str | ExportFormat): The unknown image quality label or ExportFormat value that caused exception.
 
     Example:
     -------
-    >>> raise UnknownImageQualityError("ultra")
-    Traceback (most recent call last):
-        ...
-    UnknownImageQualityError: Unknown quality level: ultra
-    >>> raise UnknownImageQualityError(ImageQuality.ULTRA)  # noqa
-    Traceback (most recent call last):
-        ...
-    UnknownImageQualityError: Unknown quality level: ultra
+        >>> raise UnknownImageQualityError("ultra")
+        Traceback (most recent call last):
+            ...
+        UnknownImageQualityError: Unknown quality level: ultra
+        >>> raise UnknownImageQualityError(ImageQuality.ULTRA)  # noqa
+        Traceback (most recent call last):
+            ...
+        UnknownImageQualityError: Unknown quality level: ultra
 
     """
 
