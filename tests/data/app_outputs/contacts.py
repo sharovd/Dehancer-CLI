@@ -43,35 +43,41 @@ contacts_success_output = """Create contacts for the image '{input_image_path}':
 42. 'Kodak Color Plus 200 + Kodak Endura' : {result_image_link}
 43. 'Kodak Eastman Double-X 5222' : {result_image_link}
 44. 'Kodak Ektachrome E100 (2017)' : {result_image_link}
-45. 'Kodak Ektar 25 (Exp. 1996) + 2383' : {result_image_link}
-46. 'Kodak Ektar 25 (Exp. 1996) + Kodak Endura paper' : {result_image_link}
-47. 'Kodak Gold 200' : {result_image_link}
-48. 'Kodak Kodachrome 64 (Experimental)' : {result_image_link}
-49. 'Kodak Plus-X Pan 125 (Exp. 1979)' : {result_image_link}
-50. 'Kodak Portra 400 + Endura' : {result_image_link}
-51. 'Kodak Supra 100 + 2383' : {result_image_link}
-52. 'Kodak Supra 100 + Kodak Endura' : {result_image_link}
-53. 'Kodak Ultramax 400 + 2383' : {result_image_link}
-54. 'Kodak Ultramax 400 + Kodak Endura' : {result_image_link}
-55. 'Kodak Vision3 200T + 2383' : {result_image_link}
-56. 'Kodak Vision3 200T + Kodak Endura' : {result_image_link}
-57. 'Kodak Vision3 250D + 2383' : {result_image_link}
-58. 'Kodak Vision3 500T + 2383' : {result_image_link}
-59. 'Kodak Vision3 50D + 2383' : {result_image_link}
-60. 'Kodak Vision3 50D + Kodak Endura' : {result_image_link}
-61. 'Konica Centuria 100 DNP + 3513' : {result_image_link}
-62. 'Konica Centuria 100 DNP + Kodak Endura' : {result_image_link}
-63. 'Konica Impresa 50 (Exp. 2006) + 2383' : {result_image_link}
-64. 'Konica Impresa 50 (Exp. 2006) + Kodak Endura' : {result_image_link}
-65. 'Konica Minolta VX400 Super' : {result_image_link}
-66. 'Lomochrome Metropolis XR 100-400' : {result_image_link}
-67. 'Lomochrome Purple XR 100-400' : {result_image_link}
-68. 'ORWO Chrom UT21 Daylight (Exp. 1992)' : {result_image_link}
-69. 'Polaroid Polachrome 35 mm (Exp. 1986)' : {result_image_link}
-70. 'Polaroid Type 100 Sepia (Exp. 2009)' : {result_image_link}
-71. 'Prokudin-Gorskiy 1906 (experimental)' : {result_image_link}
-72. 'Rollei CN200 + 2383' : {result_image_link}
-73. 'Rollei CN200 + Kodak Endura' : {result_image_link}
-74. 'Rollei Ortho 25' : {result_image_link}
-75. 'Svema Type-42 (Exp. 1991)' : {result_image_link}
+45. 'Kodak Ektar 100 + Kodak Endura' : {result_image_link}
+46. 'Kodak Ektar 25 (Exp. 1996) + 2383' : {result_image_link}
+47. 'Kodak Ektar 25 (Exp. 1996) + Kodak Endura paper' : {result_image_link}
+48. 'Kodak Gold 200' : {result_image_link}
+49. 'Kodak Kodachrome 64 (Experimental)' : {result_image_link}
+50. 'Kodak Plus-X Pan 125 (Exp. 1979)' : {result_image_link}
+51. 'Kodak Portra 160 + Kidsk Endura' : {result_image_link}
+52. 'Kodak Portra 160NC + Kodak Endura' : {result_image_link}
+53. 'Kodak Portra 160VC + Kodak Endura' : {result_image_link}
+54. 'Kodak Portra 400 + Endura' : {result_image_link}
+55. 'Kodak Portra 800 + Kodak Endura' : {result_image_link}
+56. 'Kodak Pro Image 100 + Kodak Endura' : {result_image_link}
+57. 'Kodak Supra 100 + 2383' : {result_image_link}
+58. 'Kodak Supra 100 + Kodak Endura' : {result_image_link}
+59. 'Kodak Ultramax 400 + 2383' : {result_image_link}
+60. 'Kodak Ultramax 400 + Kodak Endura' : {result_image_link}
+61. 'Kodak Vision3 200T + 2383' : {result_image_link}
+62. 'Kodak Vision3 200T + Kodak Endura' : {result_image_link}
+63. 'Kodak Vision3 250D + 2383' : {result_image_link}
+64. 'Kodak Vision3 500T + 2383' : {result_image_link}
+65. 'Kodak Vision3 50D + 2383' : {result_image_link}
+66. 'Kodak Vision3 50D + Kodak Endura' : {result_image_link}
+67. 'Konica Centuria 100 DNP + 3513' : {result_image_link}
+68. 'Konica Centuria 100 DNP + Kodak Endura' : {result_image_link}
+69. 'Konica Impresa 50 (Exp. 2006) + 2383' : {result_image_link}
+70. 'Konica Impresa 50 (Exp. 2006) + Kodak Endura' : {result_image_link}
+71. 'Konica Minolta VX400 Super' : {result_image_link}
+72. 'Lomochrome Metropolis XR 100-400' : {result_image_link}
+73. 'Lomochrome Purple XR 100-400' : {result_image_link}
+74. 'ORWO Chrom UT21 Daylight (Exp. 1992)' : {result_image_link}
+75. 'Polaroid Polachrome 35 mm (Exp. 1986)' : {result_image_link}
+76. 'Polaroid Type 100 Sepia (Exp. 2009)' : {result_image_link}
+77. 'Prokudin-Gorskiy 1906 (experimental)' : {result_image_link}
+78. 'Rollei CN200 + 2383' : {result_image_link}
+79. 'Rollei CN200 + Kodak Endura' : {result_image_link}
+80. 'Rollei Ortho 25' : {result_image_link}
+81. 'Svema Type-42 (Exp. 1991)' : {result_image_link}
 """

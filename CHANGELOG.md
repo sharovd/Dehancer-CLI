@@ -5,7 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.5.3] - 2026-01-26
+## [0.5.4] - 2026-01-26
+### Added
+- Support has been added for 6 new film presets, including Kodak Ektar 100, Kodak Portra 160, Kodak Portra 800, Kodak Pro Image 100. 
+
 ### Security
 - Fixed all vulnerability issues found by the application security framework.
 
