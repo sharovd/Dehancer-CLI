@@ -191,7 +191,7 @@ def test_get_available_presets_from_api_success(mock_requests_session_get: Magic
     mock_response = Mock()
     mock_response.text = json.dumps(presets_success_response)
     mock_requests_session_get.return_value = mock_response
-    expected_number_of_presets = 75
+    expected_number_of_presets = 81
     # Act: perform method under test
     result = mock_api_client.get_available_presets()
     # Assert: check that the expected API method have been called by the tested method
@@ -221,7 +221,7 @@ def test_get_available_presets_from_cache_success(mock_api_client: DehancerOnlin
     # Arrange: setup mock objects
     available_presets = [Preset(**preset) for preset in presets_success_response["presets"]]
     mock_api_client.cache_manager.get.return_value = sorted(available_presets, key=lambda p: p.caption)
-    expected_number_of_presets = 75
+    expected_number_of_presets = 81
     # Act: perform method under test
     result = mock_api_client.get_available_presets()
     # Assert: check that the expected cache method have been called by the tested method

@@ -43,35 +43,41 @@ presets_success_output = """The next presets are available:
 [42]	Kodak Color Plus 200 + Kodak Endura
 [43]	Kodak Eastman Double-X 5222
 [44]	Kodak Ektachrome E100 (2017)
-[45]	Kodak Ektar 25 (Exp. 1996) + 2383
-[46]	Kodak Ektar 25 (Exp. 1996) + Kodak Endura paper
-[47]	Kodak Gold 200
-[48]	Kodak Kodachrome 64 (Experimental)
-[49]	Kodak Plus-X Pan 125 (Exp. 1979)
-[50]	Kodak Portra 400 + Endura
-[51]	Kodak Supra 100 + 2383
-[52]	Kodak Supra 100 + Kodak Endura
-[53]	Kodak Ultramax 400 + 2383
-[54]	Kodak Ultramax 400 + Kodak Endura
-[55]	Kodak Vision3 200T + 2383
-[56]	Kodak Vision3 200T + Kodak Endura
-[57]	Kodak Vision3 250D + 2383
-[58]	Kodak Vision3 500T + 2383
-[59]	Kodak Vision3 50D + 2383
-[60]	Kodak Vision3 50D + Kodak Endura
-[61]	Konica Centuria 100 DNP + 3513
-[62]	Konica Centuria 100 DNP + Kodak Endura
-[63]	Konica Impresa 50 (Exp. 2006) + 2383
-[64]	Konica Impresa 50 (Exp. 2006) + Kodak Endura
-[65]	Konica Minolta VX400 Super
-[66]	Lomochrome Metropolis XR 100-400
-[67]	Lomochrome Purple XR 100-400
-[68]	ORWO Chrom UT21 Daylight (Exp. 1992)
-[69]	Polaroid Polachrome 35 mm (Exp. 1986)
-[70]	Polaroid Type 100 Sepia (Exp. 2009)
-[71]	Prokudin-Gorskiy 1906 (experimental)
-[72]	Rollei CN200 + 2383
-[73]	Rollei CN200 + Kodak Endura
-[74]	Rollei Ortho 25
-[75]	Svema Type-42 (Exp. 1991)
+[45]	Kodak Ektar 100 + Kodak Endura
+[46]	Kodak Ektar 25 (Exp. 1996) + 2383
+[47]	Kodak Ektar 25 (Exp. 1996) + Kodak Endura paper
+[48]	Kodak Gold 200
+[49]	Kodak Kodachrome 64 (Experimental)
+[50]	Kodak Plus-X Pan 125 (Exp. 1979)
+[51]	Kodak Portra 160 + Kidsk Endura
+[52]	Kodak Portra 160NC + Kodak Endura
+[53]	Kodak Portra 160VC + Kodak Endura
+[54]	Kodak Portra 400 + Endura
+[55]	Kodak Portra 800 + Kodak Endura
+[56]	Kodak Pro Image 100 + Kodak Endura
+[57]	Kodak Supra 100 + 2383
+[58]	Kodak Supra 100 + Kodak Endura
+[59]	Kodak Ultramax 400 + 2383
+[60]	Kodak Ultramax 400 + Kodak Endura
+[61]	Kodak Vision3 200T + 2383
+[62]	Kodak Vision3 200T + Kodak Endura
+[63]	Kodak Vision3 250D + 2383
+[64]	Kodak Vision3 500T + 2383
+[65]	Kodak Vision3 50D + 2383
+[66]	Kodak Vision3 50D + Kodak Endura
+[67]	Konica Centuria 100 DNP + 3513
+[68]	Konica Centuria 100 DNP + Kodak Endura
+[69]	Konica Impresa 50 (Exp. 2006) + 2383
+[70]	Konica Impresa 50 (Exp. 2006) + Kodak Endura
+[71]	Konica Minolta VX400 Super
+[72]	Lomochrome Metropolis XR 100-400
+[73]	Lomochrome Purple XR 100-400
+[74]	ORWO Chrom UT21 Daylight (Exp. 1992)
+[75]	Polaroid Polachrome 35 mm (Exp. 1986)
+[76]	Polaroid Type 100 Sepia (Exp. 2009)
+[77]	Prokudin-Gorskiy 1906 (experimental)
+[78]	Rollei CN200 + 2383
+[79]	Rollei CN200 + Kodak Endura
+[80]	Rollei Ortho 25
+[81]	Svema Type-42 (Exp. 1991)
 """

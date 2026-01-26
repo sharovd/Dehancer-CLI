@@ -2,12 +2,12 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-EXPECTED_NUMBER_OF_PRESETS = 75
+EXPECTED_NUMBER_OF_PRESETS = 81
 
 EXPECTED_PRESET_SECTIONS = {
     "0": "Featured",
     "7": "Color films",
-    "65": "Black and white films",
+    "71": "Black and white films",
 }
 
 class PresetModel(BaseModel):
