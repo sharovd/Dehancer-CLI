@@ -60,6 +60,7 @@ def test_login_with_email_and_password_success_response_is_valid(api_client: Deh
 
 
 @pytest.mark.contract
+@pytest.mark.skip("It appears that the upload of all image sizes is now done as multipart.")
 def test_image_upload_prepare_regular_success_response_is_valid(api_client: DehancerOnlineAPIClient,
                                                                 test_images: list[str]) -> None:
     # Arrange: define test data
