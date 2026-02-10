@@ -2,6 +2,7 @@ import os
 import shutil
 import time
 from pathlib import Path
+from typing import Self
 
 
 class FileBackupContext:
@@ -99,7 +100,7 @@ class FileBackupContext:
         if self.backup_path is not None and Path(self.backup_path).is_file():
             Path(self.backup_path).unlink()
 
-    def __enter__(self) -> "FileBackupContext":
+    def __enter__(self) -> Self:
         """
         Enter the context manager, backing up files in the specified directory or single file.
 

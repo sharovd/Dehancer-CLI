@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 if TYPE_CHECKING:
     from src.cache.cache_manager import CacheManager
@@ -44,7 +44,7 @@ class CacheBackupContext:
         for key, value in self.backup_data.items():
             self.cache_manager.set(key, value)
 
-    def __enter__(self) -> "CacheBackupContext":  # noqa: UP037
+    def __enter__(self) -> Self:
         """
         Enter the context manager, backing up cache values.
 

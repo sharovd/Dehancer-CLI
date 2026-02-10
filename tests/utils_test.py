@@ -85,7 +85,7 @@ def test_update_auth_data_in_cache(auth_data: dict[str, str], expected_calls: di
 def test_get_auth_data_returns_auth_data(cache_data: dict[str, str] | None, expected_result: dict[str, str] | None):
     # Arrange: setup mock cache object
     mock_cache_manager = create_autospec(CacheManager)
-    mock_cache_manager.get.side_effect = lambda key: cache_data.get(key)
+    mock_cache_manager.get.side_effect = cache_data.get
     # Act: perform method under test and get result
     actual_result = get_auth_data_from_cache(mock_cache_manager)
     # Assert
