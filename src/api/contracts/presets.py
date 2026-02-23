@@ -2,7 +2,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-EXPECTED_NUMBER_OF_PRESETS = 81
+EXPECTED_NUMBER_OF_PRESETS = 86
 
 EXPECTED_PRESET_SECTIONS = {
     "0": "Featured",

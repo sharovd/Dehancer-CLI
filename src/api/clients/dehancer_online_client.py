@@ -201,20 +201,14 @@ class DehancerOnlineAPIClient(BaseAPIClient):
             upload_prepare_response = loads(self._image_upload_prepare_raw(image_path).text)
             if upload_prepare_response["success"]:
                 image_id = upload_prepare_response["imageId"]
-                # Regular upload (small size image file)
-                if not upload_prepare_response.get("isMultipart", False):
-                    url = upload_prepare_response["url"]
-                    self._image_put_raw(url, image_path)
-                    self._image_upload_finish_raw(image_id, image_path)
-                # Multipart upload (big size image file)
-                else:
-                    chunk_size = upload_prepare_response["chunkSize"]
-                    urls = upload_prepare_response["urls"]
-                    upload_id = upload_prepare_response["uploadId"]
-                    responses = self._image_put_multipart_raw(urls, image_path, chunk_size)
-                    etags = [response.headers["ETag"] for response in responses]
-                    image_file_name = Path(image_path).name
-                    self._image_upload_finish_multipart_raw(image_id, upload_id, etags, image_file_name)
+                # Multipart upload (now, for both small and large image files)
+                chunk_size = upload_prepare_response["chunkSize"]
+                urls = upload_prepare_response["urls"]
+                upload_id = upload_prepare_response["uploadId"]
+                responses = self._image_put_multipart_raw(urls, image_path, chunk_size)
+                etags = [response.headers["ETag"] for response in responses]
+                image_file_name = Path(image_path).name
+                self._image_upload_finish_multipart_raw(image_id, upload_id, etags, image_file_name)
                 logger.debug("Image was uploaded, id is '%s'", image_id)
                 return image_id
         return None
@@ -236,7 +230,7 @@ class DehancerOnlineAPIClient(BaseAPIClient):
             In case of successful result, a JSON response object with field 'images' is returned.
 
         """
-        states = [asdict(preset) for preset in presets]
+        states = [p.to_preview_generate() for p in presets]
         url = f"{self.api_base_url}/image/previews/{image_id}"
         payload = dumps({
             "imageId": image_id,
