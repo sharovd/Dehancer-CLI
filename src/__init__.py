@@ -1,2 +1,2 @@
 app_name = "Dehancer-CLI"
-app_version = "0.5.8"
+app_version = "0.6.0"

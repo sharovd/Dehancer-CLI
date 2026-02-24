@@ -11,7 +11,6 @@ from src.api.constants import DEHANCER_ONLINE_API_BASE_URL
 from src.api.contracts.image_export import ImageExportModel
 from src.api.contracts.image_previews import ImagePreviewsModel
 from src.api.contracts.image_render import ImageRenderModel
-from src.api.contracts.image_upload_prepare import ImageUploadPrepareModel
 from src.api.contracts.login_with_email_and_password import LoginWithEmailAndPasswordModel
 from src.api.contracts.presets import PresetsResponseModel
 from src.api.enums import ExportFormat, ImageSize
@@ -57,35 +56,6 @@ def test_login_with_email_and_password_success_response_is_valid(api_client: Deh
         # Act: perform method under test
         api_client._login_with_email_and_password_raw("test@test.com", "12345678").json(),  # noqa: SLF001
     )
-
-
-@pytest.mark.contract
-@pytest.mark.skip("It appears that the upload of all image sizes is now done as multipart.")
-def test_image_upload_prepare_regular_success_response_is_valid(api_client: DehancerOnlineAPIClient,
-                                                                test_images: list[str]) -> None:
-    # Arrange: define test data
-    random_test_image_path = choice(test_images)  # noqa: S311
-    # Assert: the success response payload conforms to the ImageUploadPrepareModel contract
-    model = ImageUploadPrepareModel.model_validate(
-        # Act: perform method under test
-        api_client._image_upload_prepare_raw(random_test_image_path).json(),  # noqa: SLF001
-    )
-    # Assert: the response correctly identifies the upload as single-part
-    assert not model.is_multipart
-
-
-@pytest.mark.contract
-def test_image_upload_prepare_multipart_success_response_is_valid(api_client: DehancerOnlineAPIClient,
-                                                                  test_big_images: list[str]):
-    # Arrange: define test data
-    random_test_image_path = choice(test_big_images)  # noqa: S311
-    # Assert: the success response payload conforms to the ImageUploadPrepareModel contract
-    model = ImageUploadPrepareModel.model_validate(
-        # Act: perform method under test
-        api_client._image_upload_prepare_raw(random_test_image_path).json(),  # noqa: SLF001
-    )
-    # Assert: the response correctly identifies the upload as multipart
-    assert model.is_multipart
 
 
 @pytest.mark.contract

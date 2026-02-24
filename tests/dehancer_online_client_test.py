@@ -228,8 +228,8 @@ def test_get_available_presets_from_cache_success(mock_api_client: DehancerOnlin
     mock_api_client.cache_manager.get.assert_any_call(PRESETS)
     # Assert: check that the method result contains the expected data
     assert len(result) == expected_number_of_presets
-    assert result[0].caption == "AGFA Chrome RSX II 200 (Exp. 2006)"
-    assert result[1].caption == "Adox Color Implosion 100"
+    assert result[0].caption == "Adox Color Implosion 100"
+    assert result[1].caption == "Agfa Agfacolor 100"
     assert all(isinstance(p, Preset) for p in result)
 
 
@@ -267,7 +267,8 @@ def test_upload_regular_image_success(mock_api_client: DehancerOnlineAPIClient, 
     with patch.object(mock_api_client, "_DehancerOnlineAPIClient__check_image_file", return_value=True), \
             patch.object(mock_api_client, "_image_upload_prepare_raw",
                          return_value=Mock(text=json.dumps(image_upload_prepare_regular_success_response))), \
-            patch.object(mock_api_client, "_image_put_raw"), \
+            patch.object(mock_api_client, "_image_put_raw",
+                         return_value=[Mock(headers={"ETag": "etag-1"})]), \
             patch.object(mock_api_client, "_image_upload_finish_raw"), \
             patch.object(utils, "is_file_exist", return_value=True), \
             patch("src.api.clients.dehancer_online_client.logger") as mock_logger:
@@ -276,6 +277,18 @@ def test_upload_regular_image_success(mock_api_client: DehancerOnlineAPIClient, 
         # Assert: check that the method result contains the expected data
         expected_image_id = image_upload_prepare_regular_success_response.get("imageId")
         assert result == expected_image_id
+        # Assert: check that the expected logic was triggered
+        mock_api_client._image_put_raw.assert_called_once_with(  # noqa: SLF001
+            image_upload_prepare_regular_success_response["urls"],
+            image_path,
+            image_upload_prepare_regular_success_response["chunkSize"],
+        )
+        mock_api_client._image_upload_finish_raw.assert_called_once_with(  # noqa: SLF001
+            image_upload_prepare_regular_success_response["imageId"],
+            image_upload_prepare_regular_success_response["uploadId"],
+            ["etag-1"],
+            Path(image_path).name,
+        )
         # Assert: check that the expected message has been printed in the logs
         mock_logger.debug.assert_any_call("Upload image...")
         mock_logger.debug.assert_any_call("Image was uploaded, id is '%s'", expected_image_id)
@@ -287,12 +300,12 @@ def test_upload_multipart_image_success(mock_api_client: DehancerOnlineAPIClient
     with patch.object(mock_api_client, "_DehancerOnlineAPIClient__check_image_file", return_value=True), \
             patch.object(mock_api_client, "_image_upload_prepare_raw",
                          return_value=Mock(text=json.dumps(image_upload_prepare_multipart_success_response))), \
-            patch.object(mock_api_client, "_image_put_multipart_raw",
+            patch.object(mock_api_client, "_image_put_raw",
                          return_value=[
                              Mock(headers={"ETag": "etag-1"}),
                              Mock(headers={"ETag": "etag-2"}),
                          ]), \
-            patch.object(mock_api_client, "_image_upload_finish_multipart_raw"), \
+            patch.object(mock_api_client, "_image_upload_finish_raw"), \
             patch.object(utils, "is_file_exist", return_value=True), \
             patch("src.api.clients.dehancer_online_client.logger") as mock_logger:
         # Act: perform method under test
@@ -300,12 +313,12 @@ def test_upload_multipart_image_success(mock_api_client: DehancerOnlineAPIClient
         # Assert: check that the method result contains the expected data
         expected_image_id = image_upload_prepare_multipart_success_response.get("imageId")
         assert result == expected_image_id
-        # Assert: check that the expected multipart logic was triggered
-        mock_api_client._image_put_multipart_raw.assert_called_once_with(  # noqa: SLF001
+        # Assert: check that the expected logic was triggered
+        mock_api_client._image_put_raw.assert_called_once_with(  # noqa: SLF001
             image_upload_prepare_multipart_success_response["urls"], image_path,
             image_upload_prepare_multipart_success_response["chunkSize"],
         )
-        mock_api_client._image_upload_finish_multipart_raw.assert_called_once_with(  # noqa: SLF001
+        mock_api_client._image_upload_finish_raw.assert_called_once_with(  # noqa: SLF001
             image_upload_prepare_multipart_success_response["imageId"],
             image_upload_prepare_multipart_success_response["uploadId"], ["etag-1", "etag-2"],
             Path(image_path).name,
@@ -374,7 +387,7 @@ def test_upload_image_file_not_exist(mock_api_client: DehancerOnlineAPIClient, i
 def test_get_image_previews_success(mock_api_client: DehancerOnlineAPIClient):
     image_id = "123"
     image_size = ImageSize.SMALL
-    presets = generate_presets(62)
+    presets = generate_presets(86)
     # Arrange: setup mock objects
     with patch.object(mock_api_client.session, "post",
                       return_value=Mock(text=json.dumps(image_previews_success_response))) as mock_post:
@@ -383,7 +396,7 @@ def test_get_image_previews_success(mock_api_client: DehancerOnlineAPIClient):
         expected_payload = json.dumps({
             "imageId": image_id,
             "size": image_size.value,
-            "states": [asdict(preset) for preset in presets],
+            "states":[p.to_preview_generate() for p in presets],
         })
         expected_headers = BASE_HEADERS.copy()
         expected_headers.update({
@@ -395,7 +408,7 @@ def test_get_image_previews_success(mock_api_client: DehancerOnlineAPIClient):
         mock_post.assert_called_once_with(f"{mock_api_client.api_base_url}/image/previews/{image_id}",
                                           headers=expected_headers, data=expected_payload)
         # Assert: check that the method result contains the expected data
-        assert result == {f"Preset {i}": link for i, link in zip(range(1, 63),
+        assert result == {f"Preset {i}": link for i, link in zip(range(1, 86),
                                                                  image_previews_success_response["images"],
                                                                  strict=False)}
 
