@@ -4,6 +4,7 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 from unittest.mock import Mock, call, create_autospec, mock_open, patch
 
+import puremagic
 import pyperclip
 import pytest
 import requests
@@ -564,6 +565,37 @@ def test_is_supported_format_file_for_nonexistent_file_raises_error():
     with pytest.raises(FileNotFoundError, match=f"The file {non_existent_file_path} does not exist."):
         # Act: perform method under test
         is_supported_format_file(non_existent_file_path, {})
+
+
+@pytest.mark.unit
+def test_is_supported_format_file_returns_true_when_extension_unknown_and_puremagic_detects_valid_mime():
+    # Arrange: create temporary file with unsupported extension
+    with NamedTemporaryFile(delete=False, suffix=".unknown") as tmp_file:
+        tmp_file.write(b"dummy")
+        file_path = tmp_file.name
+    # Arrange: mock puremagic to return supported MIME type
+    with patch("src.utils.puremagic.from_file", return_value="image/jpeg"):
+        # Act: perform method under test
+        result = is_supported_format_file(file_path, {"jpg": "image/jpeg"})
+    # Assert: check that method returns True because puremagic detected supported MIME
+    assert result is True
+
+
+@pytest.mark.unit
+def test_is_supported_format_file_logs_debug_when_extension_unknown_and_puremagic_raises_error():
+    # Arrange: create dummy file with unsupported extension
+    with NamedTemporaryFile(delete=False, suffix=".unknown") as tmp_file:
+        tmp_file.write(b"dummy content")
+        unknown_extension_file_path = tmp_file.name
+    # Arrange: mock puremagic to raise detection error and capture logger
+    with patch("src.utils.puremagic.from_file", side_effect=puremagic.PureError("fail")), \
+         patch("src.utils.logger") as mock_logger:
+        # Act: perform method under test
+        result = is_supported_format_file(str(unknown_extension_file_path), IMAGE_VALID_TYPES)
+    # Assert: check that method returns False because format is unsupported and detection failed
+    assert result is False
+    # Assert: check that the expected message has been printed in the debug logs
+    assert "Fail while detecting file type" in mock_logger.debug.call_args[0][0]
 
 
 @pytest.mark.unit
