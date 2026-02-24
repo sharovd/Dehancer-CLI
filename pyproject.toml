@@ -15,8 +15,8 @@ dependencies = [
    "certifi == 2026.1.4",
    "urllib3 == 2.6.3",
    "zipp == 3.23.0",
-   "puremagic == 1.30",
-   "cryptography == 46.0.4",
+   "puremagic == 2.0.0",
+   "cryptography == 46.0.5",
    "diskcache == 5.6.3",
    "rjsmin == 1.2.5",
    "pyperclip == 1.11.0",
@@ -24,13 +24,13 @@ dependencies = [
    "brotli (>=1.2.0,<2.0.0)",
    "brotlicffi (>=1.2.0.0,<2.0.0.0)",
    "fonttools (>=4.61.1,<5.0.0)",
-   "filelock (>=3.20.3,<4.0.0)",
+   "filelock (>=3.24.3,<4.0.0)",
    "virtualenv (>=20.36.1,<21.0.0)"
 ]
 
 [project.optional-dependencies]
 dev = [
-   "ruff == 0.15.0",
+   "ruff == 0.15.2",
    "pytest == 9.0.2",
    "pytest-cov == 7.0.0",
    "pydantic == 2.12.5",
@@ -39,8 +39,10 @@ dev = [
    "markdown2 == 2.5.4",
    "nuitka == 2.6.9",
    "poetry-core == 2.3.1",
-   "poetry-dynamic-versioning == 1.9.1",
-   "poetry-plugin-export == 1.10.0"
+   "poetry-dynamic-versioning == 1.10.0",
+   "poetry-plugin-export == 1.10.0",
+    # Fix vulnerabilities
+   "pillow (>=12.1.1,<13.0.0)"
 ]
 
 [project.scripts]

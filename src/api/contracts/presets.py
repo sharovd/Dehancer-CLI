@@ -2,12 +2,12 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-EXPECTED_NUMBER_OF_PRESETS = 81
+EXPECTED_NUMBER_OF_PRESETS = 86
 
 EXPECTED_PRESET_SECTIONS = {
     "0": "Featured",
     "7": "Color films",
-    "71": "Black and white films",
+    "76": "Black and white films",
 }
 
 class PresetModel(BaseModel):
@@ -61,7 +61,7 @@ class PresetModel(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     caption: str
-    creator: Literal["Dehancer Team"]
+    creator: Literal["Dehancer Team", "Dmitry Novak"]
     preset: str
     exposure: float = Field(ge=-2.0, le=2.0)
     contrast: float = Field(ge=-40.0, le=40.0)

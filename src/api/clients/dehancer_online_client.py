@@ -201,20 +201,13 @@ class DehancerOnlineAPIClient(BaseAPIClient):
             upload_prepare_response = loads(self._image_upload_prepare_raw(image_path).text)
             if upload_prepare_response["success"]:
                 image_id = upload_prepare_response["imageId"]
-                # Regular upload (small size image file)
-                if not upload_prepare_response.get("isMultipart", False):
-                    url = upload_prepare_response["url"]
-                    self._image_put_raw(url, image_path)
-                    self._image_upload_finish_raw(image_id, image_path)
-                # Multipart upload (big size image file)
-                else:
-                    chunk_size = upload_prepare_response["chunkSize"]
-                    urls = upload_prepare_response["urls"]
-                    upload_id = upload_prepare_response["uploadId"]
-                    responses = self._image_put_multipart_raw(urls, image_path, chunk_size)
-                    etags = [response.headers["ETag"] for response in responses]
-                    image_file_name = Path(image_path).name
-                    self._image_upload_finish_multipart_raw(image_id, upload_id, etags, image_file_name)
+                chunk_size = upload_prepare_response["chunkSize"]
+                upload_id = upload_prepare_response["uploadId"]
+                urls = upload_prepare_response["urls"]
+                responses = self._image_put_raw(urls, image_path, chunk_size)
+                etags = [response.headers["ETag"] for response in responses]
+                image_file_name = Path(image_path).name
+                self._image_upload_finish_raw(image_id, upload_id, etags, image_file_name)
                 logger.debug("Image was uploaded, id is '%s'", image_id)
                 return image_id
         return None
@@ -236,7 +229,7 @@ class DehancerOnlineAPIClient(BaseAPIClient):
             In case of successful result, a JSON response object with field 'images' is returned.
 
         """
-        states = [asdict(preset) for preset in presets]
+        states = [p.to_preview_generate() for p in presets]
         url = f"{self.api_base_url}/image/previews/{image_id}"
         payload = dumps({
             "imageId": image_id,
@@ -459,40 +452,10 @@ class DehancerOnlineAPIClient(BaseAPIClient):
         }
         return self.session.post(url, headers=headers, data=payload)
 
-    def _image_put_raw(self, url: str, image_path: str) -> Response:  # pragma: no cover
+    def _image_put_raw(self, urls: list[str],
+                       image_path: str, chunk_size: int) -> list[Response]:  # pragma: no cover
         """
-        Send an HTTP PUT request with the image content as bytes to the Dehancer Online API.
-
-        Step 2/3 in the image upload flow.
-
-        Args:
-        ----
-            url (str): The URL to send the PUT request to.
-            image_path (str): The path to the image file to be uploaded.
-
-        Returns:
-        -------
-            Response: The HTTP response object.
-            In case of successful result, a response body is empty.
-
-        Raises:
-        ------
-            Exception: If there is an error during the PUT request or while reading the image file.
-
-        """
-        headers = BASE_HEADERS
-        headers.update({
-            "Content-Type": guess_type(image_path)[0],
-        })
-        headers.update(SECURITY_HEADERS)
-        with Path(image_path).open("rb") as image_file:
-            file_bytes = image_file.read()
-        return self.session.put(url, headers=headers, data=file_bytes)
-
-    def _image_put_multipart_raw(self, urls: list[str],
-                                 image_path: str, chunk_size: int) -> list[Response]:  # pragma: no cover
-        """
-        Send an HTTP PUT requests with the large image content as bytes to the Dehancer Online API.
+        Send an HTTP PUT requests with the image content as bytes to the Dehancer Online API.
 
         Step 2/3 in the image upload flow.
 
@@ -525,7 +488,8 @@ class DehancerOnlineAPIClient(BaseAPIClient):
                 result.append(self.session.put(url, headers=headers, data=chunk))
         return result
 
-    def _image_upload_finish_raw(self, image_id: str, image_file_name: str) -> Response:  # pragma: no cover
+    def _image_upload_finish_raw(self, image_id: str, upload_id: str,
+                                 etags: list[str], image_file_name: str) -> None:  # pragma: no cover
         """
         Send an HTTP POST request notifying the server that an image has been successfully uploaded.
 
@@ -534,43 +498,7 @@ class DehancerOnlineAPIClient(BaseAPIClient):
         Args:
         ----
             image_id (str): The ID of the uploaded image.
-            image_file_name (str): The name of the image file that was uploaded.
-
-        Returns:
-        -------
-            Response: The HTTP response object containing the result of the notification.
-            In case of successful result, a JSON response object with fields
-            'userId', 'width', 'height', 'filename', 'originalUrl', 'placeholderUrl' is returned.
-
-        Raises:
-        ------
-            Exception: If there is an error during the POST request.
-
-        """
-        url = f"{self.api_base_url}/upload/finish"
-        payload = dumps({
-            "imageId": image_id,
-            "filename": image_file_name,
-        })
-        headers = BASE_HEADERS
-        headers.update({
-            "TE": HEADER_TRANSFER_ENCODING_TRAILERS,
-            "Content-Type": HEADER_JSON_CONTENT_TYPE,
-        })
-        headers.update(SECURITY_HEADERS)
-        return self.session.post(url, headers=headers, data=payload)
-
-    def _image_upload_finish_multipart_raw(self, image_id: str, upload_id: str,
-                                           etags: list[str], image_file_name: str) -> None:  # pragma: no cover
-        """
-        Send an HTTP POST request notifying the server that an multipart image has been successfully uploaded.
-
-        Step 3/3 in the image upload flow.
-
-        Args:
-        ----
-            image_id (str): The ID of the uploaded image.
-            upload_id (str): The multipart upload ID.
+            upload_id (str): The image part (single or multi) upload ID.
             etags (list[str]): The list of ETags from each part upload.
             image_file_name (str): The name of the image file that was uploaded.
 

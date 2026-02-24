@@ -47,6 +47,29 @@ class Preset:  # noqa: D101
     vignette_size: float
     vignette_feather: float
 
+    def to_preview_generate(self) -> dict:
+        """
+        Return the API-compatible state representation of the preset to generate a preview image.
+
+        The returned dictionary only contains the subset of preset parameters
+        accepted by the Dehancer Online API (`/image/previews` endpoint).
+
+        Returns
+        -------
+        dict: Dictionary with film simulation parameters
+
+        """
+        return {
+            "preset": self.preset,
+            "grain": self.grain,
+            "contrast": self.contrast,
+            "exposure": self.exposure,
+            "temperature": self.temperature,
+            "tint": self.tint,
+            "color_boost": self.color_boost,
+            "sequence": 1,
+        }
+
 
 @dataclass
 class PresetSettings:  # noqa: D101

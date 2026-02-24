@@ -190,10 +190,10 @@ def is_supported_format_file(file_path: str, valid_types: dict[str, str]) -> boo
     """
     Check if the specified file is of a supported format.
 
-    This method checks if the file at the given file path matches any of the
-    formats provided in the valid_types dictionary.
-    It first uses the puremagic module to determine the file type
-    and then checks the MIME type as a fallback.
+    This method checks the file format using multiple strategies:
+    1. Extension check against valid_types keys.
+    2. MIME type detected by puremagic.
+    3. MIME type guessed by mimetypes (fallback).
 
     Args:
     ----
@@ -213,10 +213,17 @@ def is_supported_format_file(file_path: str, valid_types: dict[str, str]) -> boo
     if not Path(file_path).exists():
         msg = f"The file {file_path} does not exist."
         raise FileNotFoundError(msg)
-    # Check format using puremagic
-    file_type = puremagic.what(file_path)
-    if file_type in valid_types:
+    ext = Path(file_path).suffix.lower().lstrip(".")
+    # Extension check against valid_types keys
+    if ext in valid_types:
         return True
+    # MIME check using puremagic
+    try:
+        mime_type = puremagic.from_file(file_path, mime=True)
+        if mime_type in valid_types.values():
+            return True
+    except puremagic.PureError as exc:
+        logger.debug("Fail while detecting file type: %s", exc)
     # Additional check using mimetypes (for types not covered by puremagic)
     mime_type, _ = mimetypes.guess_type(file_path)
     return mime_type in valid_types.values()

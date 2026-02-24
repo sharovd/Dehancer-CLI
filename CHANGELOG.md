@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2026-02-24
+### Added
+- Support has been added for 5 new film presets, including Fuji Reala 500D (Exp.2013) + 3513, Fujichrome Velvia 50, Kodak Eastman Double-X 5222 + 2383, Lomochrome Purple XR 100-400 ISO200, Lomochrome Purple XR 100-400 ISO400.
+
+### Changed
+- Renamed a few presets and aligned them with the current Dehancer Online API.
+- Removed multipart upload handling and aligned the upload implementation with the current Dehancer Online API.
+- Updated all outdated dependencies.
+
+### Security
+- Fixed all vulnerability issues found by the application security framework.
+
 ## [0.5.6] - 2026-02-10
 ### Changed
 - Updated all outdated dependencies.
