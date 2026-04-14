@@ -18,10 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -42,10 +42,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -65,7 +65,7 @@ jobs:
           poetry run anybadge --value=$total_coverage --file=badges/unit-test/unit-test-coverage.svg coverage
 
       - name: Upload unit test coverage badge as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: unit-test-coverage-badge
           path: badges/unit-test/unit-test-coverage.svg
@@ -75,10 +75,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -98,10 +98,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -129,7 +129,7 @@ jobs:
           poetry run anybadge --label "vulnerabilities | snyk" --value=tested --file=badges/vulnerabilities/vulnerabilities-snyk-result.svg tested=$badge_color
 
       - name: Upload vulnerabilities status badge as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: vulnerabilities-status-badge
           path: badges/vulnerabilities/vulnerabilities-snyk-result.svg
@@ -143,10 +143,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "18"
           cache: "npm"
@@ -156,7 +156,7 @@ jobs:
         run: npm install -g javascript-obfuscator@4.1.1
 
       - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -257,7 +257,7 @@ jobs:
           cp settings.yaml dist/
 
       - name: Upload build as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Dehancer-CLI ${{ env.app_build_version }} for ${{ runner.os }} ${{ env.runner_os_version }}
           path: dist/
@@ -267,16 +267,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Download unit test coverage badge
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: unit-test-coverage-badge
           path: badges/unit-test
 
       - name: Download vulnerabilities status badge
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: vulnerabilities-status-badge
           path: badges/vulnerabilities
