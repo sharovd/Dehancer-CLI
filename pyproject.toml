@@ -8,32 +8,32 @@ license = "MIT"
 
 requires-python = ">=3.12,<4.0"
 dependencies = [
-   "click == 8.3.2",
+   "click == 8.3.3",
    "pyyaml == 6.0.3",
-   "requests == 2.33.1",
+   "requests == 2.34.2",
    "requests-toolbelt == 1.0.0",
-   "certifi == 2026.2.25",
-   "urllib3 == 2.6.3",
+   "certifi == 2026.4.22",
+   "urllib3 == 2.7.0",
    "zipp == 3.23.1",
    "puremagic == 2.2.0",
-   "cryptography == 46.0.7",
+   "cryptography == 48.0.0",
    "diskcache == 5.6.3",
    "rjsmin == 1.2.5",
    "pyperclip == 1.11.0",
     # Fix vulnerabilities
    "brotli (>=1.2.0,<2.0.0)",
    "brotlicffi (>=1.2.0.1,<2.0.0.0)",
-   "fonttools (>=4.62.1,<5.0.0)",
-   "filelock (>=3.25.2,<4.0.0)",
-   "virtualenv (>=21.2.3,<22.0.0)"
+   "fonttools (>=4.63.0,<5.0.0)",
+   "filelock (>=3.29.0,<4.0.0)",
+   "virtualenv (>=21.3.3,<22.0.0)"
 ]
 
 [project.optional-dependencies]
 dev = [
-   "ruff == 0.15.10",
+   "ruff == 0.15.13",
    "pytest == 9.0.3",
    "pytest-cov == 7.1.0",
-   "pydantic == 2.13.0",
+   "pydantic == 2.13.4",
    "anybadge == 1.16.0",
    "weasyprint == 68.1",
    "markdown2 == 2.5.5",
