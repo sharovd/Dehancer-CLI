@@ -2,4 +2,4 @@ ignore:
   SNYK-PYTHON-DISKCACHE-15268422:
     - '*':
         reason: "No upgrade or patch is available as of February 26, 2024"
-        expires: 2026-06-01
+        expires: 2026-09-01
