@@ -508,12 +508,14 @@ class DehancerOnlineAPIClient(BaseAPIClient):
 
         """
         url = f"{self.api_base_url}/upload/finish"
-        payload = dumps({
+        payload = {
             "imageId": image_id,
-            "uploadId": upload_id,
             "etags": etags,
             "filename": image_file_name,
-        })
+        }
+        if upload_id is not None:
+            payload["uploadId"] = upload_id
+        payload = dumps(payload)
         headers = BASE_HEADERS
         headers.update({
             "TE": HEADER_TRANSFER_ENCODING_TRAILERS,
