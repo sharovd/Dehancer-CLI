@@ -8,34 +8,34 @@ license = "MIT"
 
 requires-python = ">=3.12,<4.0"
 dependencies = [
-   "click == 8.4.2",
+   "click == 8.5.0",
    "pyyaml == 6.0.3",
    "requests == 2.34.2",
    "requests-toolbelt == 1.0.0",
-   "certifi == 2026.6.17",
+   "certifi == 2026.7.22",
    "urllib3 == 2.7.0",
    "zipp == 4.1.0",
    "puremagic == 2.2.0",
-   "cryptography == 49.0.0",
+   "cryptography == 50.0.1",
    "diskcache == 5.6.3",
    "rjsmin == 1.2.5",
    "pyperclip == 1.11.0",
     # Fix vulnerabilities
    "brotli (>=1.2.0,<2.0.0)",
-   "brotlicffi (>=1.2.0.1,<2.0.0.0)",
-   "fonttools (>=4.63.0,<5.0.0)",
-   "filelock (>=3.31.0,<4.0.0)",
-   "virtualenv (>=21.6.1,<22.0.0)",
-   "dulwich (>=1.2.11,<2.0.0)",
-   "idna (>=3.18,<4.0)"
+   "brotlicffi (>=1.2.0.2,<2.0.0.0)",
+   "fonttools (>=4.64.0,<5.0.0)",
+   "filelock (>=3.32.5,<4.0.0)",
+   "virtualenv (>=21.7.8,<22.0.0)",
+   "dulwich (>=1.2.14,<2.0.0)",
+   "idna (>=3.19,<4.0)"
 ]
 
 [project.optional-dependencies]
 dev = [
-   "ruff == 0.15.22",
+   "ruff == 0.16.5",
    "pytest == 9.1.1",
    "pytest-cov == 7.1.0",
-   "pydantic == 2.13.4",
+   "pydantic == 2.13.5",
    "anybadge == 1.16.0",
    "weasyprint == 69.0",
    "markdown2 == 2.5.5",
@@ -45,8 +45,8 @@ dev = [
    "poetry-plugin-export == 1.10.0",
     # Fix vulnerabilities
    "pillow (>=12.3.0,<13.0.0)",
-   "Pygments (>=2.20.0,<3.0.0)",
-   "msgpack (>=1.2.1,<2.0.0)"
+   "Pygments (>=2.21.0,<3.0.0)",
+   "msgpack (>=1.2.2,<2.0.0)"
 ]
 
 [project.scripts]
