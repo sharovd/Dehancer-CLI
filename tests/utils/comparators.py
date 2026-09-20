@@ -48,7 +48,7 @@ def compare_contacts_command_output(expected_output: str, actual_output: str, in
     return _compare_command_output(expected_output, actual_output, replacements)
 
 
-def compare_develop_command_output(expected_output: str, actual_output: str, input_image_path: str,  # noqa: PLR0913
+def compare_develop_command_output(expected_output: str, actual_output: str, input_image_path: str,  # noqa: PLR0913 PLR0917
                                    input_preset_name: str,
                                    input_settings_adjustments: str, input_settings_effects: str,
                                    input_preset_number: str | int) -> bool:
