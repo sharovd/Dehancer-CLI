@@ -441,7 +441,7 @@ def contacts(input, logs: int) -> None:  # noqa: A002, ANN001
               type=float, help="Vignette feather setting (effects).")
 @click.option("-settings", "--settings_file", type=click.Path(exists=True), help="Settings file.")
 @click.option("--logs", type=int, default=0, help="Enable debug logs (1 for enabled, 0 for disabled).")
-def develop(input, preset: int,  # noqa: A002, ANN001, PLR0913
+def develop(input, preset: int,  # noqa: A002, ANN001, PLR0913 PLR0917
             quality: str,
             contrast: float, exposure: float, temperature: float, tint: float, color_boost: float,
             grain: float, bloom: float, halation: float,
