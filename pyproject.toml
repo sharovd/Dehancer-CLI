@@ -13,7 +13,7 @@ dependencies = [
    "requests == 2.34.2",
    "requests-toolbelt == 1.0.0",
    "certifi == 2026.7.22",
-   "urllib3 == 2.7.0",
+   "urllib3 == 2.8.0",
    "zipp == 4.1.0",
    "puremagic == 2.2.0",
    "cryptography == 50.0.1",
@@ -23,21 +23,22 @@ dependencies = [
     # Fix vulnerabilities
    "brotli (>=1.2.0,<2.0.0)",
    "brotlicffi (>=1.2.0.2,<2.0.0.0)",
-   "fonttools (>=4.64.0,<5.0.0)",
+   "fonttools (>=4.65.0,<5.0.0)",
    "filelock (>=3.32.5,<4.0.0)",
    "virtualenv (>=21.7.8,<22.0.0)",
-   "dulwich (>=1.2.14,<2.0.0)",
-   "idna (>=3.19,<4.0)"
+   "dulwich (>=1.2.15,<2.0.0)",
+   "idna (>=3.20,<4.0)",
+   "anyio (>=4.15.1,<5.0.0)"
 ]
 
 [project.optional-dependencies]
 dev = [
-   "ruff == 0.16.5",
+   "ruff == 0.16.8",
    "pytest == 9.1.1",
    "pytest-cov == 7.1.0",
    "pydantic == 2.13.5",
    "anybadge == 1.16.0",
-   "weasyprint == 69.0",
+   "weasyprint == 70.0",
    "markdown2 == 2.5.5",
    "nuitka == 2.6.9",
    "poetry-core == 2.3.2",
